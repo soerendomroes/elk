@@ -450,12 +450,14 @@ public class BasicProgressMonitor implements IElkProgressMonitor {
                 ? null
                 : Collections.unmodifiableList(logGraphs);
     }
-    
+   
+    // elkjs-exclude-start 
     @Override
     public Path getDebugFolder() {
         initDebugFolder(false);
         return debugFolder;
     }
+    // elkjs-exclude-end
 
     @Override
     public boolean isExecutionTimeMeasured() {
@@ -477,7 +479,7 @@ public class BasicProgressMonitor implements IElkProgressMonitor {
      * @param ensureExistence if {@code true}, tries to ensure that the folder exists.
      */
     private void initDebugFolder(final boolean ensureExistence) {
-     // elkjs-exclude-start
+        // elkjs-exclude-start
         if (recordLogs && persistLogs && debugFolder == null) {
             // Our debug path hasn't been computed yet. How we do so depends on whether we have a parent or not
             if (getParentMonitor() == null) {
@@ -552,7 +554,9 @@ public class BasicProgressMonitor implements IElkProgressMonitor {
         String monitorFolder = String.format("%02d-%s",
                 index,
                 name);
+	// elkjs-exclude-start
         debugFolder = getParentMonitor().getDebugFolder().resolve(monitorFolder);
+	// elkjs-exclude-end
     }
     
     /**

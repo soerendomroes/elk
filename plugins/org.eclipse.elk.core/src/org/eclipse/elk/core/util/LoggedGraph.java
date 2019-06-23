@@ -10,7 +10,9 @@ package org.eclipse.elk.core.util;
 import java.io.StringWriter;
 import java.util.Collections;
 
+// elkjs-exclude-start
 import org.eclipse.elk.core.util.persistence.ElkGraphResource;
+// elkjs-exclude-end
 import org.eclipse.elk.graph.ElkNode;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -50,9 +52,11 @@ public final class LoggedGraph {
         /**
          * Checks if {@code o}'s type is the same or a subtype of the type we would expect.
          */
+	// elkjs-exclude-start
         boolean isTypeCompatible(final Object o) {
             return expectedType.isAssignableFrom(o.getClass());
         }
+	// elkjs-exclude-end
         
         /**
          * Returns the file extension for graphs of this type.
@@ -108,10 +112,14 @@ public final class LoggedGraph {
      * Serializes the graph to a string for it to be saved to a file.
      */
     public String serialize() {
+	// TODO what is the effect?
+	// elkjs-exclude-start
         graphType.isTypeCompatible(graph);
+	// elkjs-exclude-end
         
         // Depending on our type, different things are to be done
         switch (graphType) {
+	// elkjs-exclude-start
         case ELK:
             ResourceSet resourceSet = new ResourceSetImpl();
             Resource resource = resourceSet.createResource(URI.createFileURI("dummy.elkg"));
@@ -131,7 +139,7 @@ public final class LoggedGraph {
             }
             
             return "Unexpected problem serializing ELK Graph.";
-            
+        // elkjs-exclude-end
         default:
             return graph.toString();
         }
