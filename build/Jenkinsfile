@@ -115,9 +115,8 @@ pipeline {
   post {
       always {
           // Notify of regression
-          emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER!', 
+          mail subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER!',
             body: '''Check console output at $BUILD_URL to view the results.''',
-            recipientProviders: [culprits(), requestor()], 
             to: 'cds@informatik.uni-kiel.de'
       }
 
