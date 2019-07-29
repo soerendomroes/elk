@@ -115,7 +115,7 @@ pipeline {
   post {
       always {
           // Notify of regression
-          mail subject: "Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER!",
+          mail subject: "Build ${currentBuild.result} $PROJECT_NAME #$BUILD_NUMBER!",
             body: "Check console output at $BUILD_URL to view the results.",
             to: 'cds@informatik.uni-kiel.de'
       }
