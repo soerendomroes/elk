@@ -31,9 +31,8 @@ pipeline {
         )
     }
 
-    options {
-
-    }
+    // options {
+    // }
 
     stages {
         stage('Checkout') {
@@ -112,15 +111,15 @@ pipeline {
     }
 
     // Notify our developers if we enter or leave regressions
-    post {
-        regression {
-            // Notify of regression
-            // TODO
-        }
+    // post {
+    //     regression {
+    //         // Notify of regression
+    //         // TODO
+    //     }
 
-        fixed {
-            // Notify that build is stable again
-            // TODO
-        }
-    }
+    //     fixed {
+    //         // Notify that build is stable again
+    //         // TODO
+    //     }
+    // }
 }
