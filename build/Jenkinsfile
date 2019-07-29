@@ -35,6 +35,13 @@ pipeline {
       description: 'Path to the repository the meta data compiler will be published at.',
       defaultValue: 'file:///shared/modeling/elk/maven/meta/nightly/'
     )
+
+    // Regarding ELK proper...
+    string(
+      name: 'ELK_TARGET_DIR',
+      description: 'Path to the directory the build will copy all downloadable artifacts to.',
+      defaultValue: '/shared/modeling/elk/updates/nightly/'
+    )
   }
 
   // options {
@@ -77,8 +84,11 @@ pipeline {
     stage('BuildELK') {
       // Builds and publishes the ELK update site itself
       steps {
-        // TODO
-        echo 'BuildELK'
+        // Invoke Maven build. This will compile the code and publish it at Maven Central
+        sh "mvn -f elk/build/pom.xml -Pelk-update-site -Pmaven-publish -Psign --define elkMeta.repositoryUrl=${params.META_REPOSITORY_URL} --define elk.metadata.documentation.outputPath=elk/docs/ clean deploy"
+
+        // Generate downloadable artifacts, including documentation
+        sh "ant -f elk/build/org.eclipse.elk.repository/publish.xml -DtargetDir=${params.ELK_TARGET_DIR} -Dhugo=/shared/common/hugo/latest/hugo docs zipIt publish"
       }
     }
 
@@ -89,40 +99,29 @@ pipeline {
       }
     }
 
-    stage('DeployELK') {
-      steps {
-        // TODO
-        echo 'DeployElk'
-      }
-    }
-
-    stage('BuildWebsite') {
-      steps {
-        // TODO
-        echo 'BuildWebsite'
-      }
-    }
-
     stage('DeployWebsite') {
       steps {
-        // TODO
-        echo 'DeployWebsite'
+        dir('elk/build/org.eclipse.elk.repository') {
+          sh "./publish-website.sh"
+        }
       }
     }
   }
 
   // Notify our developers if we enter or leave regressions
   post {
-      always {
+      regression {
           // Notify of regression
           mail subject: "ELK ${currentBuild.fullDisplayName}: ${currentBuild.currentResult}",
-            body: "Check console output at $BUILD_URL to view the results.",
+            body: "Oh noes! The build has fallen into the hands of an evil regression! Check console output at $BUILD_URL to view the results.",
             to: 'cds@informatik.uni-kiel.de'
       }
 
-      // fixed {
-      //     // Notify that build is stable again
-      //     // TODO
-      // }
+      fixed {
+          // Notify that build is stable again
+          mail subject: "ELK ${currentBuild.fullDisplayName}: ${currentBuild.currentResult}",
+            body: "Hail to the source, the build is fixed! Check console output at $BUILD_URL to view the results.",
+            to: 'cds@informatik.uni-kiel.de'
+      }
   }
 }
