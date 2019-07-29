@@ -115,7 +115,7 @@ pipeline {
   post {
       always {
           // Notify of regression
-          mail subject: "Build ${currentBuild.fullDisplayName}: ${currentBuild.result}",
+          mail subject: "ELK ${currentBuild.fullDisplayName}: ${currentBuild.currentResult}",
             body: "Check console output at $BUILD_URL to view the results.",
             to: 'cds@informatik.uni-kiel.de'
       }
