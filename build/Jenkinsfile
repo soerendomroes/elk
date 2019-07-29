@@ -69,9 +69,7 @@ pipeline {
 
     stage('BuildMeta') {
       steps {
-        sh
-          label: 'buildMeta',
-          script: "mvn -f elk/build/pom.xml -P elk-meta --define elkMeta.repositoryUrl=${params.META_REPOSITORY_URL} --define elkMeta.publishUrl=${params.META_PUBLISH_URL} clean deploy"
+        sh label: 'buildMeta', script: "mvn -f elk/build/pom.xml -P elk-meta --define elkMeta.repositoryUrl=${params.META_REPOSITORY_URL} --define elkMeta.publishUrl=${params.META_PUBLISH_URL} clean deploy"
       }
     }
 
