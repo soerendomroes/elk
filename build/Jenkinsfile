@@ -82,20 +82,16 @@ pipeline {
     }
 
     stage('BuildELK') {
-      // Builds and publishes the ELK update site itself
+      // Builds the ELK update site itself and publishes to Maven Central
       steps {
-        // Invoke Maven build. This will compile the code and publish it at Maven Central
         sh "mvn -f elk/build/pom.xml -Pelk-update-site -Pmaven-publish -Psign -s /opt/public/hipp/homes/genie.elk/.m2/settings-deploy-ossrh.xml --define elkMeta.repositoryUrl=${params.META_REPOSITORY_URL} --define elk.metadata.documentation.outputPath=elk/docs/ clean deploy"
-
-        // Generate downloadable artifacts, including documentation
-        sh "ant -f elk/build/org.eclipse.elk.repository/publish.xml -DtargetDir=${params.ELK_TARGET_DIR} -Dhugo=/shared/common/hugo/latest/hugo docs zipIt publish"
       }
     }
 
-    stage('TestELK') {
+    stage('GenerateDownloads') {
+      // Generates and publishes our downloads
       steps {
-        // TODO
-        echo 'TestELK'
+        sh "ant -f elk/build/org.eclipse.elk.repository/publish.xml -DtargetDir=${params.ELK_TARGET_DIR} -Dhugo=/shared/common/hugo/latest/hugo docs zipIt publish"
       }
     }
 
