@@ -23,7 +23,7 @@ pipeline {
       defaultValue: 'master'
     )
 
-    // For the meta-data compiler...
+    // Regarding the meta-data compiler...
     string(
       name: 'META_REPOSITORY_URL',
       description: 'URL of the repository the meta data compiler will be published at.',
@@ -43,7 +43,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        // Checkout the main ELK repository
+        // Main ELK Repository
         checkout(
           [
             $class: 'GitSCM',
@@ -68,12 +68,14 @@ pipeline {
     }
 
     stage('BuildMeta') {
+      // Builds and publishes the ELK Meta Data Compiler
       steps {
-        sh label: 'buildMeta', script: "mvn -f elk/build/pom.xml -P elk-meta --define elkMeta.repositoryUrl=${params.META_REPOSITORY_URL} --define elkMeta.publishUrl=${params.META_PUBLISH_URL} clean deploy"
+        sh "mvn -f elk/build/pom.xml -Pelk-meta --define elkMeta.repositoryUrl=${params.META_REPOSITORY_URL} --define elkMeta.publishUrl=${params.META_PUBLISH_URL} clean deploy"
       }
     }
 
     stage('BuildELK') {
+      // Builds and publishes the ELK update site itself
       steps {
         // TODO
         echo 'BuildELK'
@@ -110,15 +112,18 @@ pipeline {
   }
 
   // Notify our developers if we enter or leave regressions
-  // post {
-  //     regression {
-  //         // Notify of regression
-  //         // TODO
-  //     }
+  post {
+      always {
+          // Notify of regression
+          emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER!', 
+            body: '''Check console output at $BUILD_URL to view the results.''',
+            recipientProviders: [culprits(), requestor()], 
+            to: 'cds@informatik.uni-kiel.de'
+      }
 
-  //     fixed {
-  //         // Notify that build is stable again
-  //         // TODO
-  //     }
-  // }
+      // fixed {
+      //     // Notify that build is stable again
+      //     // TODO
+      // }
+  }
 }
