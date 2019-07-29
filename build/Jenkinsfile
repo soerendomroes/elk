@@ -7,119 +7,120 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 pipeline {
-    agent any
+  agent any
+  tools {
+    maven 'apache-maven-latest'
+    ant 'apache-ant-1.9.6'
+    git 'Default'
+    jdk 'jdk1.8.0-latest'
+  }
 
-    parameters {
-        // For the source repository
-        string(
-            name: 'BRANCH',
-            description: 'The repository branch to checkout.',
-            defaultValue: 'master'
-        )
+  parameters {
+    // For the source repository
+    string(
+      name: 'BRANCH',
+      description: 'The repository branch to checkout.',
+      defaultValue: 'master'
+    )
 
-        // For the meta-data compiler...
-        string(
-            name: 'META_REPOSITORY_URL',
-            description: 'URL of the repository the meta data compiler will be published at.',
-            defaultValue: 'http://build.eclipse.org/modeling/elk/maven/meta/nightly'
-        )
+    // For the meta-data compiler...
+    string(
+      name: 'META_REPOSITORY_URL',
+      description: 'URL of the repository the meta data compiler will be published at.',
+      defaultValue: 'http://build.eclipse.org/modeling/elk/maven/meta/nightly'
+    )
 
-        string(
-            name: 'META_PUBLISH_URL',
-            description: 'Path to the repository the meta data compiler will be published at.',
-            defaultValue: 'file:///shared/modeling/elk/maven/meta/nightly/'
+    string(
+      name: 'META_PUBLISH_URL',
+      description: 'Path to the repository the meta data compiler will be published at.',
+      defaultValue: 'file:///shared/modeling/elk/maven/meta/nightly/'
+    )
+  }
+
+  // options {
+  // }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        // Checkout the main ELK repository
+        checkout(
+          [
+            $class: 'GitSCM',
+            branches: [[name: "*/${params.BRANCH}"]],
+            extensions: [
+              [
+                $class: 'CloneOption',
+                noTags: true,
+                shallow: true
+              ], [
+                $class: 'RelativeTargetDirectory',
+                relativeTargetDir: 'elk'
+              ], [
+                $class: 'CleanCheckout'
+              ]
+            ],
+            submoduleCfg: [],
+            userRemoteConfigs: [[url: 'https://github.com/eclipse/elk.git']]
+          ]
         )
+      }
     }
 
-    // options {
-    // }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checkout'
-                checkout(
-                    [
-                        $class: 'GitSCM',
-                        branches: [[name: "*/${params.BRANCH}"]],
-                        extensions: [
-                            [
-                                $class: 'CloneOption',
-                                noTags: true,
-                                shallow: true
-                            ], [
-                                $class: 'RelativeTargetDirectory',
-                                relativeTargetDir: 'elk'
-                            ], [
-                                $class: 'CleanCheckout'
-                            ]
-                        ],
-                        submoduleCfg: [],
-                        userRemoteConfigs: [[url: 'https://github.com/eclipse/elk.git']]
-                    ])
-            }
-        }
-
-        stage('BuildMeta') {
-            steps {
-                // TODO
-                echo 'BuildMeta'
-            }
-        }
-
-        stage('DeployMeta') {
-            steps {
-                // TODO
-                echo 'DeployMeta'
-            }
-        }
-
-        stage('BuildELK') {
-            steps {
-                // TODO
-                echo 'BuildELK'
-            }
-        }
-
-        stage('TestELK') {
-            steps {
-                // TODO
-                echo 'TestELK'
-            }
-        }
-
-        stage('DeployELK') {
-            steps {
-                // TODO
-                echo 'DeployElk'
-            }
-        }
-
-        stage('BuildWebsite') {
-            steps {
-                // TODO
-                echo 'BuildWebsite'
-            }
-        }
-
-        stage('DeployWebsite') {
-            steps {
-                // TODO
-                echo 'DeployWebsite'
-            }
-        }
+    stage('BuildMeta') {
+      steps {
+        sh
+          label: 'buildMeta',
+          script: "mvn -f elk/build/pom.xml -P elk-meta --define elkMeta.repositoryUrl=${params.META_REPOSITORY_URL} --define elkMeta.publishUrl=${params.META_PUBLISH_URL} clean deploy"
+      }
     }
 
-    // Notify our developers if we enter or leave regressions
-    // post {
-    //     regression {
-    //         // Notify of regression
-    //         // TODO
-    //     }
+    stage('BuildELK') {
+      steps {
+        // TODO
+        echo 'BuildELK'
+      }
+    }
 
-    //     fixed {
-    //         // Notify that build is stable again
-    //         // TODO
-    //     }
-    // }
+    stage('TestELK') {
+      steps {
+        // TODO
+        echo 'TestELK'
+      }
+    }
+
+    stage('DeployELK') {
+      steps {
+        // TODO
+        echo 'DeployElk'
+      }
+    }
+
+    stage('BuildWebsite') {
+      steps {
+        // TODO
+        echo 'BuildWebsite'
+      }
+    }
+
+    stage('DeployWebsite') {
+      steps {
+        // TODO
+        echo 'DeployWebsite'
+      }
+    }
+  }
+
+  // Notify our developers if we enter or leave regressions
+  // post {
+  //     regression {
+  //         // Notify of regression
+  //         // TODO
+  //     }
+
+  //     fixed {
+  //         // Notify that build is stable again
+  //         // TODO
+  //     }
+  // }
 }
