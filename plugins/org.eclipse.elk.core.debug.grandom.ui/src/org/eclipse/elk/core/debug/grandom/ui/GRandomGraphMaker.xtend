@@ -101,6 +101,13 @@ class GRandomGraphMaker {
         setQuantities(genOpt, config.fraction, GeneratorOptions.PARTITION_FRAC)
         genOpt.setIfExists(config.maxWidth, GeneratorOptions.MAX_WIDTH)
         genOpt.setIfExists(config.maxDegree, GeneratorOptions.MAX_DEGREE)
+        
+        setQuantities(genOpt, config.bigNodes, GeneratorOptions.NUMBER_BIG_NODES)
+        if (config.bigNodeSize.exists) {
+            setQuantities(genOpt, config.bigNodeSize.width, GeneratorOptions.BIG_NODE_WIDTH)
+            setQuantities(genOpt, config.bigNodeSize.height, GeneratorOptions.BIG_NODE_HEIGHT)
+        }
+        genOpt.setIfExists(config.prio, GeneratorOptions.SET_PRIORITY)
 
         genOpt
     }
@@ -278,6 +285,9 @@ class GRandomGraphMaker {
             }
             case TRICONNECTED: {
                 options.setProperty(GeneratorOptions.GRAPH_TYPE, GraphType.TRICONNECTED)
+            }
+            case RECTANGLE: {
+                options.setProperty(GeneratorOptions.GRAPH_TYPE, GraphType.RECTANGLES)
             }
         }
     }
