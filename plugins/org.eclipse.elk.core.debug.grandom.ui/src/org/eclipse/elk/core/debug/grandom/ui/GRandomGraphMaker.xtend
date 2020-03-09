@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2018 Kiel University and others.
+ * Copyright (c) 2016, 2020 Kiel University and others.
  * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -166,6 +166,7 @@ class GRandomGraphMaker {
     private def size(Nodes nodes, Random r, GeneratorOptions genOpt) {
         val size = nodes.size
         if (size.exists) {
+            genOpt.setIfExists(true, GeneratorOptions.SET_NODE_SIZE)
             setQuantities(genOpt, size.width, GeneratorOptions.NODE_WIDTH)
             setQuantities(genOpt, size.height, GeneratorOptions.NODE_HEIGHT)
         }
