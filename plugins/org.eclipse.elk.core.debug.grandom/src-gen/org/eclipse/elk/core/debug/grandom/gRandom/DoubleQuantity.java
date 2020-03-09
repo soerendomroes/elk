@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -40,10 +40,6 @@ public interface DoubleQuantity extends EObject
   /**
    * Returns the value of the '<em><b>Quant</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Quant</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Quant</em>' attribute.
    * @see #setQuant(Double)
@@ -66,10 +62,6 @@ public interface DoubleQuantity extends EObject
   /**
    * Returns the value of the '<em><b>Min</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Min</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Min</em>' attribute.
    * @see #setMin(Double)
@@ -92,10 +84,6 @@ public interface DoubleQuantity extends EObject
   /**
    * Returns the value of the '<em><b>Min Max</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Min Max</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Min Max</em>' attribute.
    * @see #setMinMax(boolean)
@@ -118,10 +106,6 @@ public interface DoubleQuantity extends EObject
   /**
    * Returns the value of the '<em><b>Max</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Max</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Max</em>' attribute.
    * @see #setMax(Double)
@@ -144,10 +128,6 @@ public interface DoubleQuantity extends EObject
   /**
    * Returns the value of the '<em><b>Mean</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Mean</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Mean</em>' attribute.
    * @see #setMean(Double)
@@ -170,10 +150,6 @@ public interface DoubleQuantity extends EObject
   /**
    * Returns the value of the '<em><b>Gaussian</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Gaussian</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Gaussian</em>' attribute.
    * @see #setGaussian(boolean)
@@ -196,10 +172,6 @@ public interface DoubleQuantity extends EObject
   /**
    * Returns the value of the '<em><b>Stddv</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Stddv</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Stddv</em>' attribute.
    * @see #setStddv(Double)

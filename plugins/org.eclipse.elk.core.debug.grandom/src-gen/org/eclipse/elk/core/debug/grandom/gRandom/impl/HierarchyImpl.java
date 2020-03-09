@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -108,6 +108,7 @@ public class HierarchyImpl extends MinimalEObjectImpl.Container implements Hiera
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getLevels()
   {
     return levels;
@@ -135,6 +136,7 @@ public class HierarchyImpl extends MinimalEObjectImpl.Container implements Hiera
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setLevels(DoubleQuantity newLevels)
   {
     if (newLevels != levels)
@@ -156,6 +158,7 @@ public class HierarchyImpl extends MinimalEObjectImpl.Container implements Hiera
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getEdges()
   {
     return edges;
@@ -183,6 +186,7 @@ public class HierarchyImpl extends MinimalEObjectImpl.Container implements Hiera
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setEdges(DoubleQuantity newEdges)
   {
     if (newEdges != edges)
@@ -204,6 +208,7 @@ public class HierarchyImpl extends MinimalEObjectImpl.Container implements Hiera
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getNumHierarchNodes()
   {
     return numHierarchNodes;
@@ -231,6 +236,7 @@ public class HierarchyImpl extends MinimalEObjectImpl.Container implements Hiera
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setNumHierarchNodes(DoubleQuantity newNumHierarchNodes)
   {
     if (newNumHierarchNodes != numHierarchNodes)
@@ -252,6 +258,7 @@ public class HierarchyImpl extends MinimalEObjectImpl.Container implements Hiera
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getCrossHierarchRel()
   {
     return crossHierarchRel;
@@ -279,6 +286,7 @@ public class HierarchyImpl extends MinimalEObjectImpl.Container implements Hiera
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setCrossHierarchRel(DoubleQuantity newCrossHierarchRel)
   {
     if (newCrossHierarchRel != crossHierarchRel)

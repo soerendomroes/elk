@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -37,10 +37,6 @@ public interface Hierarchy extends EObject
   /**
    * Returns the value of the '<em><b>Levels</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Levels</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Levels</em>' containment reference.
    * @see #setLevels(DoubleQuantity)
@@ -63,10 +59,6 @@ public interface Hierarchy extends EObject
   /**
    * Returns the value of the '<em><b>Edges</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Edges</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Edges</em>' containment reference.
    * @see #setEdges(DoubleQuantity)
@@ -89,10 +81,6 @@ public interface Hierarchy extends EObject
   /**
    * Returns the value of the '<em><b>Num Hierarch Nodes</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Num Hierarch Nodes</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Num Hierarch Nodes</em>' containment reference.
    * @see #setNumHierarchNodes(DoubleQuantity)
@@ -115,10 +103,6 @@ public interface Hierarchy extends EObject
   /**
    * Returns the value of the '<em><b>Cross Hierarch Rel</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Cross Hierarch Rel</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Cross Hierarch Rel</em>' containment reference.
    * @see #setCrossHierarchRel(DoubleQuantity)

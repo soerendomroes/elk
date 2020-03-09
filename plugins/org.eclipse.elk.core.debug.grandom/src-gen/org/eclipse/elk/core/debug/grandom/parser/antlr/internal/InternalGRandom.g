@@ -378,21 +378,41 @@ ruleConfiguration returns [EObject current=null]
 							getUnorderedGroupHelper().select(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 5);
 						}
 									({true}?=>((
-										{
-											newCompositeNode(grammarAccess.getConfigurationAccess().getHierarchyHierarchyParserRuleCall_3_1_5_0());
-										}
-										lv_hierarchy_16_0=ruleHierarchy
-										{
-											if ($current==null) {
-												$current = createModelElementForParent(grammarAccess.getConfigurationRule());
+										(
+											lv_bN_16_0='bigNodes'
+											{
+												newLeafNode(lv_bN_16_0, grammarAccess.getConfigurationAccess().getBNBigNodesKeyword_3_1_5_0_0());
 											}
-											set(
-												$current,
-												"hierarchy",
-												lv_hierarchy_16_0,
-												"org.eclipse.elk.core.debug.grandom.GRandom.Hierarchy");
-											afterParserOrEnumRuleCall();
-										}
+											{
+												if ($current==null) {
+													$current = createModelElement(grammarAccess.getConfigurationRule());
+												}
+												setWithLastConsumed($current, "bN", true, "bigNodes");
+											}
+										)
+									)
+									otherlv_17='='
+									{
+										newLeafNode(otherlv_17, grammarAccess.getConfigurationAccess().getEqualsSignKeyword_3_1_5_1());
+									}
+									(
+										(
+											{
+												newCompositeNode(grammarAccess.getConfigurationAccess().getBigNodesDoubleQuantityParserRuleCall_3_1_5_2_0());
+											}
+											lv_bigNodes_18_0=ruleDoubleQuantity
+											{
+												if ($current==null) {
+													$current = createModelElementForParent(grammarAccess.getConfigurationRule());
+												}
+												set(
+													$current,
+													"bigNodes",
+													lv_bigNodes_18_0,
+													"org.eclipse.elk.core.debug.grandom.GRandom.DoubleQuantity");
+												afterParserOrEnumRuleCall();
+											}
+										)
 									)
 									))
 						{ 
@@ -405,29 +425,39 @@ ruleConfiguration returns [EObject current=null]
 						{
 							getUnorderedGroupHelper().select(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 6);
 						}
-									({true}?=>(otherlv_17='seed'
+									({true}?=>((
+										(
+											lv_bNS_19_0='bigNodeSize'
+											{
+												newLeafNode(lv_bNS_19_0, grammarAccess.getConfigurationAccess().getBNSBigNodeSizeKeyword_3_1_6_0_0());
+											}
+											{
+												if ($current==null) {
+													$current = createModelElement(grammarAccess.getConfigurationRule());
+												}
+												setWithLastConsumed($current, "bNS", true, "bigNodeSize");
+											}
+										)
+									)
+									otherlv_20='='
 									{
-										newLeafNode(otherlv_17, grammarAccess.getConfigurationAccess().getSeedKeyword_3_1_6_0());
-									}
-									otherlv_18='='
-									{
-										newLeafNode(otherlv_18, grammarAccess.getConfigurationAccess().getEqualsSignKeyword_3_1_6_1());
+										newLeafNode(otherlv_20, grammarAccess.getConfigurationAccess().getEqualsSignKeyword_3_1_6_1());
 									}
 									(
 										(
 											{
-												newCompositeNode(grammarAccess.getConfigurationAccess().getSeedIntegerParserRuleCall_3_1_6_2_0());
+												newCompositeNode(grammarAccess.getConfigurationAccess().getBigNodeSizeSizeParserRuleCall_3_1_6_2_0());
 											}
-											lv_seed_19_0=ruleInteger
+											lv_bigNodeSize_21_0=ruleSize
 											{
 												if ($current==null) {
 													$current = createModelElementForParent(grammarAccess.getConfigurationRule());
 												}
 												set(
 													$current,
-													"seed",
-													lv_seed_19_0,
-													"org.eclipse.elk.core.debug.grandom.GRandom.Integer");
+													"bigNodeSize",
+													lv_bigNodeSize_21_0,
+													"org.eclipse.elk.core.debug.grandom.GRandom.Size");
 												afterParserOrEnumRuleCall();
 											}
 										)
@@ -443,32 +473,17 @@ ruleConfiguration returns [EObject current=null]
 						{
 							getUnorderedGroupHelper().select(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 7);
 						}
-									({true}?=>(otherlv_20='format'
-									{
-										newLeafNode(otherlv_20, grammarAccess.getConfigurationAccess().getFormatKeyword_3_1_7_0());
-									}
-									otherlv_21='='
-									{
-										newLeafNode(otherlv_21, grammarAccess.getConfigurationAccess().getEqualsSignKeyword_3_1_7_1());
-									}
-									(
-										(
-											{
-												newCompositeNode(grammarAccess.getConfigurationAccess().getFormatFormatsEnumRuleCall_3_1_7_2_0());
+									({true}?=>((
+										lv_prio_22_0='setPriority'
+										{
+											newLeafNode(lv_prio_22_0, grammarAccess.getConfigurationAccess().getPrioSetPriorityKeyword_3_1_7_0());
+										}
+										{
+											if ($current==null) {
+												$current = createModelElement(grammarAccess.getConfigurationRule());
 											}
-											lv_format_22_0=ruleFormats
-											{
-												if ($current==null) {
-													$current = createModelElementForParent(grammarAccess.getConfigurationRule());
-												}
-												set(
-													$current,
-													"format",
-													lv_format_22_0,
-													"org.eclipse.elk.core.debug.grandom.GRandom.Formats");
-												afterParserOrEnumRuleCall();
-											}
-										)
+											setWithLastConsumed($current, "prio", true, "setPriority");
+										}
 									)
 									))
 						{ 
@@ -481,19 +496,123 @@ ruleConfiguration returns [EObject current=null]
 						{
 							getUnorderedGroupHelper().select(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 8);
 						}
-									({true}?=>(otherlv_23='filename'
+									({true}?=>((
+										{
+											newCompositeNode(grammarAccess.getConfigurationAccess().getHierarchyHierarchyParserRuleCall_3_1_8_0());
+										}
+										lv_hierarchy_23_0=ruleHierarchy
+										{
+											if ($current==null) {
+												$current = createModelElementForParent(grammarAccess.getConfigurationRule());
+											}
+											set(
+												$current,
+												"hierarchy",
+												lv_hierarchy_23_0,
+												"org.eclipse.elk.core.debug.grandom.GRandom.Hierarchy");
+											afterParserOrEnumRuleCall();
+										}
+									)
+									))
+						{ 
+							getUnorderedGroupHelper().returnFromSelection(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1());
+						}
+					)
+				)|
+				(
+					{getUnorderedGroupHelper().canSelect(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 9)}?=>(
+						{
+							getUnorderedGroupHelper().select(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 9);
+						}
+									({true}?=>(otherlv_24='seed'
 									{
-										newLeafNode(otherlv_23, grammarAccess.getConfigurationAccess().getFilenameKeyword_3_1_8_0());
+										newLeafNode(otherlv_24, grammarAccess.getConfigurationAccess().getSeedKeyword_3_1_9_0());
 									}
-									otherlv_24='='
+									otherlv_25='='
 									{
-										newLeafNode(otherlv_24, grammarAccess.getConfigurationAccess().getEqualsSignKeyword_3_1_8_1());
+										newLeafNode(otherlv_25, grammarAccess.getConfigurationAccess().getEqualsSignKeyword_3_1_9_1());
 									}
 									(
 										(
-											lv_filename_25_0=RULE_STRING
 											{
-												newLeafNode(lv_filename_25_0, grammarAccess.getConfigurationAccess().getFilenameSTRINGTerminalRuleCall_3_1_8_2_0());
+												newCompositeNode(grammarAccess.getConfigurationAccess().getSeedIntegerParserRuleCall_3_1_9_2_0());
+											}
+											lv_seed_26_0=ruleInteger
+											{
+												if ($current==null) {
+													$current = createModelElementForParent(grammarAccess.getConfigurationRule());
+												}
+												set(
+													$current,
+													"seed",
+													lv_seed_26_0,
+													"org.eclipse.elk.core.debug.grandom.GRandom.Integer");
+												afterParserOrEnumRuleCall();
+											}
+										)
+									)
+									))
+						{ 
+							getUnorderedGroupHelper().returnFromSelection(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1());
+						}
+					)
+				)|
+				(
+					{getUnorderedGroupHelper().canSelect(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 10)}?=>(
+						{
+							getUnorderedGroupHelper().select(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 10);
+						}
+									({true}?=>(otherlv_27='format'
+									{
+										newLeafNode(otherlv_27, grammarAccess.getConfigurationAccess().getFormatKeyword_3_1_10_0());
+									}
+									otherlv_28='='
+									{
+										newLeafNode(otherlv_28, grammarAccess.getConfigurationAccess().getEqualsSignKeyword_3_1_10_1());
+									}
+									(
+										(
+											{
+												newCompositeNode(grammarAccess.getConfigurationAccess().getFormatFormatsEnumRuleCall_3_1_10_2_0());
+											}
+											lv_format_29_0=ruleFormats
+											{
+												if ($current==null) {
+													$current = createModelElementForParent(grammarAccess.getConfigurationRule());
+												}
+												set(
+													$current,
+													"format",
+													lv_format_29_0,
+													"org.eclipse.elk.core.debug.grandom.GRandom.Formats");
+												afterParserOrEnumRuleCall();
+											}
+										)
+									)
+									))
+						{ 
+							getUnorderedGroupHelper().returnFromSelection(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1());
+						}
+					)
+				)|
+				(
+					{getUnorderedGroupHelper().canSelect(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 11)}?=>(
+						{
+							getUnorderedGroupHelper().select(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1(), 11);
+						}
+									({true}?=>(otherlv_30='filename'
+									{
+										newLeafNode(otherlv_30, grammarAccess.getConfigurationAccess().getFilenameKeyword_3_1_11_0());
+									}
+									otherlv_31='='
+									{
+										newLeafNode(otherlv_31, grammarAccess.getConfigurationAccess().getEqualsSignKeyword_3_1_11_1());
+									}
+									(
+										(
+											lv_filename_32_0=RULE_STRING
+											{
+												newLeafNode(lv_filename_32_0, grammarAccess.getConfigurationAccess().getFilenameSTRINGTerminalRuleCall_3_1_11_2_0());
 											}
 											{
 												if ($current==null) {
@@ -502,7 +621,7 @@ ruleConfiguration returns [EObject current=null]
 												setWithLastConsumed(
 													$current,
 													"filename",
-													lv_filename_25_0,
+													lv_filename_32_0,
 													"org.eclipse.xtext.common.Terminals.STRING");
 											}
 										)
@@ -520,9 +639,9 @@ ruleConfiguration returns [EObject current=null]
 					  getUnorderedGroupHelper().leave(grammarAccess.getConfigurationAccess().getUnorderedGroup_3_1());
 					}
 			)
-			otherlv_26='}'
+			otherlv_33='}'
 			{
-				newLeafNode(otherlv_26, grammarAccess.getConfigurationAccess().getRightCurlyBracketKeyword_3_2());
+				newLeafNode(otherlv_33, grammarAccess.getConfigurationAccess().getRightCurlyBracketKeyword_3_2());
 			}
 		)?
 	)
@@ -1881,6 +2000,14 @@ ruleForm returns [Enumerator current=null]
 			{
 				$current = grammarAccess.getFormAccess().getAcyclicEnumLiteralDeclaration_5().getEnumLiteral().getInstance();
 				newLeafNode(enumLiteral_5, grammarAccess.getFormAccess().getAcyclicEnumLiteralDeclaration_5());
+			}
+		)
+		    |
+		(
+			enumLiteral_6='rectangle'
+			{
+				$current = grammarAccess.getFormAccess().getRectangleEnumLiteralDeclaration_6().getEnumLiteral().getInstance();
+				newLeafNode(enumLiteral_6, grammarAccess.getFormAccess().getRectangleEnumLiteralDeclaration_6());
 			}
 		)
 	)

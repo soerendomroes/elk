@@ -90,6 +90,7 @@ public class GRandomSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *             (
 	 *                 nodes=Nodes | 
 	 *                 edges=Edges | 
+	 *                 prio?='setPriority' | 
 	 *                 hierarchy=Hierarchy | 
 	 *                 seed=Integer | 
 	 *                 format=Formats | 
@@ -97,7 +98,9 @@ public class GRandomSemanticSequencer extends AbstractDelegatingSemanticSequence
 	 *             )? 
 	 *             (mW?='maxWidth' maxWidth=Integer)? 
 	 *             (mD?='maxDegree' maxDegree=Integer)? 
-	 *             (pF?='partitionFraction' fraction=DoubleQuantity)?
+	 *             (pF?='partitionFraction' fraction=DoubleQuantity)? 
+	 *             (bN?='bigNodes' bigNodes=DoubleQuantity)? 
+	 *             (bNS?='bigNodeSize' bigNodeSize=Size)?
 	 *         )+
 	 *     )
 	 */

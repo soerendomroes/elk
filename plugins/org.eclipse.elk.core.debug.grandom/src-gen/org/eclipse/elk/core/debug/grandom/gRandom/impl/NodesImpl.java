@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -141,6 +141,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getNNodes()
   {
     return nNodes;
@@ -168,6 +169,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setNNodes(DoubleQuantity newNNodes)
   {
     if (newNNodes != nNodes)
@@ -189,6 +191,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Ports getPorts()
   {
     return ports;
@@ -216,6 +219,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setPorts(Ports newPorts)
   {
     if (newPorts != ports)
@@ -237,6 +241,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isLabels()
   {
     return labels;
@@ -247,6 +252,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setLabels(boolean newLabels)
   {
     boolean oldLabels = labels;
@@ -260,6 +266,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Size getSize()
   {
     return size;
@@ -287,6 +294,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setSize(Size newSize)
   {
     if (newSize != size)
@@ -308,6 +316,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isRemoveIsolated()
   {
     return removeIsolated;
@@ -318,6 +327,7 @@ public class NodesImpl extends MinimalEObjectImpl.Container implements Nodes
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setRemoveIsolated(boolean newRemoveIsolated)
   {
     boolean oldRemoveIsolated = removeIsolated;

@@ -81,23 +81,37 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cEqualsSignKeyword_3_1_4_1 = (Keyword)cGroup_3_1_4.eContents().get(1);
 		private final Assignment cFractionAssignment_3_1_4_2 = (Assignment)cGroup_3_1_4.eContents().get(2);
 		private final RuleCall cFractionDoubleQuantityParserRuleCall_3_1_4_2_0 = (RuleCall)cFractionAssignment_3_1_4_2.eContents().get(0);
-		private final Assignment cHierarchyAssignment_3_1_5 = (Assignment)cUnorderedGroup_3_1.eContents().get(5);
-		private final RuleCall cHierarchyHierarchyParserRuleCall_3_1_5_0 = (RuleCall)cHierarchyAssignment_3_1_5.eContents().get(0);
+		private final Group cGroup_3_1_5 = (Group)cUnorderedGroup_3_1.eContents().get(5);
+		private final Assignment cBNAssignment_3_1_5_0 = (Assignment)cGroup_3_1_5.eContents().get(0);
+		private final Keyword cBNBigNodesKeyword_3_1_5_0_0 = (Keyword)cBNAssignment_3_1_5_0.eContents().get(0);
+		private final Keyword cEqualsSignKeyword_3_1_5_1 = (Keyword)cGroup_3_1_5.eContents().get(1);
+		private final Assignment cBigNodesAssignment_3_1_5_2 = (Assignment)cGroup_3_1_5.eContents().get(2);
+		private final RuleCall cBigNodesDoubleQuantityParserRuleCall_3_1_5_2_0 = (RuleCall)cBigNodesAssignment_3_1_5_2.eContents().get(0);
 		private final Group cGroup_3_1_6 = (Group)cUnorderedGroup_3_1.eContents().get(6);
-		private final Keyword cSeedKeyword_3_1_6_0 = (Keyword)cGroup_3_1_6.eContents().get(0);
+		private final Assignment cBNSAssignment_3_1_6_0 = (Assignment)cGroup_3_1_6.eContents().get(0);
+		private final Keyword cBNSBigNodeSizeKeyword_3_1_6_0_0 = (Keyword)cBNSAssignment_3_1_6_0.eContents().get(0);
 		private final Keyword cEqualsSignKeyword_3_1_6_1 = (Keyword)cGroup_3_1_6.eContents().get(1);
-		private final Assignment cSeedAssignment_3_1_6_2 = (Assignment)cGroup_3_1_6.eContents().get(2);
-		private final RuleCall cSeedIntegerParserRuleCall_3_1_6_2_0 = (RuleCall)cSeedAssignment_3_1_6_2.eContents().get(0);
-		private final Group cGroup_3_1_7 = (Group)cUnorderedGroup_3_1.eContents().get(7);
-		private final Keyword cFormatKeyword_3_1_7_0 = (Keyword)cGroup_3_1_7.eContents().get(0);
-		private final Keyword cEqualsSignKeyword_3_1_7_1 = (Keyword)cGroup_3_1_7.eContents().get(1);
-		private final Assignment cFormatAssignment_3_1_7_2 = (Assignment)cGroup_3_1_7.eContents().get(2);
-		private final RuleCall cFormatFormatsEnumRuleCall_3_1_7_2_0 = (RuleCall)cFormatAssignment_3_1_7_2.eContents().get(0);
-		private final Group cGroup_3_1_8 = (Group)cUnorderedGroup_3_1.eContents().get(8);
-		private final Keyword cFilenameKeyword_3_1_8_0 = (Keyword)cGroup_3_1_8.eContents().get(0);
-		private final Keyword cEqualsSignKeyword_3_1_8_1 = (Keyword)cGroup_3_1_8.eContents().get(1);
-		private final Assignment cFilenameAssignment_3_1_8_2 = (Assignment)cGroup_3_1_8.eContents().get(2);
-		private final RuleCall cFilenameSTRINGTerminalRuleCall_3_1_8_2_0 = (RuleCall)cFilenameAssignment_3_1_8_2.eContents().get(0);
+		private final Assignment cBigNodeSizeAssignment_3_1_6_2 = (Assignment)cGroup_3_1_6.eContents().get(2);
+		private final RuleCall cBigNodeSizeSizeParserRuleCall_3_1_6_2_0 = (RuleCall)cBigNodeSizeAssignment_3_1_6_2.eContents().get(0);
+		private final Assignment cPrioAssignment_3_1_7 = (Assignment)cUnorderedGroup_3_1.eContents().get(7);
+		private final Keyword cPrioSetPriorityKeyword_3_1_7_0 = (Keyword)cPrioAssignment_3_1_7.eContents().get(0);
+		private final Assignment cHierarchyAssignment_3_1_8 = (Assignment)cUnorderedGroup_3_1.eContents().get(8);
+		private final RuleCall cHierarchyHierarchyParserRuleCall_3_1_8_0 = (RuleCall)cHierarchyAssignment_3_1_8.eContents().get(0);
+		private final Group cGroup_3_1_9 = (Group)cUnorderedGroup_3_1.eContents().get(9);
+		private final Keyword cSeedKeyword_3_1_9_0 = (Keyword)cGroup_3_1_9.eContents().get(0);
+		private final Keyword cEqualsSignKeyword_3_1_9_1 = (Keyword)cGroup_3_1_9.eContents().get(1);
+		private final Assignment cSeedAssignment_3_1_9_2 = (Assignment)cGroup_3_1_9.eContents().get(2);
+		private final RuleCall cSeedIntegerParserRuleCall_3_1_9_2_0 = (RuleCall)cSeedAssignment_3_1_9_2.eContents().get(0);
+		private final Group cGroup_3_1_10 = (Group)cUnorderedGroup_3_1.eContents().get(10);
+		private final Keyword cFormatKeyword_3_1_10_0 = (Keyword)cGroup_3_1_10.eContents().get(0);
+		private final Keyword cEqualsSignKeyword_3_1_10_1 = (Keyword)cGroup_3_1_10.eContents().get(1);
+		private final Assignment cFormatAssignment_3_1_10_2 = (Assignment)cGroup_3_1_10.eContents().get(2);
+		private final RuleCall cFormatFormatsEnumRuleCall_3_1_10_2_0 = (RuleCall)cFormatAssignment_3_1_10_2.eContents().get(0);
+		private final Group cGroup_3_1_11 = (Group)cUnorderedGroup_3_1.eContents().get(11);
+		private final Keyword cFilenameKeyword_3_1_11_0 = (Keyword)cGroup_3_1_11.eContents().get(0);
+		private final Keyword cEqualsSignKeyword_3_1_11_1 = (Keyword)cGroup_3_1_11.eContents().get(1);
+		private final Assignment cFilenameAssignment_3_1_11_2 = (Assignment)cGroup_3_1_11.eContents().get(2);
+		private final RuleCall cFilenameSTRINGTerminalRuleCall_3_1_11_2_0 = (RuleCall)cFilenameAssignment_3_1_11_2.eContents().get(0);
 		private final Keyword cRightCurlyBracketKeyword_3_2 = (Keyword)cGroup_3.eContents().get(2);
 		
 		//Configuration:
@@ -107,6 +121,9 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//	& (mW?='maxWidth' '=' maxWidth=Integer)?
 		//	& (mD?='maxDegree' '=' maxDegree=Integer)?
 		//	& (pF?='partitionFraction' '=' fraction=DoubleQuantity)?
+		//	& (bN?='bigNodes' '=' bigNodes=DoubleQuantity)?
+		//	& (bNS?='bigNodeSize' '=' bigNodeSize=Size)?
+		//	& prio?='setPriority'?
 		//	& hierarchy=Hierarchy?
 		//	& ('seed' '=' seed=Integer)?
 		//	& ('format' '=' format=Formats)?
@@ -115,9 +132,9 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		@Override public ParserRule getRule() { return rule; }
 		
 		//'generate' samples=INT form=Form ('{' (nodes=Nodes? & edges=Edges? & (mW?='maxWidth' '=' maxWidth=Integer)? &
-		//(mD?='maxDegree' '=' maxDegree=Integer)? & (pF?='partitionFraction' '=' fraction=DoubleQuantity)? &
-		//hierarchy=Hierarchy? & ('seed' '=' seed=Integer)? & ('format' '=' format=Formats)? & ('filename' '=' filename=STRING)?)
-		//'}')?
+		//(mD?='maxDegree' '=' maxDegree=Integer)? & (pF?='partitionFraction' '=' fraction=DoubleQuantity)? & (bN?='bigNodes' '='
+		//bigNodes=DoubleQuantity)? & (bNS?='bigNodeSize' '=' bigNodeSize=Size)? & prio?='setPriority'? & hierarchy=Hierarchy? &
+		//('seed' '=' seed=Integer)? & ('format' '=' format=Formats)? & ('filename' '=' filename=STRING)?) '}')?
 		public Group getGroup() { return cGroup; }
 		
 		//'generate'
@@ -136,16 +153,18 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		public RuleCall getFormFormEnumRuleCall_2_0() { return cFormFormEnumRuleCall_2_0; }
 		
 		//('{' (nodes=Nodes? & edges=Edges? & (mW?='maxWidth' '=' maxWidth=Integer)? & (mD?='maxDegree' '=' maxDegree=Integer)? &
-		//(pF?='partitionFraction' '=' fraction=DoubleQuantity)? & hierarchy=Hierarchy? & ('seed' '=' seed=Integer)? & ('format'
-		//'=' format=Formats)? & ('filename' '=' filename=STRING)?) '}')?
+		//(pF?='partitionFraction' '=' fraction=DoubleQuantity)? & (bN?='bigNodes' '=' bigNodes=DoubleQuantity)? &
+		//(bNS?='bigNodeSize' '=' bigNodeSize=Size)? & prio?='setPriority'? & hierarchy=Hierarchy? & ('seed' '=' seed=Integer)? &
+		//('format' '=' format=Formats)? & ('filename' '=' filename=STRING)?) '}')?
 		public Group getGroup_3() { return cGroup_3; }
 		
 		//'{'
 		public Keyword getLeftCurlyBracketKeyword_3_0() { return cLeftCurlyBracketKeyword_3_0; }
 		
-		//nodes=Nodes? & edges=Edges? & (mW?='maxWidth' '=' maxWidth=Integer)? & (mD?='maxDegree' '=' maxDegree=Integer)? &
-		//(pF?='partitionFraction' '=' fraction=DoubleQuantity)? & hierarchy=Hierarchy? & ('seed' '=' seed=Integer)? & ('format'
-		//'=' format=Formats)? & ('filename' '=' filename=STRING)?
+		//(nodes=Nodes? & edges=Edges? & (mW?='maxWidth' '=' maxWidth=Integer)? & (mD?='maxDegree' '=' maxDegree=Integer)? &
+		//(pF?='partitionFraction' '=' fraction=DoubleQuantity)? & (bN?='bigNodes' '=' bigNodes=DoubleQuantity)? &
+		//(bNS?='bigNodeSize' '=' bigNodeSize=Size)? & prio?='setPriority'? & hierarchy=Hierarchy? & ('seed' '=' seed=Integer)? &
+		//('format' '=' format=Formats)? & ('filename' '=' filename=STRING)?)
 		public UnorderedGroup getUnorderedGroup_3_1() { return cUnorderedGroup_3_1; }
 		
 		//nodes=Nodes?
@@ -214,56 +233,98 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//DoubleQuantity
 		public RuleCall getFractionDoubleQuantityParserRuleCall_3_1_4_2_0() { return cFractionDoubleQuantityParserRuleCall_3_1_4_2_0; }
 		
-		//hierarchy=Hierarchy?
-		public Assignment getHierarchyAssignment_3_1_5() { return cHierarchyAssignment_3_1_5; }
+		//(bN?='bigNodes' '=' bigNodes=DoubleQuantity)?
+		public Group getGroup_3_1_5() { return cGroup_3_1_5; }
 		
-		//Hierarchy
-		public RuleCall getHierarchyHierarchyParserRuleCall_3_1_5_0() { return cHierarchyHierarchyParserRuleCall_3_1_5_0; }
+		//bN?='bigNodes'
+		public Assignment getBNAssignment_3_1_5_0() { return cBNAssignment_3_1_5_0; }
 		
-		//('seed' '=' seed=Integer)?
+		//'bigNodes'
+		public Keyword getBNBigNodesKeyword_3_1_5_0_0() { return cBNBigNodesKeyword_3_1_5_0_0; }
+		
+		//'='
+		public Keyword getEqualsSignKeyword_3_1_5_1() { return cEqualsSignKeyword_3_1_5_1; }
+		
+		//bigNodes=DoubleQuantity
+		public Assignment getBigNodesAssignment_3_1_5_2() { return cBigNodesAssignment_3_1_5_2; }
+		
+		//DoubleQuantity
+		public RuleCall getBigNodesDoubleQuantityParserRuleCall_3_1_5_2_0() { return cBigNodesDoubleQuantityParserRuleCall_3_1_5_2_0; }
+		
+		//(bNS?='bigNodeSize' '=' bigNodeSize=Size)?
 		public Group getGroup_3_1_6() { return cGroup_3_1_6; }
 		
-		//'seed'
-		public Keyword getSeedKeyword_3_1_6_0() { return cSeedKeyword_3_1_6_0; }
+		//bNS?='bigNodeSize'
+		public Assignment getBNSAssignment_3_1_6_0() { return cBNSAssignment_3_1_6_0; }
+		
+		//'bigNodeSize'
+		public Keyword getBNSBigNodeSizeKeyword_3_1_6_0_0() { return cBNSBigNodeSizeKeyword_3_1_6_0_0; }
 		
 		//'='
 		public Keyword getEqualsSignKeyword_3_1_6_1() { return cEqualsSignKeyword_3_1_6_1; }
 		
+		//bigNodeSize=Size
+		public Assignment getBigNodeSizeAssignment_3_1_6_2() { return cBigNodeSizeAssignment_3_1_6_2; }
+		
+		//Size
+		public RuleCall getBigNodeSizeSizeParserRuleCall_3_1_6_2_0() { return cBigNodeSizeSizeParserRuleCall_3_1_6_2_0; }
+		
+		//prio?='setPriority'?
+		public Assignment getPrioAssignment_3_1_7() { return cPrioAssignment_3_1_7; }
+		
+		//'setPriority'
+		public Keyword getPrioSetPriorityKeyword_3_1_7_0() { return cPrioSetPriorityKeyword_3_1_7_0; }
+		
+		//hierarchy=Hierarchy?
+		public Assignment getHierarchyAssignment_3_1_8() { return cHierarchyAssignment_3_1_8; }
+		
+		//Hierarchy
+		public RuleCall getHierarchyHierarchyParserRuleCall_3_1_8_0() { return cHierarchyHierarchyParserRuleCall_3_1_8_0; }
+		
+		//('seed' '=' seed=Integer)?
+		public Group getGroup_3_1_9() { return cGroup_3_1_9; }
+		
+		//'seed'
+		public Keyword getSeedKeyword_3_1_9_0() { return cSeedKeyword_3_1_9_0; }
+		
+		//'='
+		public Keyword getEqualsSignKeyword_3_1_9_1() { return cEqualsSignKeyword_3_1_9_1; }
+		
 		//seed=Integer
-		public Assignment getSeedAssignment_3_1_6_2() { return cSeedAssignment_3_1_6_2; }
+		public Assignment getSeedAssignment_3_1_9_2() { return cSeedAssignment_3_1_9_2; }
 		
 		//Integer
-		public RuleCall getSeedIntegerParserRuleCall_3_1_6_2_0() { return cSeedIntegerParserRuleCall_3_1_6_2_0; }
+		public RuleCall getSeedIntegerParserRuleCall_3_1_9_2_0() { return cSeedIntegerParserRuleCall_3_1_9_2_0; }
 		
 		//('format' '=' format=Formats)?
-		public Group getGroup_3_1_7() { return cGroup_3_1_7; }
+		public Group getGroup_3_1_10() { return cGroup_3_1_10; }
 		
 		//'format'
-		public Keyword getFormatKeyword_3_1_7_0() { return cFormatKeyword_3_1_7_0; }
+		public Keyword getFormatKeyword_3_1_10_0() { return cFormatKeyword_3_1_10_0; }
 		
 		//'='
-		public Keyword getEqualsSignKeyword_3_1_7_1() { return cEqualsSignKeyword_3_1_7_1; }
+		public Keyword getEqualsSignKeyword_3_1_10_1() { return cEqualsSignKeyword_3_1_10_1; }
 		
 		//format=Formats
-		public Assignment getFormatAssignment_3_1_7_2() { return cFormatAssignment_3_1_7_2; }
+		public Assignment getFormatAssignment_3_1_10_2() { return cFormatAssignment_3_1_10_2; }
 		
 		//Formats
-		public RuleCall getFormatFormatsEnumRuleCall_3_1_7_2_0() { return cFormatFormatsEnumRuleCall_3_1_7_2_0; }
+		public RuleCall getFormatFormatsEnumRuleCall_3_1_10_2_0() { return cFormatFormatsEnumRuleCall_3_1_10_2_0; }
 		
 		//('filename' '=' filename=STRING)?
-		public Group getGroup_3_1_8() { return cGroup_3_1_8; }
+		public Group getGroup_3_1_11() { return cGroup_3_1_11; }
 		
 		//'filename'
-		public Keyword getFilenameKeyword_3_1_8_0() { return cFilenameKeyword_3_1_8_0; }
+		public Keyword getFilenameKeyword_3_1_11_0() { return cFilenameKeyword_3_1_11_0; }
 		
 		//'='
-		public Keyword getEqualsSignKeyword_3_1_8_1() { return cEqualsSignKeyword_3_1_8_1; }
+		public Keyword getEqualsSignKeyword_3_1_11_1() { return cEqualsSignKeyword_3_1_11_1; }
 		
 		//filename=STRING
-		public Assignment getFilenameAssignment_3_1_8_2() { return cFilenameAssignment_3_1_8_2; }
+		public Assignment getFilenameAssignment_3_1_11_2() { return cFilenameAssignment_3_1_11_2; }
 		
 		//STRING
-		public RuleCall getFilenameSTRINGTerminalRuleCall_3_1_8_2_0() { return cFilenameSTRINGTerminalRuleCall_3_1_8_2_0; }
+		public RuleCall getFilenameSTRINGTerminalRuleCall_3_1_11_2_0() { return cFilenameSTRINGTerminalRuleCall_3_1_11_2_0; }
 		
 		//'}'
 		public Keyword getRightCurlyBracketKeyword_3_2() { return cRightCurlyBracketKeyword_3_2; }
@@ -326,9 +387,9 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//'{'
 		public Keyword getLeftCurlyBracketKeyword_2_0() { return cLeftCurlyBracketKeyword_2_0; }
 		
-		//('levels' '=' levels=DoubleQuantity)? // MISSING
+		//(('levels' '=' levels=DoubleQuantity)? // MISSING
 		//& ('cross-hierarchy edges' '=' edges=DoubleQuantity)? & ('compound nodes' '=' numHierarchNodes=DoubleQuantity)? &
-		//('cross-hierarchy relative edges' '=' crossHierarchRel=DoubleQuantity)?
+		//('cross-hierarchy relative edges' '=' crossHierarchRel=DoubleQuantity)?)
 		public UnorderedGroup getUnorderedGroup_2_1() { return cUnorderedGroup_2_1; }
 		
 		//('levels' '=' levels=DoubleQuantity)?
@@ -430,13 +491,13 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//('{' (labels?='labels'? & selfLoops?='self loops'?) '}')?
 		public Group getGroup() { return cGroup; }
 		
-		//'edges' (density?='density' | total?='total' | relative?='relative' | outbound?='outgoing') '=' nEdges=DoubleQuantity
+		//('edges' (density?='density' | total?='total' | relative?='relative' | outbound?='outgoing') '=' nEdges=DoubleQuantity)
 		public Group getGroup_0() { return cGroup_0; }
 		
 		//'edges'
 		public Keyword getEdgesKeyword_0_0() { return cEdgesKeyword_0_0; }
 		
-		//density?='density' | total?='total' | relative?='relative' | outbound?='outgoing'
+		//(density?='density' | total?='total' | relative?='relative' | outbound?='outgoing')
 		public Alternatives getAlternatives_0_1() { return cAlternatives_0_1; }
 		
 		//density?='density'
@@ -478,7 +539,7 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//'{'
 		public Keyword getLeftCurlyBracketKeyword_1_0() { return cLeftCurlyBracketKeyword_1_0; }
 		
-		//labels?='labels'? & selfLoops?='self loops'?
+		//(labels?='labels'? & selfLoops?='self loops'?)
 		public UnorderedGroup getUnorderedGroup_1_1() { return cUnorderedGroup_1_1; }
 		
 		//labels?='labels'?
@@ -549,7 +610,7 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//'{'
 		public Keyword getLeftCurlyBracketKeyword_4_0() { return cLeftCurlyBracketKeyword_4_0; }
 		
-		//ports=Ports? & labels?=Labels? & size=Size? & removeIsolated?='remove isolated'?
+		//(ports=Ports? & labels?=Labels? & size=Size? & removeIsolated?='remove isolated'?)
 		public UnorderedGroup getUnorderedGroup_4_1() { return cUnorderedGroup_4_1; }
 		
 		//ports=Ports?
@@ -611,7 +672,7 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//{Size}
 		public Action getSizeAction_0() { return cSizeAction_0; }
 		
-		//'size' ('{' (('height' '=' height=DoubleQuantity)? & ('width' '=' width=DoubleQuantity)?) '}')?
+		//('size' ('{' (('height' '=' height=DoubleQuantity)? & ('width' '=' width=DoubleQuantity)?) '}')?)
 		public Group getGroup_1() { return cGroup_1; }
 		
 		//'size'
@@ -623,7 +684,7 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//'{'
 		public Keyword getLeftCurlyBracketKeyword_1_1_0() { return cLeftCurlyBracketKeyword_1_1_0; }
 		
-		//('height' '=' height=DoubleQuantity)? & ('width' '=' width=DoubleQuantity)?
+		//(('height' '=' height=DoubleQuantity)? & ('width' '=' width=DoubleQuantity)?)
 		public UnorderedGroup getUnorderedGroup_1_1_1() { return cUnorderedGroup_1_1_1; }
 		
 		//('height' '=' height=DoubleQuantity)?
@@ -712,8 +773,8 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//'{'
 		public Keyword getLeftCurlyBracketKeyword_2_0() { return cLeftCurlyBracketKeyword_2_0; }
 		
-		//labels?=Labels? & ('re-use' '=' reUse=DoubleQuantity)? & size=Size? & ('constraint' '=' constraint=ConstraintType)? &
-		//flow+=Flow*
+		//(labels?=Labels? & ('re-use' '=' reUse=DoubleQuantity)? & size=Size? & ('constraint' '=' constraint=ConstraintType)? &
+		//flow+=Flow*)
 		public UnorderedGroup getUnorderedGroup_2_1() { return cUnorderedGroup_2_1; }
 		
 		//labels?=Labels?
@@ -1028,6 +1089,8 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cTriconnectedTriconnectedGraphsKeyword_4_0 = (Keyword)cTriconnectedEnumLiteralDeclaration_4.eContents().get(0);
 		private final EnumLiteralDeclaration cAcyclicEnumLiteralDeclaration_5 = (EnumLiteralDeclaration)cAlternatives.eContents().get(5);
 		private final Keyword cAcyclicAcyclicGraphsKeyword_5_0 = (Keyword)cAcyclicEnumLiteralDeclaration_5.eContents().get(0);
+		private final EnumLiteralDeclaration cRectangleEnumLiteralDeclaration_6 = (EnumLiteralDeclaration)cAlternatives.eContents().get(6);
+		private final Keyword cRectangleRectangleKeyword_6_0 = (Keyword)cRectangleEnumLiteralDeclaration_6.eContents().get(0);
 		
 		//enum Form:
 		//	trees
@@ -1035,11 +1098,12 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		//	| bipartite='bipartite graphs'
 		//	| biconnected='biconnected graphs'
 		//	| triconnected='triconnected graphs'
-		//	| acyclic='acyclic graphs';
+		//	| acyclic='acyclic graphs'
+		//	| rectangle;
 		public EnumRule getRule() { return rule; }
 		
 		//trees | custom='graphs' | bipartite='bipartite graphs' | biconnected='biconnected graphs' |
-		//triconnected='triconnected graphs' | acyclic='acyclic graphs'
+		//triconnected='triconnected graphs' | acyclic='acyclic graphs' | rectangle
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//trees
@@ -1077,6 +1141,12 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//'acyclic graphs'
 		public Keyword getAcyclicAcyclicGraphsKeyword_5_0() { return cAcyclicAcyclicGraphsKeyword_5_0; }
+		
+		//rectangle
+		public EnumLiteralDeclaration getRectangleEnumLiteralDeclaration_6() { return cRectangleEnumLiteralDeclaration_6; }
+		
+		//'rectangle'
+		public Keyword getRectangleRectangleKeyword_6_0() { return cRectangleRectangleKeyword_6_0; }
 	}
 	public class SideElements extends AbstractEnumRuleElementFinder {
 		private final EnumRule rule = (EnumRule) GrammarUtil.findRuleForName(getGrammar(), "org.eclipse.elk.core.debug.grandom.GRandom.Side");
@@ -1313,6 +1383,9 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 	//	& (mW?='maxWidth' '=' maxWidth=Integer)?
 	//	& (mD?='maxDegree' '=' maxDegree=Integer)?
 	//	& (pF?='partitionFraction' '=' fraction=DoubleQuantity)?
+	//	& (bN?='bigNodes' '=' bigNodes=DoubleQuantity)?
+	//	& (bNS?='bigNodeSize' '=' bigNodeSize=Size)?
+	//	& prio?='setPriority'?
 	//	& hierarchy=Hierarchy?
 	//	& ('seed' '=' seed=Integer)?
 	//	& ('format' '=' format=Formats)?
@@ -1347,7 +1420,8 @@ public class GRandomGrammarAccess extends AbstractGrammarElementFinder {
 	//	| bipartite='bipartite graphs'
 	//	| biconnected='biconnected graphs'
 	//	| triconnected='triconnected graphs'
-	//	| acyclic='acyclic graphs';
+	//	| acyclic='acyclic graphs'
+	//	| rectangle;
 	public FormElements getFormAccess() {
 		return eForm;
 	}

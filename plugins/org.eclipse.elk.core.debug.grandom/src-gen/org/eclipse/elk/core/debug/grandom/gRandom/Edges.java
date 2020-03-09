@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -40,10 +40,6 @@ public interface Edges extends EObject
   /**
    * Returns the value of the '<em><b>Density</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Density</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Density</em>' attribute.
    * @see #setDensity(boolean)
@@ -66,10 +62,6 @@ public interface Edges extends EObject
   /**
    * Returns the value of the '<em><b>Total</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Total</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Total</em>' attribute.
    * @see #setTotal(boolean)
@@ -92,10 +84,6 @@ public interface Edges extends EObject
   /**
    * Returns the value of the '<em><b>Relative</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Relative</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Relative</em>' attribute.
    * @see #setRelative(boolean)
@@ -118,10 +106,6 @@ public interface Edges extends EObject
   /**
    * Returns the value of the '<em><b>Outbound</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Outbound</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Outbound</em>' attribute.
    * @see #setOutbound(boolean)
@@ -144,10 +128,6 @@ public interface Edges extends EObject
   /**
    * Returns the value of the '<em><b>NEdges</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>NEdges</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>NEdges</em>' containment reference.
    * @see #setNEdges(DoubleQuantity)
@@ -170,10 +150,6 @@ public interface Edges extends EObject
   /**
    * Returns the value of the '<em><b>Labels</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Labels</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Labels</em>' attribute.
    * @see #setLabels(boolean)
@@ -196,10 +172,6 @@ public interface Edges extends EObject
   /**
    * Returns the value of the '<em><b>Self Loops</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Self Loops</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Self Loops</em>' attribute.
    * @see #setSelfLoops(boolean)

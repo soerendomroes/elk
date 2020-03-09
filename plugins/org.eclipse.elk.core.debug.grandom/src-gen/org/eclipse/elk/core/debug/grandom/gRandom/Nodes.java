@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -38,10 +38,6 @@ public interface Nodes extends EObject
   /**
    * Returns the value of the '<em><b>NNodes</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>NNodes</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>NNodes</em>' containment reference.
    * @see #setNNodes(DoubleQuantity)
@@ -64,10 +60,6 @@ public interface Nodes extends EObject
   /**
    * Returns the value of the '<em><b>Ports</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Ports</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Ports</em>' containment reference.
    * @see #setPorts(Ports)
@@ -90,10 +82,6 @@ public interface Nodes extends EObject
   /**
    * Returns the value of the '<em><b>Labels</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Labels</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Labels</em>' attribute.
    * @see #setLabels(boolean)
@@ -116,10 +104,6 @@ public interface Nodes extends EObject
   /**
    * Returns the value of the '<em><b>Size</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Size</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Size</em>' containment reference.
    * @see #setSize(Size)
@@ -142,10 +126,6 @@ public interface Nodes extends EObject
   /**
    * Returns the value of the '<em><b>Remove Isolated</b></em>' attribute.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Remove Isolated</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Remove Isolated</em>' attribute.
    * @see #setRemoveIsolated(boolean)

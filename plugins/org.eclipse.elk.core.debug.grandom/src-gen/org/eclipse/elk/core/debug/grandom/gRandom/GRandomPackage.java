@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -195,13 +195,58 @@ public interface GRandomPackage extends EPackage
   int CONFIGURATION__FRACTION = 9;
 
   /**
+   * The feature id for the '<em><b>BN</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CONFIGURATION__BN = 10;
+
+  /**
+   * The feature id for the '<em><b>Big Nodes</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CONFIGURATION__BIG_NODES = 11;
+
+  /**
+   * The feature id for the '<em><b>BNS</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CONFIGURATION__BNS = 12;
+
+  /**
+   * The feature id for the '<em><b>Big Node Size</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CONFIGURATION__BIG_NODE_SIZE = 13;
+
+  /**
+   * The feature id for the '<em><b>Prio</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CONFIGURATION__PRIO = 14;
+
+  /**
    * The feature id for the '<em><b>Hierarchy</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CONFIGURATION__HIERARCHY = 10;
+  int CONFIGURATION__HIERARCHY = 15;
 
   /**
    * The feature id for the '<em><b>Seed</b></em>' attribute.
@@ -210,7 +255,7 @@ public interface GRandomPackage extends EPackage
    * @generated
    * @ordered
    */
-  int CONFIGURATION__SEED = 11;
+  int CONFIGURATION__SEED = 16;
 
   /**
    * The feature id for the '<em><b>Format</b></em>' attribute.
@@ -219,7 +264,7 @@ public interface GRandomPackage extends EPackage
    * @generated
    * @ordered
    */
-  int CONFIGURATION__FORMAT = 12;
+  int CONFIGURATION__FORMAT = 17;
 
   /**
    * The feature id for the '<em><b>Filename</b></em>' attribute.
@@ -228,7 +273,7 @@ public interface GRandomPackage extends EPackage
    * @generated
    * @ordered
    */
-  int CONFIGURATION__FILENAME = 13;
+  int CONFIGURATION__FILENAME = 18;
 
   /**
    * The number of structural features of the '<em>Configuration</em>' class.
@@ -237,7 +282,7 @@ public interface GRandomPackage extends EPackage
    * @generated
    * @ordered
    */
-  int CONFIGURATION_FEATURE_COUNT = 14;
+  int CONFIGURATION_FEATURE_COUNT = 19;
 
   /**
    * The meta object id for the '{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.HierarchyImpl <em>Hierarchy</em>}' class.
@@ -860,6 +905,61 @@ public interface GRandomPackage extends EPackage
    * @generated
    */
   EReference getConfiguration_Fraction();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isBN <em>BN</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>BN</em>'.
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isBN()
+   * @see #getConfiguration()
+   * @generated
+   */
+  EAttribute getConfiguration_BN();
+
+  /**
+   * Returns the meta object for the containment reference '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getBigNodes <em>Big Nodes</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Big Nodes</em>'.
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getBigNodes()
+   * @see #getConfiguration()
+   * @generated
+   */
+  EReference getConfiguration_BigNodes();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isBNS <em>BNS</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>BNS</em>'.
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isBNS()
+   * @see #getConfiguration()
+   * @generated
+   */
+  EAttribute getConfiguration_BNS();
+
+  /**
+   * Returns the meta object for the containment reference '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getBigNodeSize <em>Big Node Size</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Big Node Size</em>'.
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getBigNodeSize()
+   * @see #getConfiguration()
+   * @generated
+   */
+  EReference getConfiguration_BigNodeSize();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isPrio <em>Prio</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Prio</em>'.
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isPrio()
+   * @see #getConfiguration()
+   * @generated
+   */
+  EAttribute getConfiguration_Prio();
 
   /**
    * Returns the meta object for the containment reference '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getHierarchy <em>Hierarchy</em>}'.
@@ -1518,6 +1618,46 @@ public interface GRandomPackage extends EPackage
      * @generated
      */
     EReference CONFIGURATION__FRACTION = eINSTANCE.getConfiguration_Fraction();
+
+    /**
+     * The meta object literal for the '<em><b>BN</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute CONFIGURATION__BN = eINSTANCE.getConfiguration_BN();
+
+    /**
+     * The meta object literal for the '<em><b>Big Nodes</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CONFIGURATION__BIG_NODES = eINSTANCE.getConfiguration_BigNodes();
+
+    /**
+     * The meta object literal for the '<em><b>BNS</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute CONFIGURATION__BNS = eINSTANCE.getConfiguration_BNS();
+
+    /**
+     * The meta object literal for the '<em><b>Big Node Size</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CONFIGURATION__BIG_NODE_SIZE = eINSTANCE.getConfiguration_BigNodeSize();
+
+    /**
+     * The meta object literal for the '<em><b>Prio</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute CONFIGURATION__PRIO = eINSTANCE.getConfiguration_Prio();
 
     /**
      * The meta object literal for the '<em><b>Hierarchy</b></em>' containment reference feature.

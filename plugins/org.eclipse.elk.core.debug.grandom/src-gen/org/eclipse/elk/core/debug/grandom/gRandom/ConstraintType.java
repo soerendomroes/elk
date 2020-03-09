@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -81,10 +81,6 @@ public enum ConstraintType implements Enumerator
   /**
    * The '<em><b>Free</b></em>' literal value.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of '<em><b>Free</b></em>' literal object isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @see #FREE
    * @model name="free"
@@ -96,10 +92,6 @@ public enum ConstraintType implements Enumerator
   /**
    * The '<em><b>Side</b></em>' literal value.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of '<em><b>Side</b></em>' literal object isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @see #SIDE
    * @model name="side"
@@ -111,10 +103,6 @@ public enum ConstraintType implements Enumerator
   /**
    * The '<em><b>Position</b></em>' literal value.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of '<em><b>Position</b></em>' literal object isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @see #POSITION
    * @model name="position"
@@ -126,10 +114,6 @@ public enum ConstraintType implements Enumerator
   /**
    * The '<em><b>Order</b></em>' literal value.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of '<em><b>Order</b></em>' literal object isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @see #ORDER
    * @model name="order"
@@ -141,10 +125,6 @@ public enum ConstraintType implements Enumerator
   /**
    * The '<em><b>Ratio</b></em>' literal value.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of '<em><b>Ratio</b></em>' literal object isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @see #RATIO
    * @model name="ratio"
@@ -279,6 +259,7 @@ public enum ConstraintType implements Enumerator
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public int getValue()
   {
     return value;
@@ -289,6 +270,7 @@ public enum ConstraintType implements Enumerator
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public String getName()
   {
     return name;
@@ -299,6 +281,7 @@ public enum ConstraintType implements Enumerator
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public String getLiteral()
   {
     return literal;

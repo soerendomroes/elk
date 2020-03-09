@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -37,10 +37,6 @@ public interface Flow extends EObject
    * Returns the value of the '<em><b>Flow Type</b></em>' attribute.
    * The literals are from the enumeration {@link org.eclipse.elk.core.debug.grandom.gRandom.FlowType}.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Flow Type</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Flow Type</em>' attribute.
    * @see org.eclipse.elk.core.debug.grandom.gRandom.FlowType
@@ -66,10 +62,6 @@ public interface Flow extends EObject
    * Returns the value of the '<em><b>Side</b></em>' attribute.
    * The literals are from the enumeration {@link org.eclipse.elk.core.debug.grandom.gRandom.Side}.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Side</em>' attribute isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Side</em>' attribute.
    * @see org.eclipse.elk.core.debug.grandom.gRandom.Side
@@ -94,10 +86,6 @@ public interface Flow extends EObject
   /**
    * Returns the value of the '<em><b>Amount</b></em>' containment reference.
    * <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Amount</em>' containment reference isn't clear,
-   * there really should be more of a description here...
-   * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Amount</em>' containment reference.
    * @see #setAmount(DoubleQuantity)

@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -86,6 +86,7 @@ public class SizeImpl extends MinimalEObjectImpl.Container implements Size
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getHeight()
   {
     return height;
@@ -113,6 +114,7 @@ public class SizeImpl extends MinimalEObjectImpl.Container implements Size
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setHeight(DoubleQuantity newHeight)
   {
     if (newHeight != height)
@@ -134,6 +136,7 @@ public class SizeImpl extends MinimalEObjectImpl.Container implements Size
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getWidth()
   {
     return width;
@@ -161,6 +164,7 @@ public class SizeImpl extends MinimalEObjectImpl.Container implements Size
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setWidth(DoubleQuantity newWidth)
   {
     if (newWidth != width)

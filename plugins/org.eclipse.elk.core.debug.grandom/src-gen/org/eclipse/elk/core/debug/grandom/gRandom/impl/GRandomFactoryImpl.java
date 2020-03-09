@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -143,6 +143,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public RandGraph createRandGraph()
   {
     RandGraphImpl randGraph = new RandGraphImpl();
@@ -154,6 +155,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Configuration createConfiguration()
   {
     ConfigurationImpl configuration = new ConfigurationImpl();
@@ -165,6 +167,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Hierarchy createHierarchy()
   {
     HierarchyImpl hierarchy = new HierarchyImpl();
@@ -176,6 +179,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Edges createEdges()
   {
     EdgesImpl edges = new EdgesImpl();
@@ -187,6 +191,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Nodes createNodes()
   {
     NodesImpl nodes = new NodesImpl();
@@ -198,6 +203,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Size createSize()
   {
     SizeImpl size = new SizeImpl();
@@ -209,6 +215,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Ports createPorts()
   {
     PortsImpl ports = new PortsImpl();
@@ -220,6 +227,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Flow createFlow()
   {
     FlowImpl flow = new FlowImpl();
@@ -231,6 +239,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity createDoubleQuantity()
   {
     DoubleQuantityImpl doubleQuantity = new DoubleQuantityImpl();
@@ -352,6 +361,7 @@ public class GRandomFactoryImpl extends EFactoryImpl implements GRandomFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public GRandomPackage getGRandomPackage()
   {
     return (GRandomPackage)getEPackage();
