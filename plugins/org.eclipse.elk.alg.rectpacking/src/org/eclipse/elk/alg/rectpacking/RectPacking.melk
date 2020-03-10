@@ -45,6 +45,7 @@ algorithm rectPacking (RectPackingLayoutProvider) {
     supports org.eclipse.elk.interactiveLayout
     supports desiredPosition
     supports currentPosition
+    supports cplex
 }
 
 //OPTIONS
@@ -57,8 +58,15 @@ advanced option optimizationGoal: OptimizationGoal {
     default = OptimizationGoal.MAX_SCALE_DRIVEN
 }
 
+programmatic option cplex: boolean {
+    label "Cplex Solver"
+    description "Solves the problem via cplex. This might take a while."
+    targets nodes
+    default = false
+}
+
 programmatic option lastPlaceShift: boolean {
-    label "Shift Last Placed."
+    label "Shift Last Placed"
     description "When placing a rectangle behind or below the last placed rectangle in the first iteration, it is sometimes 
          possible to shift the rectangle further to the left or right, resulting in less whitespace. True (default) 
          enables the shift and false disables it. Disabling the shift produces a greater approximated area by the first 
