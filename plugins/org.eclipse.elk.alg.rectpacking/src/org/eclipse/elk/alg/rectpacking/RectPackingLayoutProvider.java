@@ -75,6 +75,10 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         // Whether interactive layout is activ.
         boolean interactive = layoutGraph.getProperty(RectPackingOptions.INTERACTIVE);
         boolean cplexEnalbed = layoutGraph.getProperty(RectPackingOptions.CPLEX);
+        double cplexOptTolerance = -1;
+        if (layoutGraph.hasProperty(RectPackingOptions.CPLEX_OPT_TOLERANCE)) {
+            cplexOptTolerance = layoutGraph.getProperty(RectPackingOptions.CPLEX_OPT_TOLERANCE);
+        }
 
         List<ElkNode> rectangles = layoutGraph.getChildren();
         DrawingUtil.resetCoordinates(rectangles);
@@ -116,26 +120,43 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         minSize.y -= padding.getVertical();
         if (cplexEnalbed) {
             // Begin cp optimizer solving.
+            boolean logging = true;
             try {
                 IloCP cp = new IloCP();
+                if (cplexOptTolerance >= 0) {
+                    cp.setParameter(IloCP.DoubleParam.OptimalityTolerance, cplexOptTolerance);
+                }
+                if (!logging) {
+                    cp.setOut(null);
+                    cp.setWarning(null);
+                    cp.setOut(null);
+                }
                 int numberOfRects = rectangles.size();
                 IloIntervalVar[] rectXs = new IloIntervalVar[numberOfRects];
                 IloIntervalVar[] rectYs = new IloIntervalVar[numberOfRects];
-                
+                double totalWidth = 0;
+                double totalHeight = 0;
+                for (ElkNode rect : rectangles) {
+                    totalWidth += rect.getWidth() + nodeNodeSpacing;
+                    totalHeight += rect.getHeight() + nodeNodeSpacing;
+                }
+                if (logging) {
+                  System.out.println("Total " + totalWidth + ", " + totalHeight);
+                }
                 // Set the length of the interval variable.
                 for (int i = 0; i < numberOfRects; i++) {
                     rectXs[i] = cp.intervalVar((int) rectangles.get(i).getWidth(), rectangles.get(i).getIdentifier() + "x");
                     rectXs[i].setStartMin(0);
-                    rectXs[i].setStartMax(10000);
-                    rectXs[i].setEndMin(0);
-                    rectXs[i].setEndMax(10000);
+                    rectXs[i].setStartMax((int) totalWidth);
+                    rectXs[i].setEndMin(rectXs[i].getSizeMin());
+                    rectXs[i].setEndMax((int) totalWidth);
                 }
                 for (int i = 0; i < numberOfRects; i++) {
                     rectYs[i] = cp.intervalVar((int) rectangles.get(i).getHeight(), rectangles.get(i).getIdentifier() + "y");
                     rectYs[i].setStartMin(0);
-                    rectYs[i].setStartMax(10000);
-                    rectYs[i].setEndMin(0);
-                    rectYs[i].setEndMax(10000);
+                    rectYs[i].setStartMax((int) totalHeight);
+                    rectYs[i].setEndMin(rectYs[i].getSizeMin());
+                    rectYs[i].setEndMax((int) totalHeight);
                 }
                 
                 // Define goal.
@@ -153,89 +174,50 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 IloNumExpr maxHeight = cp.max(heights);
                 IloNumExpr scaleMeasure = cp.min(cp.quot(1, maxWidth), cp.quot(1 / aspectRatio, maxHeight));
                 // Goal is to maximize the scale measure and minimize the area at the same time.
-                IloNumExpr cpGoal = cp.sum(cp.prod(100000.0, scaleMeasure), cp.quot(1, cp.prod(maxWidth, maxHeight)));
+                IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth, maxHeight)));
                 cp.add(cp.maximize(cpGoal, "Scale measure goal"));
-                cp.addEq(cp.startOf(rectXs[0]), 0);
-                cp.addEq(cp.startOf(rectYs[0]), 0);
+//                cp.addMinimize(cp.prod(maxWidth, maxHeight));
                 // Define constraints
                 for (int i = 0; i < numberOfRects; i++) {
                     IloIntervalVar rectX = rectXs[i];
                     IloIntervalVar rectY = rectYs[i];
-                    // Define maximum width and maximum height.
-                    cp.add(cp.ge(maxWidth, cp.endOf(rectX)));
-                    cp.add(cp.ge(maxHeight, cp.endOf(rectY)));
                     
                     // Define ordering.
-                    if (i != numberOfRects - 1) {
-                        cp.add(cp.or(
-                                cp.gt(cp.startOf(rectXs[i+1]), cp.startOf(rectX)),
-                                cp.gt(cp.startOf(rectYs[i+1]), cp.startOf(rectY))));
-                    }
-                    
-                    // Define no overlaps.
-                    for (int j = 0; j < numberOfRects; j++) {
-                        IloIntervalVar rectXj = rectXs[i];
-                        IloIntervalVar rectYj = rectYs[i];
-                        IloConstraint firstExpr = cp.imply(
-                                cp.and(
-                                        cp.ge(cp.startOf(rectX), cp.startOf(rectXj)),
-                                        cp.lt(cp.startOf(rectX), cp.endOf(rectXj))),
-                                cp.or(
-                                        cp.le(cp.endOf(rectY), cp.startOf(rectYj)),
-                                        cp.ge(cp.startOf(rectY), cp.endOf(rectYj))));
-                        
-                        IloConstraint secondExpr = cp.imply(
-                                cp.and(
-                                        cp.ge(cp.endOf(rectX), cp.startOf(rectXj)),
-                                        cp.lt(cp.endOf(rectX), cp.endOf(rectXj))),
-                                cp.or(
-                                        cp.le(cp.endOf(rectY), cp.startOf(rectYj)),
-                                        cp.ge(cp.startOf(rectY), cp.endOf(rectYj))));
-
-                        IloConstraint thirdExpr = cp.imply(
-                                cp.and(
-                                        cp.ge(cp.startOf(rectY), cp.startOf(rectYj)),
-                                        cp.lt(cp.endOf(rectY), cp.endOf(rectYj))),
-                                cp.or(
-                                        cp.le(cp.endOf(rectX), cp.startOf(rectXj)),
-                                        cp.ge(cp.startOf(rectX), cp.endOf(rectXj))));
-
-                        IloConstraint fourthExpr = cp.imply(
-                                cp.and(
-                                        cp.ge(cp.endOf(rectY), cp.startOf(rectYj)),
-                                        cp.lt(cp.endOf(rectY), cp.endOf(rectYj))),
-                                cp.or(
-                                        cp.le(cp.endOf(rectX), cp.startOf(rectXj)),
-                                        cp.ge(cp.startOf(rectX), cp.endOf(rectXj))));
-                        if (i != j) {
-//                            cp.add(firstExpr);
-//                            cp.add(secondExpr);
-//                            cp.add(thirdExpr);
-//                            cp.add(fourthExpr);
-//                            cp.add(cp.and(
-//                                    firstExpr
-//                                    , cp.and(secondExpr
-//                                            , cp.and(thirdExpr
-//                                                    , fourthExpr))));
+                    if (i != 0) {
+                        if (logging) {
+                            System.out.println("Adding constraint for node" + i);
                         }
+                        for (int j = 0; j < i; j++) {
+                            cp.add(cp.or(
+                                    cp.ge(cp.startOf(rectX), cp.sum((int) nodeNodeSpacing, cp.endOf(rectXs[j]))),
+                                    cp.ge(cp.startOf(rectY), cp.sum((int) nodeNodeSpacing, cp.endOf(rectYs[j])))));
+                        }
+                    } else {
+                        if (logging) {
+                            System.out.println("First node");
+                        }
+                        cp.addEq(0, cp.startOf(rectXs[0]));
+                        cp.addEq(0, cp.startOf(rectYs[0]));
                     }
                 }
                 
-                
-                // Set up search
-                IloSearchPhase[] phases = new IloSearchPhase[2];
-                phases[0] = cp.searchPhase(rectXs);
-                phases[1] = cp.searchPhase(rectYs);
-                cp.setSearchPhases(phases);
                 if (cp.solve()) {
-                    System.out.println("Scale Measure " + cp.getValue(scaleMeasure));
+
+                    if (logging) {
+                        System.out.println("Scale Measure " + cp.getValue(scaleMeasure));
+                    }
                     for (IloIntervalVar rectX : rectXs) {
-                        System.out.println(rectX);
-                        System.out.println(cp.getValue(cp.startOf(rectX)) + ", " + cp.getValue(cp.endOf(rectX)) + ", " + cp.getLength(rectX));
+                        if (logging) {
+                            System.out.println(rectX);
+                            System.out.println(cp.getValue(cp.startOf(rectX)) + ", " + cp.getValue(cp.endOf(rectX)) + ", " + cp.getLength(rectX));
+                        }
                     }
                     for (IloIntervalVar rectY : rectYs) {
-                        System.out.println(rectY);
-                        System.out.println(cp.getValue(cp.startOf(rectY)) + ", " + cp.getValue(cp.endOf(rectY)) + ", " + cp.getLength(rectY));
+                        if (logging) {
+                            System.out.println(rectY);
+                            System.out.println(cp.getValue(cp.startOf(rectY)) + ", " + cp.getValue(cp.endOf(rectY)) + ", " + cp.getLength(rectY));
+                            
+                        }
                     }
                     int index = 0;
                     // Apply coordinates to rectangles.
@@ -245,9 +227,11 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         index++;
                     }
                     // Calculate drawing dimensions.
-                    drawing = new DrawingData(aspectRatio, cp.getValue(maxWidth) / 1000, cp.getValue(maxHeight) / 1000, DrawingDataDescriptor.WHOLE_DRAWING);
-                    System.out.println(cp.getValue(maxWidth) / 1000);
-                    System.out.println(cp.getValue(maxHeight) / 1000);
+                    drawing = new DrawingData(aspectRatio, cp.getValue(maxWidth), cp.getValue(maxHeight), DrawingDataDescriptor.WHOLE_DRAWING);
+                    if (logging) {
+                        System.out.println(cp.getValue(maxWidth));
+                        System.out.println(cp.getValue(maxHeight));
+                    }
                 } else {
                     System.out.println("No solution found");
                     drawing = new DrawingData(aspectRatio, 100, 100, DrawingDataDescriptor.WHOLE_DRAWING);
@@ -255,38 +239,6 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             } catch (IloException e) {
                 System.err.println("Error " + e);
             }
-//            IloCplex cplex;
-//            try {
-//                cplex = new IloCplex();
-//                cplex.setOut(null);
-//                cplex.setWarning(null);
-//
-//                IloIntVar[] rectX = new IloIntVar[rectangles.size()];
-//                IloIntVar[] rectY = new IloIntVar[rectangles.size()];
-//                int index = 0;
-//                for (IloIntVar x : rectX) {
-//                    x = cplex.intVar(0, 10000, rectangles.get(index).getIdentifier());
-//                    index++;
-//                }
-//                index = 0;
-//                for (IloIntVar y : rectY) {
-//                    y = cplex.intVar(0, 10000, rectangles.get(index).getIdentifier());
-//                    index++;
-//                }
-//                // Minimization expression
-//                IloLinearNumExpr maximize = cplex.linearNumExpr();
-//                maximize.addTerm(var, 1000);
-//                cplex.addMinimize(maximize);
-//            } catch (ilog.concert.IloException e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }
-            System.out.println("Fun");
-//                IntParameter numerOfRects = new IntParameter("", rectangles.size());
-//                cplex.add
-        
-//                cplex.minimize()
-            // TODO set drawing width and so on.
         } else {
             // Initial width approximation.
             AreaApproximation firstIt = new AreaApproximation(aspectRatio, goal, lastPlaceShift);

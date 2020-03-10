@@ -46,6 +46,7 @@ algorithm rectPacking (RectPackingLayoutProvider) {
     supports desiredPosition
     supports currentPosition
     supports cplex
+    supports cplexOptTolerance
 }
 
 //OPTIONS
@@ -63,6 +64,11 @@ programmatic option cplex: boolean {
     description "Solves the problem via cplex. This might take a while."
     targets nodes
     default = false
+}
+
+programmatic option cplexOptTolerance: double {
+    label "Cplex Opt Tolerance"
+    targets nodes
 }
 
 programmatic option lastPlaceShift: boolean {
