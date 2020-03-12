@@ -126,6 +126,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 if (cplexOptTolerance >= 0) {
                     cp.setParameter(IloCP.DoubleParam.OptimalityTolerance, cplexOptTolerance);
                 }
+                cp.setParameter(IloCP.DoubleParam.TimeLimit, 60 * 60);
                 if (!logging) {
                     cp.setOut(null);
                     cp.setWarning(null);
@@ -172,7 +173,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 
                 IloNumExpr maxWidth = cp.max(widths);
                 IloNumExpr maxHeight = cp.max(heights);
-                IloNumExpr scaleMeasure = cp.min(cp.quot(1, maxWidth), cp.quot(1 / aspectRatio, maxHeight));
+                IloNumExpr scaleMeasure = cp.min(cp.quot(aspectRatio, maxWidth), cp.quot(1, maxHeight));
                 // Goal is to maximize the scale measure and minimize the area at the same time.
                 IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth, maxHeight)));
                 cp.add(cp.maximize(cpGoal, "Scale measure goal"));
