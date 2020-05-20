@@ -28,6 +28,7 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.graph.ElkNode;
 
 import ilog.cp.*;
+import ilog.cplex.IloCplex;
 import ilog.concert.*;
 
 /**
@@ -75,6 +76,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         // Whether interactive layout is activ.
         boolean interactive = layoutGraph.getProperty(RectPackingOptions.INTERACTIVE);
         boolean cplexEnalbed = layoutGraph.getProperty(RectPackingOptions.CPLEX);
+        boolean cplexEnalbed2 = layoutGraph.getProperty(RectPackingOptions.FUNCPLEX2);
         double cplexOptTolerance = -1;
         if (layoutGraph.hasProperty(RectPackingOptions.CPLEX_OPT_TOLERANCE)) {
             cplexOptTolerance = layoutGraph.getProperty(RectPackingOptions.CPLEX_OPT_TOLERANCE);
@@ -250,11 +252,97 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             // Placement according to approximated width.
             if (!onlyFirstIteration) {
                 DrawingUtil.resetCoordinates(rectangles);
-                RowFillingAndCompaction secondIt = new RowFillingAndCompaction(aspectRatio, expandNodes, expandToAspectRatio, compaction, nodeNodeSpacing);
-                // Modify the initial approximation if necessary.
-                minSize.x = Math.max(minSize.x, drawing.getDrawingWidth());
-                
-                drawing = secondIt.start(rectangles, minSize);
+                if (cplexEnalbed2) {
+                  IloCplex cp;
+                    try {
+                        cp = new IloCplex();
+                        cp.setParam(IloCplex.DoubleParam.TimeLimit, 60 * 60);
+                        boolean logging = true;
+                        if (!logging) {
+                            cp.setOut(null);
+                            cp.setWarning(null);
+                            cp.setOut(null);
+                        }
+                        // Create variables
+                        IloNumVar[] x = new IloNumVar[rectangles.size()];
+                        IloNumVar[] y = new IloNumVar[rectangles.size()];
+                        IloNumVar[] width = new IloNumVar[rectangles.size()];
+                        IloNumVar[] height = new IloNumVar[rectangles.size()];
+                        int j = 0;
+                        // Define width and height
+                        for (ElkNode rect : rectangles) {
+                            width[j] = cp.numVar(rect.getWidth(), rect.getWidth());
+                            height[j] = cp.numVar(rect.getHeight(),rect.getHeight());
+                            j++;
+                        }
+                        // Define endheight of an element
+                        IloNumExpr[] endHeight = new IloNumExpr[rectangles.size()];
+                        IloNumExpr[] endWidth = new IloNumExpr[rectangles.size()];
+                        IloNumExpr H = cp.numExpr();
+
+                        minSize.x = Math.max(minSize.x, drawing.getDrawingWidth());
+                        for (int i = 0; i < rectangles.size(); i++) {
+                            x[i] = cp.numVar(0, 10000);
+                            y[i] = cp.numVar(0, 10000);
+                            endWidth[i] = cp.sum(x[i], width[i]);
+                            endHeight[i] = cp.sum(y[i], height[i]);
+                            cp.addLe(endWidth[i], minSize.x);
+                        }
+                        H = cp.max(endHeight);
+                        for (int i = 0; i < rectangles.size(); i++) {
+                            // Define ordering.
+                            if (i != 0) {
+                                if (logging) {
+                                    System.out.println("Adding constraint for node" + i);
+                                }
+                                for (int k = 0; k < i; k++) {
+                                    cp.add(cp.or(
+                                            cp.ge(x[i], cp.sum((int) nodeNodeSpacing, endWidth[k])),
+                                            cp.ge(y[i], cp.sum((int) nodeNodeSpacing, endHeight[k]))));
+                                }
+                            } else {
+                                if (logging) {
+                                    System.out.println("First node");
+                                }
+                                cp.addEq(0, x[0]);
+                                cp.addEq(0, y[0]);
+                            }
+                        }
+                        
+                        cp.addMinimize(H);
+                        if (cp.solve()) {
+                            int index = 0;
+                            // Apply coordinates to rectangles.
+                            for (ElkNode rect : rectangles) {
+                                if (logging) {
+                                    System.out.println("X/Y (" + rect.getIdentifier() + ", " + cp.getValue(x[index]) + "," + cp.getValue(y[index]) + ")");
+                                }
+                                rect.setX(cp.getValue(x[index]));
+                                rect.setY(cp.getValue(y[index]));
+                                index++;
+                            }
+                            // Calculate drawing dimensions.
+                            drawing = new DrawingData(aspectRatio, minSize.x, cp.getValue(H), DrawingDataDescriptor.WHOLE_DRAWING);
+                            if (logging) {
+                                System.out.println(minSize.x);
+                                System.out.println(cp.getValue(H));
+                            }
+                        } else {
+                            System.out.println("No solution found");
+                            drawing = new DrawingData(aspectRatio, 100, 100, DrawingDataDescriptor.WHOLE_DRAWING);
+                        }
+                        
+                    } catch (IloException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                } else {
+                    RowFillingAndCompaction secondIt = new RowFillingAndCompaction(aspectRatio, expandNodes, expandToAspectRatio, compaction, nodeNodeSpacing);
+                    // Modify the initial approximation if necessary.
+                    minSize.x = Math.max(minSize.x, drawing.getDrawingWidth());
+                    
+                    drawing = secondIt.start(rectangles, minSize);
+                }
             }
             if (progressMonitor.isLoggingEnabled()) {
                 progressMonitor.logGraph(layoutGraph, "After compaction");

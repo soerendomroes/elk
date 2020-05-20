@@ -13,5 +13,6 @@
 			<attribute name="javadoc_location" value="file:/opt/ibm/ILOG/CPLEX_Studio1210/doc/html/en-US/refjavacpoptimizer/html/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/cplex.jar" sourcepath="/opt/ibm/ILOG/CPLEX_Studio1210/doc/html/en-US/refjavacplex/html/ilog"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

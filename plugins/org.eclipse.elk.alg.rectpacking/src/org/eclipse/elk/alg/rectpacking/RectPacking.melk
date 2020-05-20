@@ -22,7 +22,7 @@ bundle {
 }
 
 //ALGORITHM
-algorithm rectPacking (RectPackingLayoutProvider) {
+algorithm rectpacking (RectPackingLayoutProvider) {
     label "Rectangle Packing"
     description "Algorithm for packing of unconnected boxes, i.e. graphs without edges. The given order of the boxes
         is always preserved and the main reading direction of the boxes is left to right. The algorithm is divided into
@@ -46,6 +46,7 @@ algorithm rectPacking (RectPackingLayoutProvider) {
     supports desiredPosition
     supports currentPosition
     supports cplex
+    supports funcplex2
     supports cplexOptTolerance
 }
 
@@ -62,6 +63,13 @@ advanced option optimizationGoal: OptimizationGoal {
 programmatic option cplex: boolean {
     label "Cplex Solver"
     description "Solves the problem via cplex. This might take a while."
+    targets nodes
+    default = false
+}
+
+advanced option funcplex2: boolean {
+    label "Strip packing cplex solver"
+    description "Solves the strip packing problem using cplex."
     targets nodes
     default = false
 }
