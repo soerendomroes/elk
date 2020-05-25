@@ -278,9 +278,12 @@ advanced option interactive: boolean {
 }
 
 advanced option interactiveLayout: boolean {
-    label "interactive Layout"
+    label "Interactive Layout"
     description
-        "Whether the graph should be changeable interactively and by setting constraints"
+        "Whether the graph should be changeable interactively and by setting constraints.
+        This has to be true for every node that is layouted interactively. In contrast to
+        the 'interactive' option this does not change the algorithm but may enable intermediate
+        processors to store additional data for alayout run in interactive mode."
     default = false
     targets parents
 }
