@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2019 Kiel University and others.
+ * Copyright (c) 2014, 2020 Kiel University and others.
  * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -845,6 +845,12 @@ public final class LGraphUtil {
             if (!explicitAnchor) {
                 anchor.x = portSize.x;
             }
+            
+            // The port anchors think that there is a difference between the port's left and right border
+            // coordinates, which makes sense if the port has a non-zero width. The port dummy, however,
+            // will have a width of zero. Thus, the anchor must be relative to -portWidth. This fixes #546.
+            anchor.x -= portSize.x;
+            
             break;
         
         case EAST:
@@ -880,8 +886,10 @@ public final class LGraphUtil {
             assert false : finalExternalPortSide;
         }
         
-        // Finally apply the anchor by setting the dummy port position accordingly
+        // Finally apply the anchor by setting the dummy port position accordingly. Also, remember the anchor on the
+        // dummy itself since the hierarchical port processors depend on that
         dummyPort.getPosition().set(anchor);
+        dummy.setProperty(LayeredOptions.PORT_ANCHOR, anchor);
         
         if (portConstraints.isOrderFixed()) {
             // The order of ports is fixed in some way, so what we will have to do is to remember information about it
@@ -1080,8 +1088,8 @@ public final class LGraphUtil {
     public static <T> T getIndividualOrInherited(final LNode node, final IProperty<T> property) {
         T result = null;
         
-        if (node.hasProperty(CoreOptions.SPACING_INDIVIDUAL_OVERRIDE)) {
-            IPropertyHolder individualSpacings = node.getProperty(CoreOptions.SPACING_INDIVIDUAL_OVERRIDE);
+        if (node.hasProperty(CoreOptions.SPACING_INDIVIDUAL)) {
+            IPropertyHolder individualSpacings = node.getProperty(CoreOptions.SPACING_INDIVIDUAL);
             if (individualSpacings.hasProperty(property)) {
                 result = individualSpacings.getProperty(property);
             }
