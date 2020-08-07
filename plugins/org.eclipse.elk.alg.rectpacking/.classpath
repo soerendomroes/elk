@@ -8,11 +8,13 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="src-gen"/>
-	<classpathentry kind="lib" path="/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar">
+	<classpathentry kind="lib" path="/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar" sourcepath="/opt/ibm/ILOG/CPLEX_Studio1210/doc/html/en-US">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/opt/ibm/ILOG/CPLEX_Studio1210/doc/html/en-US/refjavacpoptimizer/html/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/cplex.jar" sourcepath="/opt/ibm/ILOG/CPLEX_Studio1210/doc/html/en-US/refjavacplex/html/ilog"/>
+	<classpathentry kind="lib" path="lib/choco-solver-4.10.3.jar" sourcepath="lib/choco-solver-4.10.3-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jacop-4.7.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
