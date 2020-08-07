@@ -28,7 +28,7 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.graph.ElkNode;
 
 import ilog.cp.*;
-import ilog.cplex.IloCplex;
+//import ilog.cplex.IloCplex;
 import ilog.concert.*;
 
 /**
@@ -81,321 +81,355 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         double cplexOptTolerance = -1;
         if (layoutGraph.hasProperty(RectPackingOptions.CPLEX_OPT_TOLERANCE)) {
             cplexOptTolerance = layoutGraph.getProperty(RectPackingOptions.CPLEX_OPT_TOLERANCE);
+        }
+        // A target width for the algorithm. If this is set the width approximation step is skipped.
+        double targetWidth = -1;
+        if (layoutGraph.hasProperty(RectPackingOptions.TARGET_WIDTH)) {
+            targetWidth = layoutGraph.getProperty(RectPackingOptions.TARGET_WIDTH);
+        }
 
-            // A target width for the algorithm. If this is set the width approximation step is skipped.
-            double targetWidth = -1;
-            if (layoutGraph.hasProperty(RectPackingOptions.TARGET_WIDTH)) {
-                targetWidth = layoutGraph.getProperty(RectPackingOptions.TARGET_WIDTH);
+        List<ElkNode> rectangles = layoutGraph.getChildren();
+        DrawingUtil.resetCoordinates(rectangles);
+        DrawingData drawing = null;
+        if (interactive) {
+            List<ElkNode> fixedNodes = new ArrayList<>();
+            for (ElkNode elkNode : rectangles) {
+                if (elkNode.hasProperty(RectPackingOptions.DESIRED_POSITION)) {
+                    fixedNodes.add(elkNode);
+                }
+            }
+            for (ElkNode elkNode : fixedNodes) {
+                rectangles.remove(elkNode);
+            }
+            Collections.sort(fixedNodes, (a, b) -> {
+                int positionA = a.getProperty(RectPackingOptions.DESIRED_POSITION);
+                int positionB = b.getProperty(RectPackingOptions.DESIRED_POSITION);
+                if (positionA == positionB) {
+                    return -1;
+                } else {
+                    return Integer.compare(positionA, positionB);
+                }
+            });
+            for (ElkNode elkNode : fixedNodes) {
+                int position = elkNode.getProperty(RectPackingOptions.DESIRED_POSITION);
+                position = Math.min(position, rectangles.size());
+                rectangles.add(position, elkNode);
             }
 
-            List<ElkNode> rectangles = layoutGraph.getChildren();
-            DrawingUtil.resetCoordinates(rectangles);
-            DrawingData drawing = null;
-            if (interactive) {
-                List<ElkNode> fixedNodes = new ArrayList<>();
-                for (ElkNode elkNode : rectangles) {
-                    if (elkNode.hasProperty(RectPackingOptions.DESIRED_POSITION)) {
-                        fixedNodes.add(elkNode);
-                    }
+            int index = 0;
+            for (ElkNode elkNode : rectangles) {
+                elkNode.setProperty(RectPackingOptions.CURRENT_POSITION, index);
+                index++;
+            }
+        }
+        // Get minimum size of parent.
+        KVector minSize = ElkUtil.effectiveMinSizeConstraintFor(layoutGraph);
+        // Remove padding to get the space the algorithm can use.
+        minSize.x -= padding.getHorizontal();
+        minSize.y -= padding.getVertical();
+
+        if (cplexEnalbed) {
+            // Begin cp optimizer solving.
+            boolean logging = true;
+            try {
+                IloCP cp = new IloCP();
+                if (cplexOptTolerance >= 0) {
+                    cp.setParameter(IloCP.DoubleParam.OptimalityTolerance, cplexOptTolerance);
                 }
-                for (ElkNode elkNode : fixedNodes) {
-                    rectangles.remove(elkNode);
+                cp.setParameter(IloCP.DoubleParam.TimeLimit, 60 * 60);
+                if (!logging) {
+                    cp.setOut(null);
+                    cp.setWarning(null);
+                    cp.setOut(null);
                 }
-                Collections.sort(fixedNodes, (a, b) -> {
-                    int positionA = a.getProperty(RectPackingOptions.DESIRED_POSITION);
-                    int positionB = b.getProperty(RectPackingOptions.DESIRED_POSITION);
-                    if (positionA == positionB) {
-                        return -1;
+                int numberOfRects = rectangles.size();
+                IloIntervalVar[] rectXs = new IloIntervalVar[numberOfRects];
+                IloIntervalVar[] rectYs = new IloIntervalVar[numberOfRects];
+                double totalWidth = 0;
+                double totalHeight = 0;
+                for (ElkNode rect : rectangles) {
+                    totalWidth += rect.getWidth() + nodeNodeSpacing;
+                    totalHeight += rect.getHeight() + nodeNodeSpacing;
+                }
+                if (logging) {
+                    System.out.println("Total " + totalWidth + ", " + totalHeight);
+                }
+                // Set the length of the interval variable.
+                for (int i = 0; i < numberOfRects; i++) {
+                    rectXs[i] =
+                            cp.intervalVar((int) rectangles.get(i).getWidth(), rectangles.get(i).getIdentifier() + "x");
+                    rectXs[i].setStartMin(0);
+                    rectXs[i].setStartMax((int) totalWidth);
+                    rectXs[i].setEndMin(rectXs[i].getSizeMin());
+                    rectXs[i].setEndMax((int) totalWidth);
+                }
+                for (int i = 0; i < numberOfRects; i++) {
+                    rectYs[i] = cp.intervalVar((int) rectangles.get(i).getHeight(),
+                            rectangles.get(i).getIdentifier() + "y");
+                    rectYs[i].setStartMin(0);
+                    rectYs[i].setStartMax((int) totalHeight);
+                    rectYs[i].setEndMin(rectYs[i].getSizeMin());
+                    rectYs[i].setEndMax((int) totalHeight);
+                }
+
+                // Define goal.
+                // Max width
+                IloNumExpr[] widths = new IloNumExpr[numberOfRects];
+                for (int i = 0; i < numberOfRects; i++) {
+                    widths[i] = cp.endOf(rectXs[i]);
+                }
+                IloNumExpr[] heights = new IloNumExpr[numberOfRects];
+                for (int i = 0; i < numberOfRects; i++) {
+                    heights[i] = cp.endOf(rectYs[i]);
+                }
+
+                IloNumExpr maxWidth = cp.max(widths);
+                IloNumExpr maxHeight = cp.max(heights);
+                IloNumExpr scaleMeasure = cp.min(cp.quot(aspectRatio, maxWidth), cp.quot(1, maxHeight));
+                // Goal is to maximize the scale measure and minimize the area at the same time.
+                IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth, maxHeight)));
+                cp.add(cp.maximize(cpGoal, "Scale measure goal"));
+                // cp.addMinimize(cp.prod(maxWidth, maxHeight));
+                // Define constraints
+                for (int i = 0; i < numberOfRects; i++) {
+                    IloIntervalVar rectX = rectXs[i];
+                    IloIntervalVar rectY = rectYs[i];
+
+                    // Define ordering.
+                    if (i != 0) {
+                        if (logging) {
+                            System.out.println("Adding constraint for node" + i);
+                        }
+                        // Current ma height should hold the maximum height of the packing for all placements
+                        IloNumExpr[] currentMaxHeight = new IloNumExpr[numberOfRects];
+                        IloNumExpr[] lastStackWidth = new IloNumExpr[numberOfRects];
+                        for (int j = 0; j < i; j++) {
+                            if (j == 0) {
+                                currentMaxHeight[j] = cp.constant(0);
+                                lastStackWidth[j] = cp.constant(0);
+                            } else {
+                                currentMaxHeight[j] = cp.max(currentMaxHeight[j - 1], cp.endOf(rectYs[j]));
+                                if (logging) {
+                                    System.out.println("FUn");
+                                }
+                                IloConstraint[] constraint = new IloConstraint[2];
+
+                                if (logging) {
+                                    System.out.println("FUn");
+                                }
+                                constraint[0] = cp.and(cp.eq(0, cp.startOf(rectX)),
+                                        // cp.and(cp.le(cp.sum(nodeNodeSpacing, lastStackWidth[j]), cp.endOf(rectX)),
+                                        cp.le(cp.sum(nodeNodeSpacing, currentMaxHeight[j]), cp.startOf(rectY)));
+
+                                if (logging) {
+                                    System.out.println("FUn");
+                                }
+                                constraint[1] = cp.and(
+                                        cp.eq(cp.sum(nodeNodeSpacing, lastStackWidth[j - 1]),
+                                                cp.startOf(rectX)),
+                                        // cp.and(
+                                        cp.le(cp.startOf(rectY), cp.startOf(rectYs[j])));
+
+                                if (logging) {
+                                    System.out.println("FUn");
+                                }
+                                cp.add(cp.and(cp.or(constraint),
+                                        // )));
+                                        cp.or(cp.ge(cp.startOf(rectX), cp.sum((int) nodeNodeSpacing, cp.endOf(rectXs[j]))),
+                                                cp.ge(cp.startOf(rectY),
+                                                        cp.sum((int) nodeNodeSpacing, cp.endOf(rectYs[j]))))));
+                            }
+                        }
                     } else {
-                        return Integer.compare(positionA, positionB);
+                        if (logging) {
+                            System.out.println("First node");
+                        }
+                        cp.addEq(0, cp.startOf(rectXs[0]));
+                        cp.addEq(0, cp.startOf(rectYs[0]));
                     }
-                });
-                for (ElkNode elkNode : fixedNodes) {
-                    int position = elkNode.getProperty(RectPackingOptions.DESIRED_POSITION);
-                    position = Math.min(position, rectangles.size());
-                    rectangles.add(position, elkNode);
                 }
 
-                int index = 0;
-                for (ElkNode elkNode : rectangles) {
-                    elkNode.setProperty(RectPackingOptions.CURRENT_POSITION, index);
-                    index++;
-                }
-            }
-            // Get minimum size of parent.
-            KVector minSize = ElkUtil.effectiveMinSizeConstraintFor(layoutGraph);
-            // Remove padding to get the space the algorithm can use.
-            minSize.x -= padding.getHorizontal();
-            minSize.y -= padding.getVertical();
+                if (cp.solve()) {
 
-            if (cplexEnalbed) {
-                // Begin cp optimizer solving.
-                boolean logging = true;
-                try {
-                    IloCP cp = new IloCP();
-                    if (cplexOptTolerance >= 0) {
-                        cp.setParameter(IloCP.DoubleParam.OptimalityTolerance, cplexOptTolerance);
-                    }
-                    cp.setParameter(IloCP.DoubleParam.TimeLimit, 60 * 60);
-                    if (!logging) {
-                        cp.setOut(null);
-                        cp.setWarning(null);
-                        cp.setOut(null);
-                    }
-                    int numberOfRects = rectangles.size();
-                    IloIntervalVar[] rectXs = new IloIntervalVar[numberOfRects];
-                    IloIntervalVar[] rectYs = new IloIntervalVar[numberOfRects];
-                    double totalWidth = 0;
-                    double totalHeight = 0;
-                    for (ElkNode rect : rectangles) {
-                        totalWidth += rect.getWidth() + nodeNodeSpacing;
-                        totalHeight += rect.getHeight() + nodeNodeSpacing;
-                    }
                     if (logging) {
-                        System.out.println("Total " + totalWidth + ", " + totalHeight);
+                        System.out.println("Scale Measure " + cp.getValue(scaleMeasure));
                     }
-                    // Set the length of the interval variable.
-                    for (int i = 0; i < numberOfRects; i++) {
-                        rectXs[i] = cp.intervalVar((int) rectangles.get(i).getWidth(),
-                                rectangles.get(i).getIdentifier() + "x");
-                        rectXs[i].setStartMin(0);
-                        rectXs[i].setStartMax((int) totalWidth);
-                        rectXs[i].setEndMin(rectXs[i].getSizeMin());
-                        rectXs[i].setEndMax((int) totalWidth);
-                    }
-                    for (int i = 0; i < numberOfRects; i++) {
-                        rectYs[i] = cp.intervalVar((int) rectangles.get(i).getHeight(),
-                                rectangles.get(i).getIdentifier() + "y");
-                        rectYs[i].setStartMin(0);
-                        rectYs[i].setStartMax((int) totalHeight);
-                        rectYs[i].setEndMin(rectYs[i].getSizeMin());
-                        rectYs[i].setEndMax((int) totalHeight);
-                    }
-
-                    // Define goal.
-                    // Max width
-                    IloNumExpr[] widths = new IloNumExpr[numberOfRects];
-                    for (int i = 0; i < numberOfRects; i++) {
-                        widths[i] = cp.endOf(rectXs[i]);
-                    }
-                    IloNumExpr[] heights = new IloNumExpr[numberOfRects];
-                    for (int i = 0; i < numberOfRects; i++) {
-                        heights[i] = cp.endOf(rectYs[i]);
-                    }
-
-                    IloNumExpr maxWidth = cp.max(widths);
-                    IloNumExpr maxHeight = cp.max(heights);
-                    IloNumExpr scaleMeasure = cp.min(cp.quot(aspectRatio, maxWidth), cp.quot(1, maxHeight));
-                    // Goal is to maximize the scale measure and minimize the area at the same time.
-                    IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth, maxHeight)));
-                    cp.add(cp.maximize(cpGoal, "Scale measure goal"));
-                    // cp.addMinimize(cp.prod(maxWidth, maxHeight));
-                    // Define constraints
-                    for (int i = 0; i < numberOfRects; i++) {
-                        IloIntervalVar rectX = rectXs[i];
-                        IloIntervalVar rectY = rectYs[i];
-
-                        // Define ordering.
-                        if (i != 0) {
-                            if (logging) {
-                                System.out.println("Adding constraint for node" + i);
-                            }
-                            for (int j = 0; j < i; j++) {
-                                cp.add(cp.or(
-                                        cp.ge(cp.startOf(rectX), cp.sum((int) nodeNodeSpacing, cp.endOf(rectXs[j]))),
-                                        cp.ge(cp.startOf(rectY), cp.sum((int) nodeNodeSpacing, cp.endOf(rectYs[j])))));
-                            }
-                        } else {
-                            if (logging) {
-                                System.out.println("First node");
-                            }
-                            cp.addEq(0, cp.startOf(rectXs[0]));
-                            cp.addEq(0, cp.startOf(rectYs[0]));
-                        }
-                    }
-
-                    if (cp.solve()) {
-
+                    for (IloIntervalVar rectX : rectXs) {
                         if (logging) {
-                            System.out.println("Scale Measure " + cp.getValue(scaleMeasure));
+                            System.out.println(rectX);
+                            System.out.println(cp.getValue(cp.startOf(rectX)) + ", " + cp.getValue(cp.endOf(rectX))
+                                    + ", " + cp.getLength(rectX));
                         }
-                        for (IloIntervalVar rectX : rectXs) {
-                            if (logging) {
-                                System.out.println(rectX);
-                                System.out.println(cp.getValue(cp.startOf(rectX)) + ", " + cp.getValue(cp.endOf(rectX))
-                                        + ", " + cp.getLength(rectX));
-                            }
-                        }
-                        for (IloIntervalVar rectY : rectYs) {
-                            if (logging) {
-                                System.out.println(rectY);
-                                System.out.println(cp.getValue(cp.startOf(rectY)) + ", " + cp.getValue(cp.endOf(rectY))
-                                        + ", " + cp.getLength(rectY));
-
-                            }
-                        }
-                        int index = 0;
-                        // Apply coordinates to rectangles.
-                        for (ElkNode rect : rectangles) {
-                            rect.setX(cp.getValue(cp.startOf(rectXs[index])));
-                            rect.setY(cp.getValue(cp.startOf(rectYs[index])));
-                            index++;
-                        }
-                        // Calculate drawing dimensions.
-                        drawing = new DrawingData(aspectRatio, cp.getValue(maxWidth), cp.getValue(maxHeight),
-                                DrawingDataDescriptor.WHOLE_DRAWING);
-                        if (logging) {
-                            System.out.println(cp.getValue(maxWidth));
-                            System.out.println(cp.getValue(maxHeight));
-                        }
-                    } else {
-                        System.out.println("No solution found");
-                        drawing = new DrawingData(aspectRatio, 100, 100, DrawingDataDescriptor.WHOLE_DRAWING);
                     }
-                } catch (IloException e) {
-                    System.err.println("Error " + e);
-                }
-            } else {
-                // // Initial width approximation.
-                // AreaApproximation firstIt = new AreaApproximation(aspectRatio, goal, lastPlaceShift);
-                // drawing = firstIt.approxBoundingBox(rectangles, nodeNodeSpacing);
-                // if (progressMonitor.isLoggingEnabled()) {
-                // progressMonitor.logGraph(layoutGraph, "After approximation");
-                // }
-                // // Placement according to approximated width.
-                // if (!onlyFirstIteration) {
-                // DrawingUtil.resetCoordinates(rectangles);
-                // if (cplexEnalbed2) {
-                // IloCplex cp;
-                // try {
-                // cp = new IloCplex();
-                // cp.setParam(IloCplex.DoubleParam.TimeLimit, 60 * 60);
-                // boolean logging = true;
-                // if (!logging) {
-                // cp.setOut(null);
-                // cp.setWarning(null);
-                // cp.setOut(null);
-                // }
-                // // Create variables
-                // IloNumVar[] x = new IloNumVar[rectangles.size()];
-                // IloNumVar[] y = new IloNumVar[rectangles.size()];
-                // IloNumVar[] width = new IloNumVar[rectangles.size()];
-                // IloNumVar[] height = new IloNumVar[rectangles.size()];
-                // int j = 0;
-                // // Define width and height
-                // for (ElkNode rect : rectangles) {
-                // width[j] = cp.numVar(rect.getWidth(), rect.getWidth());
-                // height[j] = cp.numVar(rect.getHeight(),rect.getHeight());
-                // j++;
-                // }
-                // // Define endheight of an element
-                // IloNumExpr[] endHeight = new IloNumExpr[rectangles.size()];
-                // IloNumExpr[] endWidth = new IloNumExpr[rectangles.size()];
-                // IloNumExpr H = cp.numExpr();
-                //
-                // minSize.x = Math.max(minSize.x, drawing.getDrawingWidth());
-                // for (int i = 0; i < rectangles.size(); i++) {
-                // x[i] = cp.numVar(0, 10000);
-                // y[i] = cp.numVar(0, 10000);
-                // endWidth[i] = cp.sum(x[i], width[i]);
-                // endHeight[i] = cp.sum(y[i], height[i]);
-                // cp.addLe(endWidth[i], minSize.x);
-                // }
-                // H = cp.max(endHeight);
-                // for (int i = 0; i < rectangles.size(); i++) {
-                // // Define ordering.
-                // if (i != 0) {
-                // if (logging) {
-                // System.out.println("Adding constraint for node" + i);
-                // }
-                // for (int k = 0; k < i; k++) {
-                // cp.add(cp.or(
-                // cp.ge(x[i], cp.sum((int) nodeNodeSpacing, endWidth[k])),
-                // cp.ge(y[i], cp.sum((int) nodeNodeSpacing, endHeight[k]))));
-                // }
-                // } else {
-                // if (logging) {
-                // System.out.println("First node");
-                // }
-                // cp.addEq(0, x[0]);
-                // cp.addEq(0, y[0]);
-                // }
-                // }
-                //
-                // cp.addMinimize(H);
-                // if (cp.solve()) {
-                // int index = 0;
-                // // Apply coordinates to rectangles.
-                // for (ElkNode rect : rectangles) {
-                // if (logging) {
-                // System.out.println("X/Y (" + rect.getIdentifier() + ", " + cp.getValue(x[index]) + "," +
-                // cp.getValue(y[index]) + ")");
-                // }
-                // rect.setX(cp.getValue(x[index]));
-                // rect.setY(cp.getValue(y[index]));
-                // index++;
-                // }
-                // // Calculate drawing dimensions.
-                // drawing = new DrawingData(aspectRatio, minSize.x, cp.getValue(H),
-                // DrawingDataDescriptor.WHOLE_DRAWING);
-                // if (logging) {
-                // System.out.println(minSize.x);
-                // System.out.println(cp.getValue(H));
-                // }
-                // } else {
-                // System.out.println("No solution found");
-                // drawing = new DrawingData(aspectRatio, 100, 100, DrawingDataDescriptor.WHOLE_DRAWING);
-                // }
-                //
-                // } catch (IloException e) {
-                // // TODO Auto-generated catch block
-                // e.printStackTrace();
-                // }
-                // } else {
-                // RowFillingAndCompaction secondIt = new RowFillingAndCompaction(aspectRatio, expandNodes,
-                // expandToAspectRatio, compaction, nodeNodeSpacing);
-                // // Modify the initial approximation if necessary.
-                // minSize.x = Math.max(minSize.x, drawing.getDrawingWidth());
-                //
-                // drawing = secondIt.start(rectangles, minSize);
-                // }
-                // }
-                // if (progressMonitor.isLoggingEnabled()) {
-                // progressMonitor.logGraph(layoutGraph, "After compaction");
-                // }
+                    for (IloIntervalVar rectY : rectYs) {
+                        if (logging) {
+                            System.out.println(rectY);
+                            System.out.println(cp.getValue(cp.startOf(rectY)) + ", " + cp.getValue(cp.endOf(rectY))
+                                    + ", " + cp.getLength(rectY));
 
-                double maxWidth = minSize.x;
-                if (targetWidth < 0 || targetWidth < minSize.x) {
-                    // Initial width approximation.
-                    AreaApproximation firstIt = new AreaApproximation(aspectRatio, goal, lastPlaceShift);
-                    drawing = firstIt.approxBoundingBox(rectangles, nodeNodeSpacing);
-                    if (progressMonitor.isLoggingEnabled()) {
-                        progressMonitor.logGraph(layoutGraph, "After approximation");
+                        }
+                    }
+                    int index = 0;
+                    // Apply coordinates to rectangles.
+                    for (ElkNode rect : rectangles) {
+                        rect.setX(cp.getValue(cp.startOf(rectXs[index])));
+                        rect.setY(cp.getValue(cp.startOf(rectYs[index])));
+                        index++;
+                    }
+                    // Calculate drawing dimensions.
+                    drawing = new DrawingData(aspectRatio, cp.getValue(maxWidth), cp.getValue(maxHeight),
+                            DrawingDataDescriptor.WHOLE_DRAWING);
+                    if (logging) {
+                        System.out.println(cp.getValue(maxWidth));
+                        System.out.println(cp.getValue(maxHeight));
                     }
                 } else {
-                    drawing = new DrawingData(aspectRatio, targetWidth, 0, DrawingDataDescriptor.WHOLE_DRAWING);
+                    System.out.println("No solution found");
+                    drawing = new DrawingData(aspectRatio, 100, 100, DrawingDataDescriptor.WHOLE_DRAWING);
                 }
-                // Placement according to approximated width.
-                if (!onlyFirstIteration) {
-                    DrawingUtil.resetCoordinates(rectangles);
-                    RowFillingAndCompaction secondIt = new RowFillingAndCompaction(aspectRatio, expandNodes,
-                            expandToAspectRatio, compaction, nodeNodeSpacing);
-                    // Modify the initial approximation if necessary.
-                    maxWidth = Math.max(minSize.x, drawing.getDrawingWidth());
+            } catch (IloException e) {
+                System.err.println("Error " + e);
+            }
+        } else {
+            // // Initial width approximation.
+            // AreaApproximation firstIt = new AreaApproximation(aspectRatio, goal, lastPlaceShift);
+            // drawing = firstIt.approxBoundingBox(rectangles, nodeNodeSpacing);
+            // if (progressMonitor.isLoggingEnabled()) {
+            // progressMonitor.logGraph(layoutGraph, "After approximation");
+            // }
+            // // Placement according to approximated width.
+            // if (!onlyFirstIteration) {
+            // DrawingUtil.resetCoordinates(rectangles);
+            // if (cplexEnalbed2) {
+            // IloCplex cp;
+            // try {
+            // cp = new IloCplex();
+            // cp.setParam(IloCplex.DoubleParam.TimeLimit, 60 * 60);
+            // boolean logging = true;
+            // if (!logging) {
+            // cp.setOut(null);
+            // cp.setWarning(null);
+            // cp.setOut(null);
+            // }
+            // // Create variables
+            // IloNumVar[] x = new IloNumVar[rectangles.size()];
+            // IloNumVar[] y = new IloNumVar[rectangles.size()];
+            // IloNumVar[] width = new IloNumVar[rectangles.size()];
+            // IloNumVar[] height = new IloNumVar[rectangles.size()];
+            // int j = 0;
+            // // Define width and height
+            // for (ElkNode rect : rectangles) {
+            // width[j] = cp.numVar(rect.getWidth(), rect.getWidth());
+            // height[j] = cp.numVar(rect.getHeight(),rect.getHeight());
+            // j++;
+            // }
+            // // Define endheight of an element
+            // IloNumExpr[] endHeight = new IloNumExpr[rectangles.size()];
+            // IloNumExpr[] endWidth = new IloNumExpr[rectangles.size()];
+            // IloNumExpr H = cp.numExpr();
+            //
+            // minSize.x = Math.max(minSize.x, drawing.getDrawingWidth());
+            // for (int i = 0; i < rectangles.size(); i++) {
+            // x[i] = cp.numVar(0, 10000);
+            // y[i] = cp.numVar(0, 10000);
+            // endWidth[i] = cp.sum(x[i], width[i]);
+            // endHeight[i] = cp.sum(y[i], height[i]);
+            // cp.addLe(endWidth[i], minSize.x);
+            // }
+            // H = cp.max(endHeight);
+            // for (int i = 0; i < rectangles.size(); i++) {
+            // // Define ordering.
+            // if (i != 0) {
+            // if (logging) {
+            // System.out.println("Adding constraint for node" + i);
+            // }
+            // for (int k = 0; k < i; k++) {
+            // cp.add(cp.or(
+            // cp.ge(x[i], cp.sum((int) nodeNodeSpacing, endWidth[k])),
+            // cp.ge(y[i], cp.sum((int) nodeNodeSpacing, endHeight[k]))));
+            // }
+            // } else {
+            // if (logging) {
+            // System.out.println("First node");
+            // }
+            // cp.addEq(0, x[0]);
+            // cp.addEq(0, y[0]);
+            // }
+            // }
+            //
+            // cp.addMinimize(H);
+            // if (cp.solve()) {
+            // int index = 0;
+            // // Apply coordinates to rectangles.
+            // for (ElkNode rect : rectangles) {
+            // if (logging) {
+            // System.out.println("X/Y (" + rect.getIdentifier() + ", " + cp.getValue(x[index]) + "," +
+            // cp.getValue(y[index]) + ")");
+            // }
+            // rect.setX(cp.getValue(x[index]));
+            // rect.setY(cp.getValue(y[index]));
+            // index++;
+            // }
+            // // Calculate drawing dimensions.
+            // drawing = new DrawingData(aspectRatio, minSize.x, cp.getValue(H),
+            // DrawingDataDescriptor.WHOLE_DRAWING);
+            // if (logging) {
+            // System.out.println(minSize.x);
+            // System.out.println(cp.getValue(H));
+            // }
+            // } else {
+            // System.out.println("No solution found");
+            // drawing = new DrawingData(aspectRatio, 100, 100, DrawingDataDescriptor.WHOLE_DRAWING);
+            // }
+            //
+            // } catch (IloException e) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // }
+            // } else {
+            // RowFillingAndCompaction secondIt = new RowFillingAndCompaction(aspectRatio, expandNodes,
+            // expandToAspectRatio, compaction, nodeNodeSpacing);
+            // // Modify the initial approximation if necessary.
+            // minSize.x = Math.max(minSize.x, drawing.getDrawingWidth());
+            //
+            // drawing = secondIt.start(rectangles, minSize);
+            // }
+            // }
+            // if (progressMonitor.isLoggingEnabled()) {
+            // progressMonitor.logGraph(layoutGraph, "After compaction");
+            // }
 
-                    drawing = secondIt.start(rectangles, maxWidth, minSize, progressMonitor, layoutGraph);
+            double maxWidth = minSize.x;
+            if (targetWidth < 0 || targetWidth < minSize.x) {
+                // Initial width approximation.
+                AreaApproximation firstIt = new AreaApproximation(aspectRatio, goal, lastPlaceShift);
+                drawing = firstIt.approxBoundingBox(rectangles, nodeNodeSpacing);
+                if (progressMonitor.isLoggingEnabled()) {
+                    progressMonitor.logGraph(layoutGraph, "After approximation");
                 }
+            } else {
+                drawing = new DrawingData(aspectRatio, targetWidth, 0, DrawingDataDescriptor.WHOLE_DRAWING);
             }
+            // Placement according to approximated width.
+            if (!onlyFirstIteration) {
+                DrawingUtil.resetCoordinates(rectangles);
+                RowFillingAndCompaction secondIt = new RowFillingAndCompaction(aspectRatio, expandNodes,
+                        expandToAspectRatio, compaction, nodeNodeSpacing);
+                // Modify the initial approximation if necessary.
+                maxWidth = Math.max(minSize.x, drawing.getDrawingWidth());
 
-            // Final touch.
-            applyPadding(rectangles, padding);
-            ElkUtil.resizeNode(layoutGraph, drawing.getDrawingWidth() + padding.getHorizontal(),
-                    drawing.getDrawingHeight() + padding.getVertical(), false, true);
-            if (progressMonitor.isLoggingEnabled()) {
-                progressMonitor.logGraph(layoutGraph, "Output");
+                drawing = secondIt.start(rectangles, maxWidth, minSize, progressMonitor, layoutGraph);
             }
-            progressMonitor.done();
         }
+
+        // Final touch.
+        applyPadding(rectangles, padding);
+        ElkUtil.resizeNode(layoutGraph, drawing.getDrawingWidth() + padding.getHorizontal(),
+                drawing.getDrawingHeight() + padding.getVertical(), false, true);
+        if (progressMonitor.isLoggingEnabled()) {
+            progressMonitor.logGraph(layoutGraph, "Output");
+        }
+        progressMonitor.done();
     }
 
     /**
