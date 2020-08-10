@@ -1102,8 +1102,8 @@ public class RandomGraphGenerator {
 
         // set size of the node
         if (get(GeneratorOptions.SET_NODE_SIZE)) {
-            node.setWidth(get(GeneratorOptions.NODE_WIDTH).floatVal(random));
-            node.setHeight(get(GeneratorOptions.NODE_HEIGHT).floatVal(random));
+            node.setWidth((int) get(GeneratorOptions.NODE_WIDTH).floatVal(random));
+            node.setHeight((int) get(GeneratorOptions.NODE_HEIGHT).floatVal(random));
         }
 
         // set port constraints
