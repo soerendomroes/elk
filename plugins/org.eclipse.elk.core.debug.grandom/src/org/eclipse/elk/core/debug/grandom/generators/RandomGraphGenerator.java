@@ -276,8 +276,8 @@ public class RandomGraphGenerator {
             for (int i = 0; i < numberOfBigNodes; i++) {
                 int bigNodeIndex = random.nextInt(graph.getChildren().size());
                 graph.getChildren().get(bigNodeIndex).setDimensions(
-                        get(GeneratorOptions.BIG_NODE_WIDTH).floatVal(random),
-                        get(GeneratorOptions.BIG_NODE_HEIGHT).floatVal(random));
+                        (int) get(GeneratorOptions.BIG_NODE_WIDTH).floatVal(random),
+                        (int) get(GeneratorOptions.BIG_NODE_HEIGHT).floatVal(random));
             }
             if (get(GeneratorOptions.SET_PRIORITY)) {
                 int prio = graph.getChildren().size();
