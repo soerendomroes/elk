@@ -138,7 +138,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 if (cplexOptTolerance >= 0) {
                     cp.setParameter(IloCP.DoubleParam.OptimalityTolerance, cplexOptTolerance);
                 }
-                cp.setParameter(IloCP.DoubleParam.TimeLimit, 60 * 10);
+                cp.setParameter(IloCP.DoubleParam.TimeLimit, 60 * 60);
 //                cp.setParameter(IloCP.IntParam.LogVerbosity, IloCP.ParameterValues.Quiet);
 //                cp.setParameter(IloCP.IntParam.ConflictRefinerOnVariables, IloCP.ParameterValues.On);
 //                cp.setParameter(IloCP.DoubleParam.RelativeOptimalityTolerance,0.01);
@@ -200,7 +200,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 IloNumExpr maxHeight = cp.max(heights);
                 IloNumExpr scaleMeasure = cp.min(cp.quot(aspectRatio, maxWidth), cp.quot(1, maxHeight));
                 // Goal is to maximize the scale measure and minimize the area at the same time.
-                IloNumExpr cpGoal = scaleMeasure; // , cp.quot(1, cp.prod(maxWidth, maxHeight)));
+                IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth, maxHeight)));
                 cp.add(cp.maximize(cpGoal, "Scale measure goal"));
                 // cp.addMinimize(cp.prod(maxWidth, maxHeight));
                 // Define constraints
@@ -232,16 +232,31 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 //                        currentStackWidth[i] = cp.numVar(0, (int) totalWidth);
 //                        currentSubRowEnd[i] = cp.numVar(0, (int) totalHeight);
                         
+                        // Constrain helper
                         currentStackWidth[i] = cp.intVar(0, (int) totalWidth);
+                        // currentStackWidth[i - 1] + spacing + width >= currentStackWidth, otherwise space is wasted
                         cp.addGe(cp.sum(currentStackWidth[i - 1],  intSpacing + rectWidth[i]), currentStackWidth[i]);
                         lastStackWidth[i] = cp.intVar(0, (int) totalWidth);
+                        // The lastStackWidth is at most the width of the current stack, if a new stack is created.
+                        // Otherwise it does not change or is set to zero
                         cp.addGe(currentStackWidth[i], lastStackWidth[i]);
                         currentRowLevel[i] = cp.intVar(0, (int) totalHeight);
+                        // rowlvel[i-1] <= rowLevel[i] <= maxHeight[i-1]
                         cp.addLe(currentRowLevel[i - 1], currentRowLevel[i]);
-                        cp.addGe(cp.sum(currentMaxHeight[i - 1], intSpacing + rectHeight[i]), currentRowLevel[i]);
+                        cp.addGe(currentMaxHeight[i - 1], currentRowLevel[i]);
                         currentSubRowEnd[i] = cp.intVar(0, (int) totalHeight);
+                        // subrowEnd[i - 1] <= subrow end <= maxHeight
                         cp.addLe(cp.sum(currentRowLevel[i],  intSpacing + rectHeight[i]), currentSubRowEnd[i]);
                         cp.addGe(currentMaxHeight[i], currentSubRowEnd[i]);
+                        
+                        // Constrain position
+                        // New rectanbgle can at most be placed right of the previous stack by either
+                        // forming their own stack
+                        // or being placed right of the last rect in the same subrow
+                        cp.addGe(currentStackWidth[i - 1], cp.startOf(rectX));
+                        // A new rectangle can at most be placed on below all existing rectangles. (as new row or new subrow)
+                        cp.addGe(currentMaxHeight[i - 1], cp.startOf(rectY));
+                        
 //                        currentSubRowLevel[i] = cp.numExpr();
 //                        choosenPosition[i] = cp.intVar(1, 4);
                         if (logging) {
