@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -32,6 +32,11 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getMaxDegree <em>Max Degree</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isPF <em>PF</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getFraction <em>Fraction</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isBN <em>BN</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getBigNodes <em>Big Nodes</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isBNS <em>BNS</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getBigNodeSize <em>Big Node Size</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isPrio <em>Prio</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getHierarchy <em>Hierarchy</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getSeed <em>Seed</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getFormat <em>Format</em>}</li>
@@ -306,6 +311,116 @@ public interface Configuration extends EObject
    * @generated
    */
   void setFraction(DoubleQuantity value);
+
+  /**
+   * Returns the value of the '<em><b>BN</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>BN</em>' attribute.
+   * @see #setBN(boolean)
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.GRandomPackage#getConfiguration_BN()
+   * @model
+   * @generated
+   */
+  boolean isBN();
+
+  /**
+   * Sets the value of the '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isBN <em>BN</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>BN</em>' attribute.
+   * @see #isBN()
+   * @generated
+   */
+  void setBN(boolean value);
+
+  /**
+   * Returns the value of the '<em><b>Big Nodes</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Big Nodes</em>' containment reference.
+   * @see #setBigNodes(DoubleQuantity)
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.GRandomPackage#getConfiguration_BigNodes()
+   * @model containment="true"
+   * @generated
+   */
+  DoubleQuantity getBigNodes();
+
+  /**
+   * Sets the value of the '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getBigNodes <em>Big Nodes</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Big Nodes</em>' containment reference.
+   * @see #getBigNodes()
+   * @generated
+   */
+  void setBigNodes(DoubleQuantity value);
+
+  /**
+   * Returns the value of the '<em><b>BNS</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>BNS</em>' attribute.
+   * @see #setBNS(boolean)
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.GRandomPackage#getConfiguration_BNS()
+   * @model
+   * @generated
+   */
+  boolean isBNS();
+
+  /**
+   * Sets the value of the '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isBNS <em>BNS</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>BNS</em>' attribute.
+   * @see #isBNS()
+   * @generated
+   */
+  void setBNS(boolean value);
+
+  /**
+   * Returns the value of the '<em><b>Big Node Size</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Big Node Size</em>' containment reference.
+   * @see #setBigNodeSize(Size)
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.GRandomPackage#getConfiguration_BigNodeSize()
+   * @model containment="true"
+   * @generated
+   */
+  Size getBigNodeSize();
+
+  /**
+   * Sets the value of the '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#getBigNodeSize <em>Big Node Size</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Big Node Size</em>' containment reference.
+   * @see #getBigNodeSize()
+   * @generated
+   */
+  void setBigNodeSize(Size value);
+
+  /**
+   * Returns the value of the '<em><b>Prio</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Prio</em>' attribute.
+   * @see #setPrio(boolean)
+   * @see org.eclipse.elk.core.debug.grandom.gRandom.GRandomPackage#getConfiguration_Prio()
+   * @model
+   * @generated
+   */
+  boolean isPrio();
+
+  /**
+   * Sets the value of the '{@link org.eclipse.elk.core.debug.grandom.gRandom.Configuration#isPrio <em>Prio</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Prio</em>' attribute.
+   * @see #isPrio()
+   * @generated
+   */
+  void setPrio(boolean value);
 
   /**
    * Returns the value of the '<em><b>Hierarchy</b></em>' containment reference.

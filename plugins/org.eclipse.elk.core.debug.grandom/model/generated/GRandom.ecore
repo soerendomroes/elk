@@ -24,6 +24,13 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="pF" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fraction" eType="#//DoubleQuantity"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bN" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="bigNodes" eType="#//DoubleQuantity"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bNS" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="bigNodeSize" eType="#//Size"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="prio" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="hierarchy" eType="#//Hierarchy"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="seed" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EIntegerObject"/>
@@ -47,6 +54,7 @@
     <eLiterals name="biconnected" value="3" literal="biconnected graphs"/>
     <eLiterals name="triconnected" value="4" literal="triconnected graphs"/>
     <eLiterals name="acyclic" value="5" literal="acyclic graphs"/>
+    <eLiterals name="rectangle" value="6" literal="rectangle"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Edges">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="density" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>

@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -149,6 +149,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isLabels()
   {
     return labels;
@@ -159,6 +160,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setLabels(boolean newLabels)
   {
     boolean oldLabels = labels;
@@ -172,6 +174,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getReUse()
   {
     return reUse;
@@ -199,6 +202,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setReUse(DoubleQuantity newReUse)
   {
     if (newReUse != reUse)
@@ -220,6 +224,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Size getSize()
   {
     return size;
@@ -247,6 +252,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setSize(Size newSize)
   {
     if (newSize != size)
@@ -268,6 +274,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public ConstraintType getConstraint()
   {
     return constraint;
@@ -278,6 +285,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setConstraint(ConstraintType newConstraint)
   {
     ConstraintType oldConstraint = constraint;
@@ -291,6 +299,7 @@ public class PortsImpl extends MinimalEObjectImpl.Container implements Ports
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EList<Flow> getFlow()
   {
     if (flow == null)

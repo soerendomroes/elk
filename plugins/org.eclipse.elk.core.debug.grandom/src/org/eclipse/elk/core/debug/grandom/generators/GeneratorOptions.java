@@ -47,7 +47,9 @@ public class GeneratorOptions extends MapPropertyHolder {
         /** an acyclic graph without transitive edges. */
         ACYCLIC_NO_TRANSITIVE_EDGES,
         /** a bipartite graph. */
-        BIPARTITE;
+        BIPARTITE,
+        /** a set of rectangles with one to five big rectangle. */
+        RECTANGLES;
     }
 
     /** the possible ways to determine edges. */
@@ -234,7 +236,21 @@ public class GeneratorOptions extends MapPropertyHolder {
     public static final IProperty<RandVal> EXACT_RELATIVE_HIER = new Property<RandVal>(
             "basic.EXACT_RELATIVE_HIER", null);  
 
-   
+  //~~~~~~~~~~~~~~~~ Options for GRAPH_TYPE RECTANGLE
+    /** option for the random number of big nodes. */
+    public static final IProperty<RandVal> NUMBER_BIG_NODES = new Property<RandVal>(
+            "basic.NUMBER_BIG_NODES", RandVal.exact(1));
+
+    /** option for the random width of the big nodes. */
+    public static final IProperty<RandVal> BIG_NODE_WIDTH = new Property<RandVal>(
+            "basic.BIG_NODE_WIDTH", RandVal.exact(300));
+
+    /** option for the random height of the big nodes. */
+    public static final IProperty<RandVal> BIG_NODE_HEIGHT = new Property<RandVal>(
+            "basic.BIG_NODE_HEIGHT", RandVal.exact(300));
+    
+    public static final IProperty<Boolean> SET_PRIORITY = new Property<Boolean>(
+            "basic.SET_PRIORITY", false);
 
     public static class RandVal {
         private double min;

@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -208,6 +208,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Double getQuant()
   {
     return quant;
@@ -218,6 +219,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setQuant(Double newQuant)
   {
     Double oldQuant = quant;
@@ -231,6 +233,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Double getMin()
   {
     return min;
@@ -241,6 +244,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setMin(Double newMin)
   {
     Double oldMin = min;
@@ -254,6 +258,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isMinMax()
   {
     return minMax;
@@ -264,6 +269,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setMinMax(boolean newMinMax)
   {
     boolean oldMinMax = minMax;
@@ -277,6 +283,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Double getMax()
   {
     return max;
@@ -287,6 +294,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setMax(Double newMax)
   {
     Double oldMax = max;
@@ -300,6 +308,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Double getMean()
   {
     return mean;
@@ -310,6 +319,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setMean(Double newMean)
   {
     Double oldMean = mean;
@@ -323,6 +333,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isGaussian()
   {
     return gaussian;
@@ -333,6 +344,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setGaussian(boolean newGaussian)
   {
     boolean oldGaussian = gaussian;
@@ -346,6 +358,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Double getStddv()
   {
     return stddv;
@@ -356,6 +369,7 @@ public class DoubleQuantityImpl extends MinimalEObjectImpl.Container implements 
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setStddv(Double newStddv)
   {
     Double oldStddv = stddv;

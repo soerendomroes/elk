@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -86,7 +86,17 @@ public enum Form implements Enumerator
    * @generated
    * @ordered
    */
-  ACYCLIC(5, "acyclic", "acyclic graphs");
+  ACYCLIC(5, "acyclic", "acyclic graphs"),
+
+  /**
+   * The '<em><b>Rectangle</b></em>' literal object.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #RECTANGLE_VALUE
+   * @generated
+   * @ordered
+   */
+  RECTANGLE(6, "rectangle", "rectangle");
 
   /**
    * The '<em><b>Trees</b></em>' literal value.
@@ -179,6 +189,17 @@ public enum Form implements Enumerator
   public static final int ACYCLIC_VALUE = 5;
 
   /**
+   * The '<em><b>Rectangle</b></em>' literal value.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #RECTANGLE
+   * @model name="rectangle"
+   * @generated
+   * @ordered
+   */
+  public static final int RECTANGLE_VALUE = 6;
+
+  /**
    * An array of all the '<em><b>Form</b></em>' enumerators.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -193,6 +214,7 @@ public enum Form implements Enumerator
       BICONNECTED,
       TRICONNECTED,
       ACYCLIC,
+      RECTANGLE,
     };
 
   /**
@@ -263,6 +285,7 @@ public enum Form implements Enumerator
       case BICONNECTED_VALUE: return BICONNECTED;
       case TRICONNECTED_VALUE: return TRICONNECTED;
       case ACYCLIC_VALUE: return ACYCLIC;
+      case RECTANGLE_VALUE: return RECTANGLE;
     }
     return null;
   }
@@ -306,6 +329,7 @@ public enum Form implements Enumerator
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public int getValue()
   {
     return value;
@@ -316,6 +340,7 @@ public enum Form implements Enumerator
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public String getName()
   {
     return name;
@@ -326,6 +351,7 @@ public enum Form implements Enumerator
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public String getLiteral()
   {
     return literal;

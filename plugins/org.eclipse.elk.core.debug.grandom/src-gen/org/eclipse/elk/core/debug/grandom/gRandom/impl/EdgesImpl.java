@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -201,6 +201,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isDensity()
   {
     return density;
@@ -211,6 +212,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setDensity(boolean newDensity)
   {
     boolean oldDensity = density;
@@ -224,6 +226,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isTotal()
   {
     return total;
@@ -234,6 +237,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setTotal(boolean newTotal)
   {
     boolean oldTotal = total;
@@ -247,6 +251,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isRelative()
   {
     return relative;
@@ -257,6 +262,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setRelative(boolean newRelative)
   {
     boolean oldRelative = relative;
@@ -270,6 +276,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isOutbound()
   {
     return outbound;
@@ -280,6 +287,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setOutbound(boolean newOutbound)
   {
     boolean oldOutbound = outbound;
@@ -293,6 +301,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getNEdges()
   {
     return nEdges;
@@ -320,6 +329,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setNEdges(DoubleQuantity newNEdges)
   {
     if (newNEdges != nEdges)
@@ -341,6 +351,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isLabels()
   {
     return labels;
@@ -351,6 +362,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setLabels(boolean newLabels)
   {
     boolean oldLabels = labels;
@@ -364,6 +376,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isSelfLoops()
   {
     return selfLoops;
@@ -374,6 +387,7 @@ public class EdgesImpl extends MinimalEObjectImpl.Container implements Edges
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setSelfLoops(boolean newSelfLoops)
   {
     boolean oldSelfLoops = selfLoops;

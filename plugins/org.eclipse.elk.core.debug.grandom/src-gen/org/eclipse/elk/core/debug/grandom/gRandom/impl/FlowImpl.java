@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -119,6 +119,7 @@ public class FlowImpl extends MinimalEObjectImpl.Container implements Flow
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public FlowType getFlowType()
   {
     return flowType;
@@ -129,6 +130,7 @@ public class FlowImpl extends MinimalEObjectImpl.Container implements Flow
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setFlowType(FlowType newFlowType)
   {
     FlowType oldFlowType = flowType;
@@ -142,6 +144,7 @@ public class FlowImpl extends MinimalEObjectImpl.Container implements Flow
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Side getSide()
   {
     return side;
@@ -152,6 +155,7 @@ public class FlowImpl extends MinimalEObjectImpl.Container implements Flow
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setSide(Side newSide)
   {
     Side oldSide = side;
@@ -165,6 +169,7 @@ public class FlowImpl extends MinimalEObjectImpl.Container implements Flow
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getAmount()
   {
     return amount;
@@ -192,6 +197,7 @@ public class FlowImpl extends MinimalEObjectImpl.Container implements Flow
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setAmount(DoubleQuantity newAmount)
   {
     if (newAmount != amount)

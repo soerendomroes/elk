@@ -270,6 +270,25 @@ public class RandomGraphGenerator {
             break;
         }
 
+        case RECTANGLES: {
+            generateCustomGraph(n, m, graph);
+            int numberOfBigNodes = get(GeneratorOptions.NUMBER_BIG_NODES).intVal(random);
+            for (int i = 0; i < numberOfBigNodes; i++) {
+                int bigNodeIndex = random.nextInt(graph.getChildren().size());
+                graph.getChildren().get(bigNodeIndex).setDimensions(
+                        get(GeneratorOptions.BIG_NODE_WIDTH).floatVal(random),
+                        get(GeneratorOptions.BIG_NODE_HEIGHT).floatVal(random));
+            }
+            if (get(GeneratorOptions.SET_PRIORITY)) {
+                int prio = graph.getChildren().size();
+                for (ElkNode elkNode : graph.getChildren()) {
+                    elkNode.setProperty(CoreOptions.PRIORITY,  prio);
+                    prio--;
+                }
+            }
+            break;
+        }
+
         default:
             throw new IllegalArgumentException("Selected graph generator is not supported.");
         }

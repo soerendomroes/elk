@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -19,6 +19,7 @@ import org.eclipse.elk.core.debug.grandom.gRandom.Formats;
 import org.eclipse.elk.core.debug.grandom.gRandom.GRandomPackage;
 import org.eclipse.elk.core.debug.grandom.gRandom.Hierarchy;
 import org.eclipse.elk.core.debug.grandom.gRandom.Nodes;
+import org.eclipse.elk.core.debug.grandom.gRandom.Size;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -47,6 +48,11 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#getMaxDegree <em>Max Degree</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#isPF <em>PF</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#getFraction <em>Fraction</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#isBN <em>BN</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#getBigNodes <em>Big Nodes</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#isBNS <em>BNS</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#getBigNodeSize <em>Big Node Size</em>}</li>
+ *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#isPrio <em>Prio</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#getHierarchy <em>Hierarchy</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#getSeed <em>Seed</em>}</li>
  *   <li>{@link org.eclipse.elk.core.debug.grandom.gRandom.impl.ConfigurationImpl#getFormat <em>Format</em>}</li>
@@ -228,6 +234,86 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
   protected DoubleQuantity fraction;
 
   /**
+   * The default value of the '{@link #isBN() <em>BN</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isBN()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean BN_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isBN() <em>BN</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isBN()
+   * @generated
+   * @ordered
+   */
+  protected boolean bN = BN_EDEFAULT;
+
+  /**
+   * The cached value of the '{@link #getBigNodes() <em>Big Nodes</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getBigNodes()
+   * @generated
+   * @ordered
+   */
+  protected DoubleQuantity bigNodes;
+
+  /**
+   * The default value of the '{@link #isBNS() <em>BNS</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isBNS()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean BNS_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isBNS() <em>BNS</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isBNS()
+   * @generated
+   * @ordered
+   */
+  protected boolean bNS = BNS_EDEFAULT;
+
+  /**
+   * The cached value of the '{@link #getBigNodeSize() <em>Big Node Size</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getBigNodeSize()
+   * @generated
+   * @ordered
+   */
+  protected Size bigNodeSize;
+
+  /**
+   * The default value of the '{@link #isPrio() <em>Prio</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isPrio()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean PRIO_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isPrio() <em>Prio</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isPrio()
+   * @generated
+   * @ordered
+   */
+  protected boolean prio = PRIO_EDEFAULT;
+
+  /**
    * The cached value of the '{@link #getHierarchy() <em>Hierarchy</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -323,6 +409,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public int getSamples()
   {
     return samples;
@@ -333,6 +420,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setSamples(int newSamples)
   {
     int oldSamples = samples;
@@ -346,6 +434,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Form getForm()
   {
     return form;
@@ -356,6 +445,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setForm(Form newForm)
   {
     Form oldForm = form;
@@ -369,6 +459,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Nodes getNodes()
   {
     return nodes;
@@ -396,6 +487,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setNodes(Nodes newNodes)
   {
     if (newNodes != nodes)
@@ -417,6 +509,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Edges getEdges()
   {
     return edges;
@@ -444,6 +537,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setEdges(Edges newEdges)
   {
     if (newEdges != edges)
@@ -465,6 +559,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isMW()
   {
     return mW;
@@ -475,6 +570,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setMW(boolean newMW)
   {
     boolean oldMW = mW;
@@ -488,6 +584,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Integer getMaxWidth()
   {
     return maxWidth;
@@ -498,6 +595,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setMaxWidth(Integer newMaxWidth)
   {
     Integer oldMaxWidth = maxWidth;
@@ -511,6 +609,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isMD()
   {
     return mD;
@@ -521,6 +620,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setMD(boolean newMD)
   {
     boolean oldMD = mD;
@@ -534,6 +634,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Integer getMaxDegree()
   {
     return maxDegree;
@@ -544,6 +645,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setMaxDegree(Integer newMaxDegree)
   {
     Integer oldMaxDegree = maxDegree;
@@ -557,6 +659,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public boolean isPF()
   {
     return pF;
@@ -567,6 +670,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setPF(boolean newPF)
   {
     boolean oldPF = pF;
@@ -580,6 +684,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public DoubleQuantity getFraction()
   {
     return fraction;
@@ -607,6 +712,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setFraction(DoubleQuantity newFraction)
   {
     if (newFraction != fraction)
@@ -628,6 +734,182 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
+  public boolean isBN()
+  {
+    return bN;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public void setBN(boolean newBN)
+  {
+    boolean oldBN = bN;
+    bN = newBN;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, GRandomPackage.CONFIGURATION__BN, oldBN, bN));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public DoubleQuantity getBigNodes()
+  {
+    return bigNodes;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NotificationChain basicSetBigNodes(DoubleQuantity newBigNodes, NotificationChain msgs)
+  {
+    DoubleQuantity oldBigNodes = bigNodes;
+    bigNodes = newBigNodes;
+    if (eNotificationRequired())
+    {
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, GRandomPackage.CONFIGURATION__BIG_NODES, oldBigNodes, newBigNodes);
+      if (msgs == null) msgs = notification; else msgs.add(notification);
+    }
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public void setBigNodes(DoubleQuantity newBigNodes)
+  {
+    if (newBigNodes != bigNodes)
+    {
+      NotificationChain msgs = null;
+      if (bigNodes != null)
+        msgs = ((InternalEObject)bigNodes).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - GRandomPackage.CONFIGURATION__BIG_NODES, null, msgs);
+      if (newBigNodes != null)
+        msgs = ((InternalEObject)newBigNodes).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - GRandomPackage.CONFIGURATION__BIG_NODES, null, msgs);
+      msgs = basicSetBigNodes(newBigNodes, msgs);
+      if (msgs != null) msgs.dispatch();
+    }
+    else if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, GRandomPackage.CONFIGURATION__BIG_NODES, newBigNodes, newBigNodes));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public boolean isBNS()
+  {
+    return bNS;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public void setBNS(boolean newBNS)
+  {
+    boolean oldBNS = bNS;
+    bNS = newBNS;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, GRandomPackage.CONFIGURATION__BNS, oldBNS, bNS));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public Size getBigNodeSize()
+  {
+    return bigNodeSize;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NotificationChain basicSetBigNodeSize(Size newBigNodeSize, NotificationChain msgs)
+  {
+    Size oldBigNodeSize = bigNodeSize;
+    bigNodeSize = newBigNodeSize;
+    if (eNotificationRequired())
+    {
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, GRandomPackage.CONFIGURATION__BIG_NODE_SIZE, oldBigNodeSize, newBigNodeSize);
+      if (msgs == null) msgs = notification; else msgs.add(notification);
+    }
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public void setBigNodeSize(Size newBigNodeSize)
+  {
+    if (newBigNodeSize != bigNodeSize)
+    {
+      NotificationChain msgs = null;
+      if (bigNodeSize != null)
+        msgs = ((InternalEObject)bigNodeSize).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - GRandomPackage.CONFIGURATION__BIG_NODE_SIZE, null, msgs);
+      if (newBigNodeSize != null)
+        msgs = ((InternalEObject)newBigNodeSize).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - GRandomPackage.CONFIGURATION__BIG_NODE_SIZE, null, msgs);
+      msgs = basicSetBigNodeSize(newBigNodeSize, msgs);
+      if (msgs != null) msgs.dispatch();
+    }
+    else if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, GRandomPackage.CONFIGURATION__BIG_NODE_SIZE, newBigNodeSize, newBigNodeSize));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public boolean isPrio()
+  {
+    return prio;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public void setPrio(boolean newPrio)
+  {
+    boolean oldPrio = prio;
+    prio = newPrio;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, GRandomPackage.CONFIGURATION__PRIO, oldPrio, prio));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
   public Hierarchy getHierarchy()
   {
     return hierarchy;
@@ -655,6 +937,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setHierarchy(Hierarchy newHierarchy)
   {
     if (newHierarchy != hierarchy)
@@ -676,6 +959,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Integer getSeed()
   {
     return seed;
@@ -686,6 +970,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setSeed(Integer newSeed)
   {
     Integer oldSeed = seed;
@@ -699,6 +984,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public Formats getFormat()
   {
     return format;
@@ -709,6 +995,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setFormat(Formats newFormat)
   {
     Formats oldFormat = format;
@@ -722,6 +1009,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public String getFilename()
   {
     return filename;
@@ -732,6 +1020,7 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public void setFilename(String newFilename)
   {
     String oldFilename = filename;
@@ -756,6 +1045,10 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
         return basicSetEdges(null, msgs);
       case GRandomPackage.CONFIGURATION__FRACTION:
         return basicSetFraction(null, msgs);
+      case GRandomPackage.CONFIGURATION__BIG_NODES:
+        return basicSetBigNodes(null, msgs);
+      case GRandomPackage.CONFIGURATION__BIG_NODE_SIZE:
+        return basicSetBigNodeSize(null, msgs);
       case GRandomPackage.CONFIGURATION__HIERARCHY:
         return basicSetHierarchy(null, msgs);
     }
@@ -792,6 +1085,16 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
         return isPF();
       case GRandomPackage.CONFIGURATION__FRACTION:
         return getFraction();
+      case GRandomPackage.CONFIGURATION__BN:
+        return isBN();
+      case GRandomPackage.CONFIGURATION__BIG_NODES:
+        return getBigNodes();
+      case GRandomPackage.CONFIGURATION__BNS:
+        return isBNS();
+      case GRandomPackage.CONFIGURATION__BIG_NODE_SIZE:
+        return getBigNodeSize();
+      case GRandomPackage.CONFIGURATION__PRIO:
+        return isPrio();
       case GRandomPackage.CONFIGURATION__HIERARCHY:
         return getHierarchy();
       case GRandomPackage.CONFIGURATION__SEED:
@@ -843,6 +1146,21 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
         return;
       case GRandomPackage.CONFIGURATION__FRACTION:
         setFraction((DoubleQuantity)newValue);
+        return;
+      case GRandomPackage.CONFIGURATION__BN:
+        setBN((Boolean)newValue);
+        return;
+      case GRandomPackage.CONFIGURATION__BIG_NODES:
+        setBigNodes((DoubleQuantity)newValue);
+        return;
+      case GRandomPackage.CONFIGURATION__BNS:
+        setBNS((Boolean)newValue);
+        return;
+      case GRandomPackage.CONFIGURATION__BIG_NODE_SIZE:
+        setBigNodeSize((Size)newValue);
+        return;
+      case GRandomPackage.CONFIGURATION__PRIO:
+        setPrio((Boolean)newValue);
         return;
       case GRandomPackage.CONFIGURATION__HIERARCHY:
         setHierarchy((Hierarchy)newValue);
@@ -900,6 +1218,21 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
       case GRandomPackage.CONFIGURATION__FRACTION:
         setFraction((DoubleQuantity)null);
         return;
+      case GRandomPackage.CONFIGURATION__BN:
+        setBN(BN_EDEFAULT);
+        return;
+      case GRandomPackage.CONFIGURATION__BIG_NODES:
+        setBigNodes((DoubleQuantity)null);
+        return;
+      case GRandomPackage.CONFIGURATION__BNS:
+        setBNS(BNS_EDEFAULT);
+        return;
+      case GRandomPackage.CONFIGURATION__BIG_NODE_SIZE:
+        setBigNodeSize((Size)null);
+        return;
+      case GRandomPackage.CONFIGURATION__PRIO:
+        setPrio(PRIO_EDEFAULT);
+        return;
       case GRandomPackage.CONFIGURATION__HIERARCHY:
         setHierarchy((Hierarchy)null);
         return;
@@ -946,6 +1279,16 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
         return pF != PF_EDEFAULT;
       case GRandomPackage.CONFIGURATION__FRACTION:
         return fraction != null;
+      case GRandomPackage.CONFIGURATION__BN:
+        return bN != BN_EDEFAULT;
+      case GRandomPackage.CONFIGURATION__BIG_NODES:
+        return bigNodes != null;
+      case GRandomPackage.CONFIGURATION__BNS:
+        return bNS != BNS_EDEFAULT;
+      case GRandomPackage.CONFIGURATION__BIG_NODE_SIZE:
+        return bigNodeSize != null;
+      case GRandomPackage.CONFIGURATION__PRIO:
+        return prio != PRIO_EDEFAULT;
       case GRandomPackage.CONFIGURATION__HIERARCHY:
         return hierarchy != null;
       case GRandomPackage.CONFIGURATION__SEED:
@@ -983,6 +1326,12 @@ public class ConfigurationImpl extends MinimalEObjectImpl.Container implements C
     result.append(maxDegree);
     result.append(", pF: ");
     result.append(pF);
+    result.append(", bN: ");
+    result.append(bN);
+    result.append(", bNS: ");
+    result.append(bNS);
+    result.append(", prio: ");
+    result.append(prio);
     result.append(", seed: ");
     result.append(seed);
     result.append(", format: ");

@@ -5,7 +5,7 @@
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- *
+ *  *
  * SPDX-License-Identifier: EPL-2.0
  *  ******************************************************************************
  */
@@ -210,6 +210,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EClass getRandGraph()
   {
     return randGraphEClass;
@@ -220,6 +221,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getRandGraph_Configs()
   {
     return (EReference)randGraphEClass.getEStructuralFeatures().get(0);
@@ -230,6 +232,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EClass getConfiguration()
   {
     return configurationEClass;
@@ -240,6 +243,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getConfiguration_Samples()
   {
     return (EAttribute)configurationEClass.getEStructuralFeatures().get(0);
@@ -250,6 +254,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getConfiguration_Form()
   {
     return (EAttribute)configurationEClass.getEStructuralFeatures().get(1);
@@ -260,6 +265,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getConfiguration_Nodes()
   {
     return (EReference)configurationEClass.getEStructuralFeatures().get(2);
@@ -270,6 +276,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getConfiguration_Edges()
   {
     return (EReference)configurationEClass.getEStructuralFeatures().get(3);
@@ -280,6 +287,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getConfiguration_MW()
   {
     return (EAttribute)configurationEClass.getEStructuralFeatures().get(4);
@@ -290,6 +298,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getConfiguration_MaxWidth()
   {
     return (EAttribute)configurationEClass.getEStructuralFeatures().get(5);
@@ -300,6 +309,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getConfiguration_MD()
   {
     return (EAttribute)configurationEClass.getEStructuralFeatures().get(6);
@@ -310,6 +320,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getConfiguration_MaxDegree()
   {
     return (EAttribute)configurationEClass.getEStructuralFeatures().get(7);
@@ -320,6 +331,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getConfiguration_PF()
   {
     return (EAttribute)configurationEClass.getEStructuralFeatures().get(8);
@@ -330,6 +342,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getConfiguration_Fraction()
   {
     return (EReference)configurationEClass.getEStructuralFeatures().get(9);
@@ -340,9 +353,10 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getConfiguration_Hierarchy()
+  @Override
+  public EAttribute getConfiguration_BN()
   {
-    return (EReference)configurationEClass.getEStructuralFeatures().get(10);
+    return (EAttribute)configurationEClass.getEStructuralFeatures().get(10);
   }
 
   /**
@@ -350,9 +364,10 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getConfiguration_Seed()
+  @Override
+  public EReference getConfiguration_BigNodes()
   {
-    return (EAttribute)configurationEClass.getEStructuralFeatures().get(11);
+    return (EReference)configurationEClass.getEStructuralFeatures().get(11);
   }
 
   /**
@@ -360,7 +375,8 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getConfiguration_Format()
+  @Override
+  public EAttribute getConfiguration_BNS()
   {
     return (EAttribute)configurationEClass.getEStructuralFeatures().get(12);
   }
@@ -370,9 +386,10 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getConfiguration_Filename()
+  @Override
+  public EReference getConfiguration_BigNodeSize()
   {
-    return (EAttribute)configurationEClass.getEStructuralFeatures().get(13);
+    return (EReference)configurationEClass.getEStructuralFeatures().get(13);
   }
 
   /**
@@ -380,6 +397,62 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
+  public EAttribute getConfiguration_Prio()
+  {
+    return (EAttribute)configurationEClass.getEStructuralFeatures().get(14);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getConfiguration_Hierarchy()
+  {
+    return (EReference)configurationEClass.getEStructuralFeatures().get(15);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EAttribute getConfiguration_Seed()
+  {
+    return (EAttribute)configurationEClass.getEStructuralFeatures().get(16);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EAttribute getConfiguration_Format()
+  {
+    return (EAttribute)configurationEClass.getEStructuralFeatures().get(17);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EAttribute getConfiguration_Filename()
+  {
+    return (EAttribute)configurationEClass.getEStructuralFeatures().get(18);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
   public EClass getHierarchy()
   {
     return hierarchyEClass;
@@ -390,6 +463,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getHierarchy_Levels()
   {
     return (EReference)hierarchyEClass.getEStructuralFeatures().get(0);
@@ -400,6 +474,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getHierarchy_Edges()
   {
     return (EReference)hierarchyEClass.getEStructuralFeatures().get(1);
@@ -410,6 +485,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getHierarchy_NumHierarchNodes()
   {
     return (EReference)hierarchyEClass.getEStructuralFeatures().get(2);
@@ -420,6 +496,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getHierarchy_CrossHierarchRel()
   {
     return (EReference)hierarchyEClass.getEStructuralFeatures().get(3);
@@ -430,6 +507,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EClass getEdges()
   {
     return edgesEClass;
@@ -440,6 +518,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getEdges_Density()
   {
     return (EAttribute)edgesEClass.getEStructuralFeatures().get(0);
@@ -450,6 +529,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getEdges_Total()
   {
     return (EAttribute)edgesEClass.getEStructuralFeatures().get(1);
@@ -460,6 +540,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getEdges_Relative()
   {
     return (EAttribute)edgesEClass.getEStructuralFeatures().get(2);
@@ -470,6 +551,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getEdges_Outbound()
   {
     return (EAttribute)edgesEClass.getEStructuralFeatures().get(3);
@@ -480,6 +562,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getEdges_NEdges()
   {
     return (EReference)edgesEClass.getEStructuralFeatures().get(4);
@@ -490,6 +573,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getEdges_Labels()
   {
     return (EAttribute)edgesEClass.getEStructuralFeatures().get(5);
@@ -500,6 +584,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getEdges_SelfLoops()
   {
     return (EAttribute)edgesEClass.getEStructuralFeatures().get(6);
@@ -510,6 +595,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EClass getNodes()
   {
     return nodesEClass;
@@ -520,6 +606,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getNodes_NNodes()
   {
     return (EReference)nodesEClass.getEStructuralFeatures().get(0);
@@ -530,6 +617,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getNodes_Ports()
   {
     return (EReference)nodesEClass.getEStructuralFeatures().get(1);
@@ -540,6 +628,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getNodes_Labels()
   {
     return (EAttribute)nodesEClass.getEStructuralFeatures().get(2);
@@ -550,6 +639,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getNodes_Size()
   {
     return (EReference)nodesEClass.getEStructuralFeatures().get(3);
@@ -560,6 +650,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getNodes_RemoveIsolated()
   {
     return (EAttribute)nodesEClass.getEStructuralFeatures().get(4);
@@ -570,6 +661,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EClass getSize()
   {
     return sizeEClass;
@@ -580,6 +672,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getSize_Height()
   {
     return (EReference)sizeEClass.getEStructuralFeatures().get(0);
@@ -590,6 +683,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getSize_Width()
   {
     return (EReference)sizeEClass.getEStructuralFeatures().get(1);
@@ -600,6 +694,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EClass getPorts()
   {
     return portsEClass;
@@ -610,6 +705,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getPorts_Labels()
   {
     return (EAttribute)portsEClass.getEStructuralFeatures().get(0);
@@ -620,6 +716,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getPorts_ReUse()
   {
     return (EReference)portsEClass.getEStructuralFeatures().get(1);
@@ -630,6 +727,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getPorts_Size()
   {
     return (EReference)portsEClass.getEStructuralFeatures().get(2);
@@ -640,6 +738,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getPorts_Constraint()
   {
     return (EAttribute)portsEClass.getEStructuralFeatures().get(3);
@@ -650,6 +749,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getPorts_Flow()
   {
     return (EReference)portsEClass.getEStructuralFeatures().get(4);
@@ -660,6 +760,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EClass getFlow()
   {
     return flowEClass;
@@ -670,6 +771,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getFlow_FlowType()
   {
     return (EAttribute)flowEClass.getEStructuralFeatures().get(0);
@@ -680,6 +782,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getFlow_Side()
   {
     return (EAttribute)flowEClass.getEStructuralFeatures().get(1);
@@ -690,6 +793,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EReference getFlow_Amount()
   {
     return (EReference)flowEClass.getEStructuralFeatures().get(2);
@@ -700,6 +804,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EClass getDoubleQuantity()
   {
     return doubleQuantityEClass;
@@ -710,6 +815,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getDoubleQuantity_Quant()
   {
     return (EAttribute)doubleQuantityEClass.getEStructuralFeatures().get(0);
@@ -720,6 +826,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getDoubleQuantity_Min()
   {
     return (EAttribute)doubleQuantityEClass.getEStructuralFeatures().get(1);
@@ -730,6 +837,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getDoubleQuantity_MinMax()
   {
     return (EAttribute)doubleQuantityEClass.getEStructuralFeatures().get(2);
@@ -740,6 +848,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getDoubleQuantity_Max()
   {
     return (EAttribute)doubleQuantityEClass.getEStructuralFeatures().get(3);
@@ -750,6 +859,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getDoubleQuantity_Mean()
   {
     return (EAttribute)doubleQuantityEClass.getEStructuralFeatures().get(4);
@@ -760,6 +870,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getDoubleQuantity_Gaussian()
   {
     return (EAttribute)doubleQuantityEClass.getEStructuralFeatures().get(5);
@@ -770,6 +881,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EAttribute getDoubleQuantity_Stddv()
   {
     return (EAttribute)doubleQuantityEClass.getEStructuralFeatures().get(6);
@@ -780,6 +892,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EEnum getFormats()
   {
     return formatsEEnum;
@@ -790,6 +903,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EEnum getForm()
   {
     return formEEnum;
@@ -800,6 +914,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EEnum getSide()
   {
     return sideEEnum;
@@ -810,6 +925,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EEnum getFlowType()
   {
     return flowTypeEEnum;
@@ -820,6 +936,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public EEnum getConstraintType()
   {
     return constraintTypeEEnum;
@@ -830,6 +947,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  @Override
   public GRandomFactory getGRandomFactory()
   {
     return (GRandomFactory)getEFactoryInstance();
@@ -869,6 +987,11 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
     createEAttribute(configurationEClass, CONFIGURATION__MAX_DEGREE);
     createEAttribute(configurationEClass, CONFIGURATION__PF);
     createEReference(configurationEClass, CONFIGURATION__FRACTION);
+    createEAttribute(configurationEClass, CONFIGURATION__BN);
+    createEReference(configurationEClass, CONFIGURATION__BIG_NODES);
+    createEAttribute(configurationEClass, CONFIGURATION__BNS);
+    createEReference(configurationEClass, CONFIGURATION__BIG_NODE_SIZE);
+    createEAttribute(configurationEClass, CONFIGURATION__PRIO);
     createEReference(configurationEClass, CONFIGURATION__HIERARCHY);
     createEAttribute(configurationEClass, CONFIGURATION__SEED);
     createEAttribute(configurationEClass, CONFIGURATION__FORMAT);
@@ -974,6 +1097,11 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
     initEAttribute(getConfiguration_MaxDegree(), ecorePackage.getEIntegerObject(), "maxDegree", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getConfiguration_PF(), ecorePackage.getEBoolean(), "pF", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getConfiguration_Fraction(), this.getDoubleQuantity(), null, "fraction", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getConfiguration_BN(), ecorePackage.getEBoolean(), "bN", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getConfiguration_BigNodes(), this.getDoubleQuantity(), null, "bigNodes", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getConfiguration_BNS(), ecorePackage.getEBoolean(), "bNS", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getConfiguration_BigNodeSize(), this.getSize(), null, "bigNodeSize", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getConfiguration_Prio(), ecorePackage.getEBoolean(), "prio", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getConfiguration_Hierarchy(), this.getHierarchy(), null, "hierarchy", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getConfiguration_Seed(), ecorePackage.getEIntegerObject(), "seed", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getConfiguration_Format(), this.getFormats(), "format", null, 0, 1, Configuration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1038,6 +1166,7 @@ public class GRandomPackageImpl extends EPackageImpl implements GRandomPackage
     addEEnumLiteral(formEEnum, Form.BICONNECTED);
     addEEnumLiteral(formEEnum, Form.TRICONNECTED);
     addEEnumLiteral(formEEnum, Form.ACYCLIC);
+    addEEnumLiteral(formEEnum, Form.RECTANGLE);
 
     initEEnum(sideEEnum, Side.class, "Side");
     addEEnumLiteral(sideEEnum, Side.NORTH);

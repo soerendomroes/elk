@@ -30,6 +30,9 @@ Configuration:
                & (mW?='maxWidth' '=' maxWidth=Integer)?
                & (mD?='maxDegree' '=' maxDegree=Integer)?
                & (pF?='partitionFraction' '=' fraction=DoubleQuantity)?
+               & (bN?='bigNodes' '=' bigNodes=DoubleQuantity)?
+               & (bNS?='bigNodeSize' '=' bigNodeSize=Size)?
+               & (prio?='setPriority')?
                & (hierarchy=Hierarchy)?
                & ('seed' '=' seed=Integer)?
                & ('format' '=' format=Formats)?
@@ -56,6 +59,7 @@ enum Form:
     | biconnected='biconnected graphs'
     | triconnected='triconnected graphs'
     | acyclic='acyclic graphs'
+    | rectangle='rectangle'
 ;
 
 Edges:
