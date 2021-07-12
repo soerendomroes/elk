@@ -11,7 +11,6 @@ package org.eclipse.elk.core.debug.grandom.ide;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
-
 import org.eclipse.elk.core.debug.grandom.ide.contentassist.antlr.GRandomParser;
 import org.eclipse.elk.core.debug.grandom.ide.contentassist.antlr.internal.InternalGRandomLexer;
 import org.eclipse.xtext.ide.DefaultIdeModule;
