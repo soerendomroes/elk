@@ -56,7 +56,7 @@ public final class ModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases,
     public void process(final LGraph layeredGraph, final IElkProgressMonitor monitor) {
         monitor.begin("Model order cycle breaking", 1);
         
-        if (layeredGraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER) != OrderingStrategy.NONE) {
+        if (layeredGraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE) {
             // gather edges that point to the wrong direction
             List<LEdge> revEdges = Lists.newArrayList();
             for (LNode source : layeredGraph.getLayerlessNodes()) {
