@@ -24,6 +24,7 @@ import org.eclipse.elk.alg.rectpacking.util.DrawingUtil;
 import org.eclipse.elk.core.AbstractLayoutProvider;
 import org.eclipse.elk.core.math.ElkPadding;
 import org.eclipse.elk.core.math.KVector;
+import org.eclipse.elk.core.options.CoreOptions;
 import org.eclipse.elk.core.util.ElkUtil;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.graph.ElkNode;
@@ -101,7 +102,21 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         List<ElkNode> rectangles = layoutGraph.getChildren();
         DrawingUtil.resetCoordinates(rectangles);
         DrawingData drawing = null;
-        
+        // XXX Do not commit Log input model
+        if (false) {
+            System.out.println("\n Graph " + layoutGraph);
+            // Log important properties
+            System.out.println(CoreOptions.ALGORITHM + ": " + RectPackingOptions.ALGORITHM_ID);
+            System.out.println(RectPackingOptions.SPACING_NODE_NODE + ": " + nodeNodeSpacing);
+            System.out.println(RectPackingOptions.EXPAND_NODES + ": " + expandNodes);
+            System.out.println(RectPackingOptions.ASPECT_RATIO + ": " + aspectRatio);
+            
+            for (ElkNode elkNode : rectangles) {
+                System.out.println("node " + elkNode.getIdentifier() + " {layout [size: " + elkNode.getWidth()  + ", " + elkNode.getHeight() + "]}"); 
+            }
+        }
+        // XXX
+
         if (interactive) {
             List<ElkNode> fixedNodes = new ArrayList<>();
             for (ElkNode elkNode : rectangles) {
