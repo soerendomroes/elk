@@ -393,6 +393,45 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         System.out.println(cp.getValue(maxWidth2));
                         System.out.println(cp.getValue(maxHeight));
                     }
+                    
+                    // Expand nodes by iterating over all other nodes and check whether they are "visible" from the
+                    // right or down border. Use this to calculate the width and height increase.
+                    if (expandNodes) {
+                        for (ElkNode rect : rectangles) {
+                            double increaseRight = drawing.getDrawingWidth();
+                            double increaseDown = drawing.getDrawingHeight();
+                            for (ElkNode otherRect : rectangles) {
+                                if (rect == otherRect) continue;
+                                
+                                // Case visible by right border
+                                if (otherRect.getX() >= rect.getX() + rect.getWidth() + nodeNodeSpacing
+                                        && ((rect.getY() <= otherRect.getY() && otherRect.getY() <= rect.getY() + rect.getHeight())
+                                            || (rect.getY() <= otherRect.getY() + otherRect.getHeight() && otherRect.getY() + otherRect.getHeight() <= rect.getY() + rect.getHeight())
+                                            || (otherRect.getY() <= rect.getY() && rect.getY() <= otherRect.getY() + otherRect.getHeight())
+                                            || (otherRect.getY() <= rect.getY() + rect.getHeight() && rect.getY() + rect.getHeight() <= otherRect.getY() + otherRect.getHeight()))) {
+                                    increaseRight = Math.min(increaseRight, otherRect.getX() - nodeNodeSpacing);
+                                    if (increaseRight - rect.getX() < rect.getWidth()) {
+                                        System.out.println("ERROR");
+                                    }
+                                }
+                                // Case visible by bottom border
+                                if (otherRect.getY() >= rect.getY() + rect.getHeight() + nodeNodeSpacing
+                                        && ((rect.getX() <= otherRect.getX() && otherRect.getX() <= rect.getX() + rect.getWidth())
+                                            || (rect.getX() <= otherRect.getX() + otherRect.getWidth() && otherRect.getX() + otherRect.getWidth() <= rect.getX() + rect.getWidth())
+                                            || (otherRect.getX() <= rect.getX() && rect.getX() <= otherRect.getX() + otherRect.getWidth())
+                                            || (otherRect.getX() <= rect.getX() + rect.getWidth() && rect.getX() + rect.getWidth() <= otherRect.getX() + otherRect.getWidth()))) {
+                                    increaseDown = Math.min(increaseDown, otherRect.getY() - nodeNodeSpacing);
+                                    if (increaseDown - rect.getY() < rect.getHeight()) {
+                                        System.out.println("ERROR");
+                                    }
+                                }
+                            }
+                            rect.setWidth(increaseRight - rect.getX());
+                            rect.setHeight(increaseDown - rect.getY());
+                            ElkUtil.translate(rect, new KVector(increaseRight - rect.getX(), increaseDown - rect.getY()), new KVector(rect.getWidth(), rect.getHeight()));
+                        }
+                    }
+                    
                     if (logging) {
                         System.out.println("");
                         for (IloNumVar choosen : currentSubRowEnd) {
