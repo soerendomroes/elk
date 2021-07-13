@@ -52,12 +52,6 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
     @Override
     public void layout(final ElkNode layoutGraph, final IElkProgressMonitor progressMonitor) {
         progressMonitor.begin("Rectangle Packing", 1);
-
-        // if requested, compute nodes's dimensions, place node labels, ports, port labels, etc.
-        if (!layoutGraph.getProperty(RectPackingOptions.OMIT_NODE_MICRO_LAYOUT)) {
-            NodeMicroLayout.forGraph(layoutGraph)
-                           .execute();
-        }
         
         if (progressMonitor.isLoggingEnabled()) {
             progressMonitor.logGraph(layoutGraph, "Input");
@@ -522,6 +516,12 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             if (progressMonitor.isLoggingEnabled()) {
                 progressMonitor.logGraph(layoutGraph, "Output");
             }
+        }
+
+        // if requested, compute nodes's dimensions, place node labels, ports, port labels, etc.
+        if (!layoutGraph.getProperty(RectPackingOptions.OMIT_NODE_MICRO_LAYOUT)) {
+            NodeMicroLayout.forGraph(layoutGraph)
+                           .execute();
         }
         progressMonitor.done();
     }
