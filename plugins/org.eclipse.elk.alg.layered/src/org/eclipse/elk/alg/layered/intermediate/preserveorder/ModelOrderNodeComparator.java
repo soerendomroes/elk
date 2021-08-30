@@ -10,13 +10,14 @@
 package org.eclipse.elk.alg.layered.intermediate.preserveorder;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LNode;
 import org.eclipse.elk.alg.layered.graph.LPort;
-import org.eclipse.elk.alg.layered.graph.Layer;
-import org.eclipse.elk.alg.layered.options.LongEdgeOrderingStrategy;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
+import org.eclipse.elk.alg.layered.options.LongEdgeOrderingStrategy;
 import org.eclipse.elk.alg.layered.options.OrderingStrategy;
 
 /**
@@ -41,19 +42,14 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
     private LongEdgeOrderingStrategy longEdgeNodeOrder = LongEdgeOrderingStrategy.EQUAL;
     
     /**
-     * Creates a comparator to compare {@link LNode}s in the same layer.
-     * 
-     * @param thePreviousLayer The previous layer
-     * @param orderingStrategy The ordering strategy
-     * @param longEdgeOrderingStrategy The strategy to order dummy nodes and nodes with no connection the previous layer
+     * Each node has an entry of nodes for which it is bigger.
      */
-    public ModelOrderNodeComparator(final Layer thePreviousLayer, final OrderingStrategy orderingStrategy,
-            final LongEdgeOrderingStrategy longEdgeOrderingStrategy) {
-        this(orderingStrategy, longEdgeOrderingStrategy);
-        this.previousLayer = new LNode[thePreviousLayer.getNodes().size()];
-        thePreviousLayer.getNodes().toArray(this.previousLayer);
-    }
-
+    private HashMap<LNode, HashSet<LNode>> biggerThan = new HashMap<>();
+    /**
+     * Each node has an entry of nodes for which it is smaller.
+     */
+    private HashMap<LNode, HashSet<LNode>> smallerThan = new HashMap<>();
+    
     /**
      * Creates a comparator to compare {@link LNode}s in the same layer.
      * 
@@ -75,6 +71,26 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
 
     @Override
     public int compare(final LNode n1, final LNode n2) {
+        if (!biggerThan.containsKey(n1)) {
+            biggerThan.put(n1, new HashSet<>());
+        } else if (biggerThan.get(n1).contains(n2)) {
+            return 1;
+        }
+        if (!biggerThan.containsKey(n2)) {
+            biggerThan.put(n2, new HashSet<>());
+        } else if (biggerThan.get(n2).contains(n1)) {
+            return -1;
+        }
+        if (!smallerThan.containsKey(n1)) {
+            smallerThan.put(n1, new HashSet<>());
+        } else if (smallerThan.get(n1).contains(n2)) {
+            return -1;
+        }
+        if (!smallerThan.containsKey(n2)) {
+            smallerThan.put(n2, new HashSet<>());
+        } else if (biggerThan.get(n2).contains(n1)) {
+            return 1;
+        }
         // If no model order is set, the one node is a dummy node and the nodes should be ordered
         // by the connected edges.
         // This kind of ordering should be preferred, if the order of the edges has priority.
@@ -98,8 +114,12 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
                     // port ordering.
                     for (LPort port : p1Node.getPorts()) {
                         if (port.equals(p1SourcePort)) {
+                            // Case the port is the one connecting to n1, therefore, n1 has a smaller model order
+                            updateBiggerAndSmallerAssociations(n2, n1);
                             return -1;
                         } else if (port.equals(p2SourcePort)) {
+                            // Case the port is the one connecting to n2, therefore, n1 has a bigger model order
+                            updateBiggerAndSmallerAssociations(n1, n2);
                             return 1;
                         }
                     }
@@ -115,8 +135,10 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
                 // since the ordering in the previous layer does already reflect it.
                 for (LNode previousNode : previousLayer) {
                     if (previousNode.equals(p1Node)) {
+                        updateBiggerAndSmallerAssociations(n2, n1);
                         return -1;
                     } else if (previousNode.equals(p2Node)) {
+                        updateBiggerAndSmallerAssociations(n1, n2);
                         return 1;
                     }
                 }
@@ -124,18 +146,32 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
             
             // One node has no source port
             if (!n1.hasProperty(InternalProperties.MODEL_ORDER) || !n2.hasProperty(InternalProperties.MODEL_ORDER)) {
+                int n1ModelOrder = getModelOrderFromConnectedEdges(n1);
+                int n2ModelOrder = getModelOrderFromConnectedEdges(n2);
+                if (n1ModelOrder > n2ModelOrder) {
+                    updateBiggerAndSmallerAssociations(n1, n2);
+                } else {
+                    updateBiggerAndSmallerAssociations(n2, n1);
+                }
                 return Integer.compare(
-                        getModelOrderFromConnectedEdges(n1),
-                        getModelOrderFromConnectedEdges(n2));
+                        n1ModelOrder,
+                        n2ModelOrder);
             }
             // Fall through case.
             // Both nodes are not connected to the previous layer. Therefore, they must be normal nodes.
             // The model order shall be used to order them.
         }
         // Order nodes by their order in the model.
+        int n1ModelOrder = n1.getProperty(InternalProperties.MODEL_ORDER);
+        int n2ModelOrder = n2.getProperty(InternalProperties.MODEL_ORDER);
+        if (n1ModelOrder > n2ModelOrder) {
+            updateBiggerAndSmallerAssociations(n1, n2);
+        } else {
+            updateBiggerAndSmallerAssociations(n2, n1);
+        }
         return Integer.compare(
-                n1.getProperty(InternalProperties.MODEL_ORDER),
-                n2.getProperty(InternalProperties.MODEL_ORDER));
+                n1ModelOrder,
+                n2ModelOrder);
     }
     
     /**
@@ -159,5 +195,26 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
         // One of this has to be chosen, since dummy nodes are not comparable with nodes
         // that do not have a connection to the previous layer.
         return longEdgeNodeOrder.returnValue();
+    }
+    
+    private void updateBiggerAndSmallerAssociations(final LNode bigger, final LNode smaller) {
+        HashSet<LNode> biggerNodeBiggerThan = biggerThan.get(bigger);
+        HashSet<LNode> smallerNodeBiggerThan = biggerThan.get(smaller);
+        biggerNodeBiggerThan.add(smaller);
+        for (LNode node : smallerNodeBiggerThan) {
+            if (!biggerNodeBiggerThan.contains(node)) {
+                updateBiggerAndSmallerAssociations(bigger, node);
+            }
+        }
+        
+
+        HashSet<LNode> biggerNodeSmallerThan = smallerThan.get(bigger);
+        HashSet<LNode> smallerNodeSmallerThan = smallerThan.get(smaller);
+        smallerNodeSmallerThan.add(bigger);
+        for (LNode node : biggerNodeSmallerThan) {
+            if (!smallerNodeSmallerThan.contains(node)) {
+                updateBiggerAndSmallerAssociations(node, smaller);
+            }
+        }
     }
 }
