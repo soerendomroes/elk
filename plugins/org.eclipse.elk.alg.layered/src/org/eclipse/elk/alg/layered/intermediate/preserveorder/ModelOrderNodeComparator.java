@@ -16,6 +16,7 @@ import java.util.HashSet;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LNode;
 import org.eclipse.elk.alg.layered.graph.LPort;
+import org.eclipse.elk.alg.layered.graph.Layer;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LongEdgeOrderingStrategy;
 import org.eclipse.elk.alg.layered.options.OrderingStrategy;
@@ -49,6 +50,20 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
      * Each node has an entry of nodes for which it is smaller.
      */
     private HashMap<LNode, HashSet<LNode>> smallerThan = new HashMap<>();
+    
+    /**
+     * Creates a comparator to compare {@link LNode}s in the same layer.
+     * 
+     * @param thePreviousLayer The previous layer
+     * @param orderingStrategy The ordering strategy
+     * @param longEdgeOrderingStrategy The strategy to order dummy nodes and nodes with no connection the previous layer
+     */
+    public ModelOrderNodeComparator(final Layer thePreviousLayer, final OrderingStrategy orderingStrategy,
+            final LongEdgeOrderingStrategy longEdgeOrderingStrategy) {
+        this(orderingStrategy, longEdgeOrderingStrategy);
+        this.previousLayer = new LNode[thePreviousLayer.getNodes().size()];
+        thePreviousLayer.getNodes().toArray(this.previousLayer);
+    }
     
     /**
      * Creates a comparator to compare {@link LNode}s in the same layer.
