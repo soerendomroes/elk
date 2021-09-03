@@ -57,6 +57,21 @@ public class BasicConsiderModelOrderTest {
                 OrderingStrategy.NODES_AND_EDGES);
         return config;
     }
+    
+    @ConfiguratorProvider
+    public LayoutConfigurator nodesAndEdgesWeightedConfigurator() {
+        LayoutConfigurator config = new LayoutConfigurator();
+        config.configure(ElkNode.class).setProperty(
+                LayeredOptions.CROSSING_MINIMIZATION_STRATEGY,
+                CrossingMinimizationStrategy.LAYER_SWEEP);
+        config.configure(ElkNode.class).setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY,
+                OrderingStrategy.NODES_AND_EDGES);
+        config.configure(ElkNode.class).setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_CROSSING_COUNTER_NODE_INFLUENCE,
+                0.001);
+        config.configure(ElkNode.class).setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_CROSSING_COUNTER_PORT_INFLUENCE,
+                0.001);
+        return config;
+    }
 
     @ConfiguratorProvider
     public LayoutConfigurator preferEdgesConfigurator() {
@@ -66,6 +81,21 @@ public class BasicConsiderModelOrderTest {
                 CrossingMinimizationStrategy.LAYER_SWEEP);
         config.configure(ElkNode.class).setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY,
                 OrderingStrategy.PREFER_EDGES);
+        return config;
+    }
+
+    @ConfiguratorProvider
+    public LayoutConfigurator preferEdgesWeightedConfigurator() {
+        LayoutConfigurator config = new LayoutConfigurator();
+        config.configure(ElkNode.class).setProperty(
+                LayeredOptions.CROSSING_MINIMIZATION_STRATEGY,
+                CrossingMinimizationStrategy.LAYER_SWEEP);
+        config.configure(ElkNode.class).setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY,
+                OrderingStrategy.PREFER_EDGES);
+        config.configure(ElkNode.class).setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_CROSSING_COUNTER_NODE_INFLUENCE,
+                0.001);
+        config.configure(ElkNode.class).setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_CROSSING_COUNTER_PORT_INFLUENCE,
+                0.001);
         return config;
     }
     
