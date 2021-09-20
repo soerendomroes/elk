@@ -10,6 +10,7 @@
 package org.eclipse.elk.core.util;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +55,9 @@ public class BasicProgressMonitor implements IElkProgressMonitor {
     public static final String ROOT_DEBUG_FOLDER_NAME = "logs";
     /** indicates an infinite number of hierarchy levels for progress reporting. */
     private static final int INFINITE_HIERARCHY_LEVELS = -1;
+    
+    public static URI CURRENT_MODEL_URI = null;
+    public static int CURRENT_MODEL_COUNTER = 0;
     
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,6 +554,10 @@ public class BasicProgressMonitor implements IElkProgressMonitor {
                 randChar1,
                 randChar2,
                 name);
+        if (CURRENT_MODEL_URI != null) {
+            monitorFolder = CURRENT_MODEL_URI.toString() + CURRENT_MODEL_COUNTER;
+            CURRENT_MODEL_COUNTER++;
+        }
         debugFolder = Paths.get(ElkUtil.debugFolderPath(ROOT_DEBUG_FOLDER_NAME, monitorFolder));
         // elkjs-exclude-end
     }

@@ -8,7 +8,8 @@ Eclipse-BuddyPolicy: registered
 Require-Bundle: com.google.guava,
  org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
- org.eclipse.elk.graph
+ org.eclipse.elk.graph,
+ org.eclipse.xtext
 Export-Package: org.eclipse.elk.core,
  org.eclipse.elk.core.alg,
  org.eclipse.elk.core.comments,

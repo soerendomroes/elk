@@ -10,6 +10,7 @@
 package org.eclipse.elk.core.service;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -706,7 +707,8 @@ public class DiagramLayoutEngine {
                 progressMonitor.done();
                 
                 // Log the final result to be displayed in our debug views
-                progressMonitor.logGraph(mapping.getLayoutGraph(), "result");
+                progressMonitor.logGraph(mapping.getLayoutGraph(), "result-"
+                        + Paths.get(BasicProgressMonitor.CURRENT_MODEL_URI.getPath()).getFileName());
             }
             if (progressMonitor.isCanceled()) {
                 return Status.CANCEL_STATUS;
@@ -748,7 +750,7 @@ public class DiagramLayoutEngine {
      */
     protected URI getExportURI(final ElkNode graph) {
         String path = ElkUtil.debugFolderPath("diagram_layout_engine")
-                + Integer.toHexString(graph.hashCode()) + ".elkg";
+                + Integer.toHexString(graph.hashCode()) + ".elkt";
         return URI.createFileURI(path);
     }
 

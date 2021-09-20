@@ -12,14 +12,12 @@ package org.eclipse.elk.core.util;
 import java.io.StringWriter;
 import java.util.Collections;
 
-// elkjs-exclude-start
 import org.eclipse.elk.core.util.persistence.ElkGraphResource;
+import org.eclipse.elk.core.util.persistence.ElkGraphResourceFactory;
 // elkjs-exclude-end
 import org.eclipse.elk.graph.ElkNode;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 
 /**
  * A logged graph, including relevant information about the graph. The actual data type of a logged graph can be either
@@ -140,8 +138,10 @@ public final class LoggedGraph {
         switch (graphType) {
         // elkjs-exclude-start
         case ELK:
-            ResourceSet resourceSet = new ResourceSetImpl();
-            Resource resource = resourceSet.createResource(URI.createFileURI("dummy.elkg"));
+            ElkGraphResourceFactory resourceFactory =
+                    (ElkGraphResourceFactory) Resource.Factory.Registry.INSTANCE
+                    .getExtensionToFactoryMap().get("elkg");
+            Resource resource = resourceFactory.createResource(URI.createFileURI("dummy.elkg"));
             
             // The resource should be an ElkGraphResource, but be save here...
             if (resource instanceof ElkGraphResource) {
