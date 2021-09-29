@@ -9,6 +9,7 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.options;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -452,6 +453,8 @@ public final class InternalProperties {
      * This is used to cache this once it was calculated.
      */
     public static final IProperty<Map<LNode, Integer>> TARGET_NODE_MODEL_ORDER = new Property<>("targetNode.modelOrder");
+
+    public static IProperty<URI> MODEL_NAME = new Property<>("modelURI");
     
     /**
      * Hidden default constructor.

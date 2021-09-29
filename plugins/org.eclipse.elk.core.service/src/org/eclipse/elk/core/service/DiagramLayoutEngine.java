@@ -661,7 +661,7 @@ public class DiagramLayoutEngine {
             progressMonitor.done();
             
             // Log the final result to be displayed in our debug views
-            progressMonitor.logGraph(mapping.getLayoutGraph(), "Result");
+//            progressMonitor.logGraph(mapping.getLayoutGraph(), "Result");
         }
 
         mapping.setProperty(MAPPING_STATUS, status);
@@ -698,7 +698,7 @@ public class DiagramLayoutEngine {
             }
             
             // Export the layout graph for debugging (this only does things if debug mode is enabled)
-            progressMonitor.logGraph(mapping.getLayoutGraph(), "input");
+//            progressMonitor.logGraph(mapping.getLayoutGraph(), "input");
 
             // Perform layout on the layout graph
             graphLayoutEngine.layout(mapping.getLayoutGraph(), progressMonitor.subTask(1));
@@ -707,8 +707,8 @@ public class DiagramLayoutEngine {
                 progressMonitor.done();
                 
                 // Log the final result to be displayed in our debug views
-                progressMonitor.logGraph(mapping.getLayoutGraph(), "result-"
-                        + Paths.get(BasicProgressMonitor.CURRENT_MODEL_URI.getPath()).getFileName());
+                progressMonitor.logGraph(mapping.getLayoutGraph(), "result-");// XXX creates NPE uncomment for test
+//                        + Paths.get(BasicProgressMonitor.CURRENT_MODEL_URI.getPath()).getFileName());
             }
             if (progressMonitor.isCanceled()) {
                 return Status.CANCEL_STATUS;

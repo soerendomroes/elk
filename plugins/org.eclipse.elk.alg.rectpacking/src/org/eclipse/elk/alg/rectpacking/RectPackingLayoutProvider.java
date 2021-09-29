@@ -49,7 +49,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         progressMonitor.begin("Rectangle Packing", 1);
         
         if (progressMonitor.isLoggingEnabled()) {
-            progressMonitor.logGraph(layoutGraph, "Input");
+//            progressMonitor.logGraph(layoutGraph, "Input");
         }
         // The desired aspect ratio.
         double aspectRatio = layoutGraph.getProperty(RectPackingOptions.ASPECT_RATIO);
@@ -121,7 +121,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             AreaApproximation firstIt = new AreaApproximation(aspectRatio, goal, lastPlaceShift);
             drawing = firstIt.approxBoundingBox(rectangles, nodeNodeSpacing, padding);
             if (progressMonitor.isLoggingEnabled()) {
-                progressMonitor.logGraph(layoutGraph, "After approximation");
+//                progressMonitor.logGraph(layoutGraph, "After approximation");
             }
         } else {
             drawing = new DrawingData(aspectRatio, targetWidth, 0, DrawingDataDescriptor.WHOLE_DRAWING);
@@ -152,7 +152,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             NodeMicroLayout.forGraph(layoutGraph).execute();
         }
         if (progressMonitor.isLoggingEnabled()) {
-            progressMonitor.logGraph(layoutGraph, "Output");
+//            progressMonitor.logGraph(layoutGraph, "Output");
         }
         progressMonitor.done();
     }

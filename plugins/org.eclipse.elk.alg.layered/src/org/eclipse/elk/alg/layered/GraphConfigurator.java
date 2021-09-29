@@ -316,6 +316,7 @@ final class GraphConfigurator {
             configuration
                 .addBefore(LayeredPhases.P3_NODE_ORDERING, IntermediateProcessorStrategy.SORT_BY_INPUT_ORDER_OF_MODEL);
         }
+        configuration.addBefore(LayeredPhases.P4_NODE_PLACEMENT, IntermediateProcessorStrategy.GET_MODEL_ORDER_VIOLATIONS);
         
         return configuration;
     }

@@ -44,14 +44,14 @@ public final class DebugUtil {
             final String name) {
         
         String tag = slotIndex + "-" + name;
-        monitor.logGraph(
-                DotDebugUtil.createDebugGraph(lgraph),
-                tag,
-                LoggedGraph.Type.DOT);
-        monitor.logGraph(
-                JsonDebugUtil.createDebugGraph(lgraph),
-                tag,
-                LoggedGraph.Type.JSON);
+//        monitor.logGraph(
+//                DotDebugUtil.createDebugGraph(lgraph),
+//                tag,
+//                LoggedGraph.Type.DOT);
+//        monitor.logGraph(
+//                JsonDebugUtil.createDebugGraph(lgraph),
+//                tag,
+//                LoggedGraph.Type.JSON);
     }
 
     /**
@@ -72,14 +72,14 @@ public final class DebugUtil {
             final List<LinearSegment> segmentList, final List<List<LinearSegment>> outgoingList) {
 
         String tag = "segment graph";
-        monitor.logGraph(
-                DotDebugUtil.createDebugGraph(layeredGraph, segmentList, outgoingList),
-                tag,
-                LoggedGraph.Type.DOT);
-        monitor.logGraph(
-                JsonDebugUtil.createDebugGraph(layeredGraph, segmentList, outgoingList),
-                tag,
-                LoggedGraph.Type.JSON);
+//        monitor.logGraph(
+//                DotDebugUtil.createDebugGraph(layeredGraph, segmentList, outgoingList),
+//                tag,
+//                LoggedGraph.Type.DOT);
+//        monitor.logGraph(
+//                JsonDebugUtil.createDebugGraph(layeredGraph, segmentList, outgoingList),
+//                tag,
+//                LoggedGraph.Type.JSON);
     }
 
     /**
@@ -105,14 +105,14 @@ public final class DebugUtil {
             final String label) {
 
         String tag = debugPrefix + " - " + label;
-        monitor.logGraph(
-                DotDebugUtil.createDebugGraph(layeredGraph, hypernodes),
-                tag,
-                LoggedGraph.Type.DOT);
-        monitor.logGraph(
-                JsonDebugUtil.createDebugGraph(layeredGraph, hypernodes),
-                tag,
-                LoggedGraph.Type.JSON);
+//        monitor.logGraph(
+//                DotDebugUtil.createDebugGraph(layeredGraph, hypernodes),
+//                tag,
+//                LoggedGraph.Type.DOT);
+//        monitor.logGraph(
+//                JsonDebugUtil.createDebugGraph(layeredGraph, hypernodes),
+//                tag,
+//                LoggedGraph.Type.JSON);
     }
 
 }

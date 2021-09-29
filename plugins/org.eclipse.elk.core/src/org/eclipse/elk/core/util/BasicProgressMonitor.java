@@ -511,7 +511,7 @@ public class BasicProgressMonitor implements IElkProgressMonitor {
                 if (Files.isRegularFile(debugFolder)) {
                     // The folder name refers to a file -- panic!
                     recordLogs = false;
-                    log("Debug folder '" + debugFolder.toString() + "' refers to a file! Not persisting logs.");
+//                    log("Debug folder '" + debugFolder.toString() + "' refers to a file! Not persisting logs.");
                     debugFolder = null;
                     
                 } else if (!Files.exists(debugFolder)) {
@@ -521,7 +521,7 @@ public class BasicProgressMonitor implements IElkProgressMonitor {
                 // Only use the debug folder if it exists now
                 if (!Files.isDirectory(debugFolder)) {
                     recordLogs = false;
-                    log("Unable to create debug folder '" + debugFolder.toString() + "'! Not persisting logs.");
+//                    log("Unable to create debug folder '" + debugFolder.toString() + "'! Not persisting logs.");
                     debugFolder = null;
                 }
             }

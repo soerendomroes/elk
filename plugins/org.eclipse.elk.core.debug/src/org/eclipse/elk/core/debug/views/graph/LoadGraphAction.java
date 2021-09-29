@@ -155,7 +155,7 @@ public class LoadGraphAction extends Action {
 
         // We're not going through the DiagramLayoutEngine, but directly through the RecursiveGraphLayoutEngine, which
         // means that not layout events will be fired. We'll have to update our model manually.
-        monitor.logGraph(graph, "Result");
+//        monitor.logGraph(graph, "Result");
 
         return ExecutionInfo.fromProgressMonitorAndFile(monitor, fileName, performLayout);
     }

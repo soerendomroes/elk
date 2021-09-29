@@ -87,6 +87,8 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
 
     // Before Phase 4
     
+    /** XXX only for sdo */
+    GET_MODEL_ORDER_VIOLATIONS,
     /** Performs 'wrapping' of the graph, potentially executing improvement heuristics. */
     BREAKING_POINT_PROCESSOR,
     /** Hierarchical one-sided greedy switch crossing reduction. */
@@ -342,6 +344,9 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
             
         case SORT_BY_INPUT_ORDER_OF_MODEL:
             return new SortByInputModelProcessor();
+            
+        case GET_MODEL_ORDER_VIOLATIONS:
+            return new GetModelOrderViolations();
             
         case TWO_SIDED_GREEDY_SWITCH:
             return new LayerSweepCrossingMinimizer(CrossMinType.TWO_SIDED_GREEDY_SWITCH);

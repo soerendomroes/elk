@@ -74,7 +74,7 @@ public class RowFillingAndCompaction {
         List<RectRow> rows = InitialPlacement.place(rectangles, maxWidth, nodeNodeSpacing);
         
         if (progressMonitor.isLoggingEnabled()) {
-            progressMonitor.logGraph(layoutGraph, "After placement");
+//            progressMonitor.logGraph(layoutGraph, "After placement");
         }
         
         // Compaction of blocks.
@@ -88,7 +88,7 @@ public class RowFillingAndCompaction {
                 Compaction.compact(rowIdx, rows, maxWidth, nodeNodeSpacing);
                 adjustWidthAndHeight(currentRow);
                 // Log graph after first row compaction.
-                progressMonitor.logGraph(layoutGraph, "Compacted row " + rowIdx);
+//                progressMonitor.logGraph(layoutGraph, "Compacted row " + rowIdx);
             }
         } else {
             // Put every block in its own block stack.
@@ -104,7 +104,7 @@ public class RowFillingAndCompaction {
         calculateDimensions(rows);
 
         if (progressMonitor.isLoggingEnabled()) {
-            progressMonitor.logGraph(layoutGraph, "After compaction");
+//            progressMonitor.logGraph(layoutGraph, "After compaction");
         }
         
         double totalWidth = Math.max(this.drawingWidth, minParentSize.x);
@@ -124,7 +124,7 @@ public class RowFillingAndCompaction {
         }
 
         if (progressMonitor.isLoggingEnabled()) {
-            progressMonitor.logGraph(layoutGraph, "After expansion");
+//            progressMonitor.logGraph(layoutGraph, "After expansion");
         }
 
         return new DrawingData(this.aspectRatio, totalWidth, this.drawingHeight + additionalHeight, DrawingDataDescriptor.WHOLE_DRAWING);

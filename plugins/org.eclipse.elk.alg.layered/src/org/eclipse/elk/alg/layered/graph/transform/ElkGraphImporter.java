@@ -225,7 +225,7 @@ class ElkGraphImporter {
         int index = 0;
         for (ElkNode child : elkgraph.getChildren()) {
             if (!child.getProperty(LayeredOptions.NO_LAYOUT)) {
-                if (elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
+                if (true || elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
                         || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY)
                             == CycleBreakingStrategy.MODEL_ORDER) {
                     child.setProperty(InternalProperties.MODEL_ORDER, index);
@@ -239,7 +239,7 @@ class ElkGraphImporter {
         // (this is not part of the previous loop since all children must have already been transformed)
         index = 0;
         for (ElkEdge elkedge : elkgraph.getContainedEdges()) {
-            if (elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
+            if (true || elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
                     || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY)
                         == CycleBreakingStrategy.MODEL_ORDER) {
                 elkedge.setProperty(InternalProperties.MODEL_ORDER, index);
@@ -302,7 +302,7 @@ class ElkGraphImporter {
         while (!elkGraphQueue.isEmpty()) {
             ElkNode elknode = elkGraphQueue.poll();
             
-            if (elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
+            if (true || elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
                     || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY)
                     == CycleBreakingStrategy.MODEL_ORDER) {
                 // Assign a model order to the nodes as they are read
@@ -371,7 +371,7 @@ class ElkGraphImporter {
                 // We don't support hyperedges
                 checkEdgeValidity(elkedge);
                 
-                if (elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
+                if (true || elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
                         || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY)
                         == CycleBreakingStrategy.MODEL_ORDER) {
                     // Assign a model order to the edges as they are read
