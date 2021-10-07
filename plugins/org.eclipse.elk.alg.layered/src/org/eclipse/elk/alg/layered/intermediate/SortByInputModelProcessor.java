@@ -96,9 +96,11 @@ public class SortByInputModelProcessor implements ILayoutProcessor<LGraph> {
                 if (targetNodeModelOrder.containsKey(targetNode)) {
                     previousOrder = targetNodeModelOrder.get(targetNode);
                 }
-                targetNodeModelOrder.put(targetNode,
-                        Math.min(p.getOutgoingEdges().get(0).getProperty(InternalProperties.MODEL_ORDER),
-                                previousOrder));
+                LEdge edge = p.getOutgoingEdges().get(0);
+                if (!edge.getProperty(InternalProperties.REVERSED)) {
+                    targetNodeModelOrder.put(targetNode, Math
+                            .min(edge.getProperty(InternalProperties.MODEL_ORDER), previousOrder));
+                }
             }
         });
         node.setProperty(InternalProperties.TARGET_NODE_MODEL_ORDER, targetNodeModelOrder);

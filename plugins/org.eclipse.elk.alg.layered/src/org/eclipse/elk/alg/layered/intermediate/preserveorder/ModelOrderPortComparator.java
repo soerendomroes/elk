@@ -12,9 +12,7 @@ package org.eclipse.elk.alg.layered.intermediate.preserveorder;
 import java.util.Comparator;
 import java.util.Map;
 
-import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LNode;
-import org.eclipse.elk.alg.layered.graph.LNode.NodeType;
 import org.eclipse.elk.alg.layered.graph.LPort;
 import org.eclipse.elk.alg.layered.graph.Layer;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
@@ -94,7 +92,16 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
                 p2Order = p1.getOutgoingEdges().get(0).getProperty(InternalProperties.MODEL_ORDER);
             }
             
+            // Same target node
             if (p1TargetNode != null && p1TargetNode.equals(p2TargetNode)) {
+                // Backward edges below
+                if (p1.getOutgoingEdges().get(0).getProperty(InternalProperties.REVERSED)
+                        && !p2.getOutgoingEdges().get(0).getProperty(InternalProperties.REVERSED)) {
+                    return 1;
+                } else if (!p1.getOutgoingEdges().get(0).getProperty(InternalProperties.REVERSED)
+                        && p2.getOutgoingEdges().get(0).getProperty(InternalProperties.REVERSED)) {
+                    return -1;
+                }
                 return Integer.compare(p1Order, p2Order);
             }
             if (targetNodeModelOrder != null) {
