@@ -136,9 +136,14 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             RowFillingAndCompaction secondIt = new RowFillingAndCompaction(aspectRatio, expandNodes, expandToAspectRatio, compaction, nodeNodeSpacing);
             // Modify the initial approximation if necessary.
             maxWidth = Math.max(minSize.x, drawing.getDrawingWidth());
-            
+
+            minSize.x -= padding.getHorizontal();
+            minSize.y -= padding.getVertical();
             // Run placement, compaction, and expansion (if enabled).
             drawing = secondIt.start(rectangles, maxWidth, minSize, progressMonitor, layoutGraph);
+
+            minSize.x += padding.getHorizontal();
+            minSize.y += padding.getVertical();
         }
 
         // Final touch.
