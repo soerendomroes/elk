@@ -52,6 +52,9 @@ algorithm rectpacking(RectPackingLayoutProvider) {
     supports org.eclipse.elk.interactiveLayout
     supports desiredPosition
     supports currentPosition
+    supports cplex
+    supports funcplex2
+    supports cplexOptTolerance
     supports targetWidth
 }
 
@@ -64,6 +67,25 @@ advanced option optimizationGoal: OptimizationGoal {
     documentation "@packingstrategy.md"
     targets nodes
     default = OptimizationGoal.MAX_SCALE_DRIVEN
+}
+
+programmatic option cplex: boolean {
+    label "Cplex Solver"
+    description "Solves the problem via cplex. This might take a while."
+    targets nodes
+    default = false
+}
+
+advanced option funcplex2: boolean {
+    label "Strip packing cplex solver"
+    description "Solves the strip packing problem using cplex."
+    targets nodes
+    default = false
+}
+
+programmatic option cplexOptTolerance: double {
+    label "Cplex Opt Tolerance"
+    targets nodes
 }
 
 programmatic option lastPlaceShift: boolean {

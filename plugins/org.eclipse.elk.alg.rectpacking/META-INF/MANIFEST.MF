@@ -12,4 +12,7 @@ Require-Bundle: org.eclipse.elk.alg.common,
  com.google.guava,
  org.eclipse.xtext.xbase.lib;bundle-version="2.10.0"
 Export-Package: org.eclipse.elk.alg.rectpacking,
+ org.eclipse.elk.alg.rectpacking.util,
  org.eclipse.elk.alg.rectpacking.options
+Bundle-ClassPath: lib/ILOG.CP.jar,lib/cplex.jar,
+ .
