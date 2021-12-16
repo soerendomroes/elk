@@ -34,6 +34,8 @@ public class RectRow {
      * Used during the compaction step for better handling and during the stuffing (expansion) process.
      */
     private final List<BlockStack> stacks = new ArrayList<BlockStack>();
+    
+    private double potentialAdditionalWidthToGetLastBlock = 0;
 
     //////////////////////////////////////////////////////////////////
     // Constructors.
@@ -217,5 +219,19 @@ public class RectRow {
      */
     public List<BlockStack> getStacks() {
         return stacks;
+    }
+
+    /**
+     * @return the potentialAdditionalWidthToGetLastBlock
+     */
+    public double getPotentialAdditionalWidthToGetLastBlock() {
+        return potentialAdditionalWidthToGetLastBlock;
+    }
+
+    /**
+     * @param potentialAdditionalWidthToGetLastBlock the potentialAdditionalWidthToGetLastBlock to set
+     */
+    public void setPotentialAdditionalWidthToGetLastBlock(double potentialAdditionalWidthToGetLastBlock) {
+        this.potentialAdditionalWidthToGetLastBlock = potentialAdditionalWidthToGetLastBlock;
     }
 }

@@ -53,6 +53,7 @@ algorithm rectpacking(RectPackingLayoutProvider) {
     supports desiredPosition
     supports currentPosition
     supports targetWidth
+    supports secondIteration
 }
 
 // OPTIONS
@@ -139,4 +140,12 @@ advanced option targetWidth: double {
          horizontal padding."
     targets nodes
     default = -1
+}
+
+advanced option secondIteration: boolean {
+    label "Second iteration"
+    description
+        "Whether a second iteration should take place"
+    targets nodes
+    default = false
 }

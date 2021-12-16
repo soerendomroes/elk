@@ -12,6 +12,7 @@ package org.eclipse.elk.alg.rectpacking.seconditeration;
 import java.util.List;
 
 import org.eclipse.elk.alg.rectpacking.util.Block;
+import org.eclipse.elk.alg.rectpacking.util.BlockRow;
 import org.eclipse.elk.alg.rectpacking.util.BlockStack;
 import org.eclipse.elk.alg.rectpacking.util.DrawingData;
 import org.eclipse.elk.alg.rectpacking.util.DrawingDataDescriptor;
@@ -41,6 +42,12 @@ public class RowFillingAndCompaction {
     private boolean compaction;
     /** Spacing between two nodes. */
     private double nodeNodeSpacing;
+
+
+    public double potentialRowWidthDecreaseMin = Double.POSITIVE_INFINITY;
+    public double potentialRowWidthDecreaseMax = 0;
+    public double potentialRowWidthIncreaseMin = Double.POSITIVE_INFINITY;
+    public double potentialRowWidthIncreaseMax = 0;
 
     //////////////////////////////////////////////////////////////////
     // Constructors.
@@ -87,6 +94,35 @@ public class RowFillingAndCompaction {
                 }
                 Compaction.compact(rowIdx, rows, maxWidth, nodeNodeSpacing);
                 adjustWidthAndHeight(currentRow);
+                // Check how much space would be needed in the current row to add the first block from the next one.
+                if (rowIdx + 1 < rows.size()) {
+                    
+                    potentialRowWidthIncreaseMax = Math.max(currentRow.getWidth() + nodeNodeSpacing
+                            + rows.get(rowIdx + 1).getFirstBlock().getWidth() - maxWidth,  potentialRowWidthDecreaseMax);
+                    potentialRowWidthIncreaseMin = Math.min(currentRow.getWidth() + nodeNodeSpacing
+                            + rows.get(rowIdx + 1).getFirstBlock().getWidth() - maxWidth,  potentialRowWidthDecreaseMin);
+                    if (currentRow.getStacks().size() != 0) {
+                        potentialRowWidthDecreaseMax = Math.max(potentialRowWidthDecreaseMax,
+                                currentRow.getStacks().get(currentRow.getStacks().size() - 1).getWidth()
+                                    + (currentRow.getStacks().size() <= 1 ? 0 : nodeNodeSpacing));
+                        potentialRowWidthDecreaseMin = Math.min(potentialRowWidthDecreaseMax,
+                                currentRow.getStacks().get(currentRow.getStacks().size() - 1).getWidth()
+                                    + (currentRow.getStacks().size() <= 1 ? 0 : nodeNodeSpacing));
+                    }
+                }
+                // Special case the graph has only one row with one block with several subrows
+                if (rows.size() == 1) {
+                    BlockStack lastStack = currentRow.getStacks().get(currentRow.getStacks().size() - 1);
+                    Block lastBlock = lastStack.getBlocks().get(lastStack.getBlocks().size() -1);
+                    for (BlockRow blockRow : lastBlock.getRows()) {
+                        potentialRowWidthDecreaseMax = Math.max(potentialRowWidthDecreaseMax, lastBlock.getWidth() - blockRow.getWidth());
+                        potentialRowWidthDecreaseMin = Math.min(potentialRowWidthDecreaseMin, lastBlock.getWidth() - blockRow.getWidth());
+                        potentialRowWidthIncreaseMax = Math.max(potentialRowWidthIncreaseMax, blockRow.getWidth() + nodeNodeSpacing);
+                        potentialRowWidthIncreaseMin = Math.min(potentialRowWidthIncreaseMin, blockRow.getWidth() + nodeNodeSpacing);
+                    }
+
+//                    currentRow.setPotentialAdditionalWidthToGetLastBlock(lastBlock.);
+                }
                 // Log graph after first row compaction.
 //                progressMonitor.logGraph(layoutGraph, "Compacted row " + rowIdx);
             }
@@ -126,8 +162,8 @@ public class RowFillingAndCompaction {
         if (progressMonitor.isLoggingEnabled()) {
 //            progressMonitor.logGraph(layoutGraph, "After expansion");
         }
-
-        return new DrawingData(this.aspectRatio, totalWidth, this.drawingHeight + additionalHeight, DrawingDataDescriptor.WHOLE_DRAWING);
+        return new DrawingData(this.aspectRatio, totalWidth, this.drawingHeight + additionalHeight,
+                DrawingDataDescriptor.WHOLE_DRAWING);
     }
 
     //////////////////////////////////////////////////////////////////

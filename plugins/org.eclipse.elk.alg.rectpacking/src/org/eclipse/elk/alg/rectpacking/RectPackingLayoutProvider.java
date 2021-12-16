@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.elk.alg.common.NodeMicroLayout;
 import org.eclipse.elk.alg.rectpacking.firstiteration.AreaApproximation;
+import org.eclipse.elk.alg.rectpacking.options.InternalProperties;
 import org.eclipse.elk.alg.rectpacking.options.OptimizationGoal;
 import org.eclipse.elk.alg.rectpacking.options.RectPackingOptions;
 import org.eclipse.elk.alg.rectpacking.seconditeration.RowFillingAndCompaction;
@@ -27,6 +28,8 @@ import org.eclipse.elk.core.math.KVector;
 import org.eclipse.elk.core.util.ElkUtil;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.graph.ElkNode;
+import org.eclipse.elk.graph.properties.IProperty;
+import org.eclipse.elk.graph.util.ElkGraphUtil;
 
 /**
  * A layout algorithm that does not take edges into account, but treats all nodes as isolated boxes. This is useful for
@@ -74,6 +77,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         boolean interactive = layoutGraph.getProperty(RectPackingOptions.INTERACTIVE);
         // A target width for the algorithm. If this is set the width approximation step is skipped.
         double targetWidth = layoutGraph.getProperty(RectPackingOptions.TARGET_WIDTH);
+        boolean secondIteration = layoutGraph.getProperty(RectPackingOptions.SECOND_ITERATION);
 
         List<ElkNode> rectangles = layoutGraph.getChildren();
         DrawingUtil.resetCoordinates(rectangles);
@@ -144,8 +148,53 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 
             minSize.x += padding.getHorizontal();
             minSize.y += padding.getVertical();
+            layoutGraph.setProperty(InternalProperties.MIN_ROW_INCREASE, secondIt.potentialRowWidthIncreaseMin);
+            layoutGraph.setProperty(InternalProperties.MAX_ROW_INCREASE, secondIt.potentialRowWidthIncreaseMax);
+            layoutGraph.setProperty(InternalProperties.MIN_ROW_DECREASE, secondIt.potentialRowWidthDecreaseMin);
+            layoutGraph.setProperty(InternalProperties.MAX_ROW_DECREASE, secondIt.potentialRowWidthDecreaseMax);
         }
-
+        
+        // Try to layout again if the aspect ratio seems to be bad
+        if (secondIteration && (drawing.getDrawingWidth() + padding.getHorizontal()) / (drawing.getDrawingHeight() + padding.getVertical()) < aspectRatio
+                && layoutGraph.getProperty(InternalProperties.MIN_ROW_INCREASE) != Double.POSITIVE_INFINITY
+                && layoutGraph.getChildren().size() > 1) {
+            // The drawing is too high, this means the approximated target width is too low
+            double oldSM = Math.min(aspectRatio / (drawing.getDrawingWidth() + padding.getHorizontal()), 1d / (drawing.getDrawingHeight() + padding.getVertical()));
+            ElkNode clone = clone(layoutGraph);
+            clone.setProperty(RectPackingOptions.SECOND_ITERATION, false);
+            
+            clone.setProperty(RectPackingOptions.TARGET_WIDTH, maxWidth + layoutGraph.getProperty(InternalProperties.MIN_ROW_INCREASE));
+            layout(clone, progressMonitor);
+            double newSM = Math.min(aspectRatio / clone.getWidth(), 1d / clone.getHeight());
+            if (newSM > oldSM) {
+                layoutGraph.setProperty(InternalProperties.SECOND_ITERATION_WAS_BETTER, true);
+                copyPosition(clone, layoutGraph);
+                drawing.setDrawingWidth(clone.getWidth());
+                drawing.setDrawingWidth(clone.getHeight());
+                
+            }
+            
+        } else if (secondIteration && (drawing.getDrawingWidth() + padding.getHorizontal()) / (drawing.getDrawingHeight() + padding.getVertical()) > aspectRatio
+                && layoutGraph.getProperty(InternalProperties.MIN_ROW_DECREASE) != Double.POSITIVE_INFINITY
+                && layoutGraph.getChildren().size() > 1) {
+            // The drawing is too high, this means the approximated target width is too high
+            double oldSM = Math.min(aspectRatio / (drawing.getDrawingWidth() + padding.getHorizontal()), 1d / (drawing.getDrawingHeight() + padding.getVertical()));
+            ElkNode clone = clone(layoutGraph);
+            clone.setProperty(RectPackingOptions.SECOND_ITERATION, false);
+            
+            clone.setProperty(RectPackingOptions.TARGET_WIDTH, Math.max(ElkUtil.effectiveMinSizeConstraintFor(layoutGraph).x,
+                    maxWidth - layoutGraph.getProperty(InternalProperties.MIN_ROW_DECREASE)));
+            layout(clone, progressMonitor);
+            double newSM = Math.min(aspectRatio / clone.getWidth(), 1d / clone.getHeight());
+            if (newSM > oldSM) {
+                layoutGraph.setProperty(InternalProperties.SECOND_ITERATION_WAS_BETTER, true);
+                copyPosition(clone, layoutGraph);
+                drawing.setDrawingWidth(clone.getWidth());
+                drawing.setDrawingWidth(clone.getHeight());
+            }
+            
+        }
+        
         // Final touch.
         applyPadding(rectangles, padding);
         
@@ -160,6 +209,32 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 //            progressMonitor.logGraph(layoutGraph, "Output");
         }
         progressMonitor.done();
+    }
+    
+    private ElkNode clone(ElkNode node) {
+        ElkNode clone = ElkGraphUtil.createNode(null);
+        for (IProperty property : node.getAllProperties().keySet()) {
+            clone.setProperty(property, node.getProperty(property));
+        }
+        for (ElkNode child : node.getChildren()) {
+            ElkNode newChild = ElkGraphUtil.createNode(clone);
+            newChild.setDimensions(child.getWidth(), child.getHeight());
+            newChild.setIdentifier(child.getIdentifier());
+            newChild.setLocation(child.getX(), child.getY());
+            clone.getChildren().add(newChild);
+            for (IProperty property : child.getAllProperties().keySet()) {
+                newChild.setProperty(property, child.getProperty(property));
+            }
+        }
+        return clone;
+    }
+    
+    private void copyPosition(ElkNode clone, ElkNode original) {
+        original.setDimensions(clone.getWidth(), clone.getHeight());
+        original.setLocation(clone.getX(), clone.getY());
+        for (int i = 0; i < clone.getChildren().size(); i++) {
+            copyPosition(clone.getChildren().get(i), original.getChildren().get(i));
+        }
     }
 
     /**
