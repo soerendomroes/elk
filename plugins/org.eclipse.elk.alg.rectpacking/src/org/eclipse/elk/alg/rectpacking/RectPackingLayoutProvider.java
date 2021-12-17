@@ -168,9 +168,11 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             double newSM = Math.min(aspectRatio / clone.getWidth(), 1d / clone.getHeight());
             if (newSM > oldSM) {
                 layoutGraph.setProperty(InternalProperties.SECOND_ITERATION_WAS_BETTER, true);
-                copyPosition(clone, layoutGraph);
-                drawing.setDrawingWidth(clone.getWidth());
-                drawing.setDrawingWidth(clone.getHeight());
+                for (int i = 0; i < clone.getChildren().size(); i++) {
+                    copyPosition(clone.getChildren().get(i), layoutGraph.getChildren().get(i));
+                }
+                drawing.setDrawingWidth(clone.getWidth() - padding.getHorizontal());
+                drawing.setDrawingHeight(clone.getHeight() - padding.getVertical());
                 
             }
             
@@ -188,15 +190,19 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             double newSM = Math.min(aspectRatio / clone.getWidth(), 1d / clone.getHeight());
             if (newSM > oldSM) {
                 layoutGraph.setProperty(InternalProperties.SECOND_ITERATION_WAS_BETTER, true);
-                copyPosition(clone, layoutGraph);
-                drawing.setDrawingWidth(clone.getWidth());
-                drawing.setDrawingWidth(clone.getHeight());
+                for (int i = 0; i < clone.getChildren().size(); i++) {
+                    copyPosition(clone.getChildren().get(i), layoutGraph.getChildren().get(i));
+                }
+                drawing.setDrawingWidth(clone.getWidth() - padding.getHorizontal());
+                drawing.setDrawingHeight(clone.getHeight() - padding.getVertical());
             }
             
         }
         
         // Final touch.
-        applyPadding(rectangles, padding);
+        if (!layoutGraph.getProperty(InternalProperties.SECOND_ITERATION_WAS_BETTER)) {
+            applyPadding(rectangles, padding);
+        }
         
         ElkUtil.resizeNode(layoutGraph, drawing.getDrawingWidth() + padding.getHorizontal(),
                 drawing.getDrawingHeight() + padding.getVertical(), false, true);
