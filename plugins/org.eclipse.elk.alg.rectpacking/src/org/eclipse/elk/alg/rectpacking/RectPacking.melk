@@ -54,6 +54,9 @@ algorithm rectpacking(RectPackingLayoutProvider) {
     supports currentPosition
     supports targetWidth
     supports secondIteration
+    supports trybox
+    supports stackable
+    supports revisedWidth
 }
 
 // OPTIONS
@@ -148,4 +151,30 @@ advanced option secondIteration: boolean {
         "Whether a second iteration should take place"
     targets nodes
     default = false
+}
+
+advanced option trybox: boolean {
+    label "Try box layout first"
+    description
+        "Whether one should check whether the regions are stackable to see whether box layout would do the job"
+    targets nodes
+    default = false
+}
+
+output option stackable: boolean {
+    label "Stackable"
+    description
+        "Set if one can stack at least two regions to safe space"
+    targets nodes
+    default = false
+}
+
+output option revisedWidth: int {
+    label "Revised width"
+    description
+        "Set if the width during rectpacking was revised, 1 for higher width, -1 for lower width, 0 for no change."
+    targets nodes
+    lowerBound = -1
+    upperBound = 1
+    default = 0
 }
