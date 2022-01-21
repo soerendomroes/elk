@@ -304,7 +304,7 @@ class ElkGraphImporter {
             
             if (elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
                     || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY)
-                        == CycleBreakingStrategy.MODEL_ORDER) {
+                    == CycleBreakingStrategy.MODEL_ORDER) {
                 // Assign a model order to the nodes as they are read
                 elknode.setProperty(InternalProperties.MODEL_ORDER, index++);
             }
@@ -373,7 +373,7 @@ class ElkGraphImporter {
                 
                 if (elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
                         || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY)
-                            == CycleBreakingStrategy.MODEL_ORDER) {
+                        == CycleBreakingStrategy.MODEL_ORDER) {
                     // Assign a model order to the edges as they are read
                     elkedge.setProperty(InternalProperties.MODEL_ORDER, index++);
                 }
