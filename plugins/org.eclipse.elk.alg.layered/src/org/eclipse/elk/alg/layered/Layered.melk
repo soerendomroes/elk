@@ -1097,3 +1097,24 @@ advanced option generatePositionAndLayerIds: boolean {
     targets parents
         
 }
+
+group modelOrderGroups {
+    option Id: String {
+        label "Model Order Group Id"
+        description
+            "If set the model order is only respected between elements with the same id. All model elements without an id
+            also form a group."
+        default = ""
+        targets nodes, edges
+    }
+    option comparisonStrategy: ModelOrderGroupComparisonStrategy {
+        label "Model Order Group Strategy"
+        description
+            "Whether the partial orders between different model order groups are combined to a total order or whether
+            randomization is preferred if two elements from different model order groups are preferred."
+        default = ModelOrderGroupComparisonStrategy.RANDOMIZATION
+        targets parents
+    }
+}
+
+
