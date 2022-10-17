@@ -593,7 +593,7 @@ public final class OneDimensionalCompactor {
 
         out.append("</svg>");
 
-        monitor.logGraph(out.toString(), name, Type.SVG);
+//        monitor.logGraph(out.toString(), name, Type.SVG);
         
         return this;
     }

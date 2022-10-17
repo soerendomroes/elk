@@ -9,13 +9,19 @@
  *******************************************************************************/
 package org.eclipse.elk.graph.text;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import java.util.Map;
+
+import org.eclipse.elk.core.util.persistence.ElkGraphResourceFactory;
+import org.eclipse.elk.graph.ElkGraphPackage;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.ISetup;
 import org.eclipse.xtext.common.TerminalsStandaloneSetup;
 import org.eclipse.xtext.resource.IResourceFactory;
 import org.eclipse.xtext.resource.IResourceServiceProvider;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 @SuppressWarnings("all")
 public class ElkGraphStandaloneSetupGenerated implements ISetup {
@@ -39,5 +45,14 @@ public class ElkGraphStandaloneSetupGenerated implements ISetup {
 		
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("elkt", resourceFactory);
 		IResourceServiceProvider.Registry.INSTANCE.getExtensionToFactoryMap().put("elkt", serviceProvider);
+        Map<String, Object> extensionMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+        if (!extensionMap.containsKey("elkg")) {
+            extensionMap.put("elkg", new ElkGraphResourceFactory());
+        }
+
+        EPackage.Registry registry = EPackage.Registry.INSTANCE;
+        if (!registry.containsKey(ElkGraphPackage.eNS_URI)) {
+            registry.put(ElkGraphPackage.eNS_URI, ElkGraphPackage.eINSTANCE);
+        }
 	}
 }

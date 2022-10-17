@@ -9,6 +9,7 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.options;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -51,6 +52,8 @@ import com.google.common.collect.Multimap;
  * @author uru
  */
 public final class InternalProperties {
+
+    public static IProperty<URI> MODEL_NAME = new Property<>("modelURI");
 
     /**
      * The original object from which a graph element was created.

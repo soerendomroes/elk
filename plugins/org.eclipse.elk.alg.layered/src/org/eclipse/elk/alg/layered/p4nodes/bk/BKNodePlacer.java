@@ -224,7 +224,7 @@ public final class BKNodePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
         // Debug output
         if (monitor.isLoggingEnabled()) {
             for (BKAlignedLayout bal : layouts) {
-                monitor.log(bal + " size is " + bal.layoutSize());
+//                monitor.log(bal + " size is " + bal.layoutSize());
             }
         }
 
@@ -270,10 +270,10 @@ public final class BKNodePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
 
         // Debug output
         if (monitor.isLoggingEnabled()) {
-            monitor.log("Chosen node placement: " + chosenLayout);
-            monitor.log("Blocks: " + getBlocks(chosenLayout));
-            monitor.log("Classes: " + getClasses(chosenLayout, monitor));
-            monitor.log("Marked edges: " + markedEdges);
+//            monitor.log("Chosen node placement: " + chosenLayout);
+//            monitor.log("Blocks: " + getBlocks(chosenLayout));
+//            monitor.log("Classes: " + getClasses(chosenLayout, monitor));
+//            monitor.log("Marked edges: " + markedEdges);
         }
         
         // cleanup
@@ -543,7 +543,7 @@ public final class BKNodePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
         Set<LNode> roots = Sets.newLinkedHashSet(Arrays.asList(bal.root));
         for (LNode root : roots) {
             if (root == null) {
-                monitor.log("There are no classes in a balanced layout.");
+//                monitor.log("There are no classes in a balanced layout.");
                 break;
             }
             LNode sink = bal.sink[root.id];
@@ -601,8 +601,8 @@ public final class BKNodePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
                     // We've found an overlap
                     feasible = false;
                     if (monitor.isLoggingEnabled()) {
-                        monitor.log("bk node placement breaks on " + node
-                                + " which should have been after " + previous);
+//                        monitor.log("bk node placement breaks on " + node
+//                                + " which should have been after " + previous);
                     }
                     break;
                 }
@@ -615,7 +615,7 @@ public final class BKNodePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
         }
         
         if (monitor.isLoggingEnabled()) {
-            monitor.log(bal + " is feasible: " + feasible);
+//            monitor.log(bal + " is feasible: " + feasible);
         }
         
         return feasible;

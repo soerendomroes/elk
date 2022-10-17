@@ -10,12 +10,14 @@
 package org.eclipse.elk.core.service;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 
+import java.nio.file.Paths;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.elk.core.IGraphLayoutEngine;
@@ -660,7 +662,7 @@ public class DiagramLayoutEngine {
             progressMonitor.done();
             
             // Log the final result to be displayed in our debug views
-            progressMonitor.logGraph(mapping.getLayoutGraph(), "Result");
+//            progressMonitor.logGraph(mapping.getLayoutGraph(), "Result");
         }
 
         mapping.setProperty(MAPPING_STATUS, status);
@@ -697,7 +699,7 @@ public class DiagramLayoutEngine {
             }
             
             // Export the layout graph for debugging (this only does things if debug mode is enabled)
-            progressMonitor.logGraph(mapping.getLayoutGraph(), "input");
+//            progressMonitor.logGraph(mapping.getLayoutGraph(), "input");
 
             // Perform layout on the layout graph
             graphLayoutEngine.layout(mapping.getLayoutGraph(), progressMonitor.subTask(1));
@@ -706,7 +708,8 @@ public class DiagramLayoutEngine {
                 progressMonitor.done();
                 
                 // Log the final result to be displayed in our debug views
-                progressMonitor.logGraph(mapping.getLayoutGraph(), "result");
+                progressMonitor.logGraph(mapping.getLayoutGraph(), "result-");// XXX creates NPE uncomment for test
+//              + Paths.get(BasicProgressMonitor.CURRENT_MODEL_URI.getPath()).getFileName());
             }
             if (progressMonitor.isCanceled()) {
                 return Status.CANCEL_STATUS;

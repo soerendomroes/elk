@@ -103,7 +103,7 @@ public final class CommentPreprocessor implements ILayoutProcessor<LGraph> {
         }
         
         if (monitor.isLoggingEnabled()) {
-            monitor.log("Found " + commentBoxCount + " comment boxes");
+//            monitor.log("Found " + commentBoxCount + " comment boxes");
         }
         
         monitor.done();

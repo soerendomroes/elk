@@ -581,12 +581,12 @@ public final class ElkLayered {
         
         if (monitor.isLoggingEnabled()) {
             // Print the algorithm configuration
-            monitor.log("ELK Layered uses the following " + algorithm.size() + " modules:");
+//            monitor.log("ELK Layered uses the following " + algorithm.size() + " modules:");
             int slot = 0;
             for (ILayoutProcessor<LGraph> processor : algorithm) {
                 // SUPPRESS CHECKSTYLE NEXT MagicNumber
                 String gwtDoesntSupportPrintf = (slot < 10 ? "0" : "") + (slot++);
-                monitor.log("   Slot " + gwtDoesntSupportPrintf + ": " + processor.getClass().getName());
+//                monitor.log("   Slot " + gwtDoesntSupportPrintf + ": " + processor.getClass().getName());
             }
         }
         
