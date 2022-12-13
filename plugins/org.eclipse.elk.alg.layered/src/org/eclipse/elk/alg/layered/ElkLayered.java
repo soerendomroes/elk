@@ -598,7 +598,7 @@ public final class ElkLayered {
             // Output debug graph
             // elkjs-exclude-start
             if (monitor.isLoggingEnabled()) {
-                DebugUtil.logDebugGraph(monitor, lgraph, slotIndex, "Before " + processor.getClass().getSimpleName());
+//                DebugUtil.logDebugGraph(monitor, lgraph, slotIndex, "Before " + processor.getClass().getSimpleName());
             }
             // elkjs-exclude-end
             

@@ -9,8 +9,11 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.graph.transform;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -87,6 +90,93 @@ class ElkGraphImporter {
     public LGraph importGraph(final ElkNode elkgraph) {
         // Create the layered graph
         final LGraph topLevelGraph = createLGraph(elkgraph);
+        
+        for (ElkNode child : elkgraph.getChildren()) {
+            // Check ancestors for edges pointing to this node.
+            // FIXME Do this for the LEdge and not for the ElkEdge?
+            ElkNode parent = elkgraph.getParent();
+            Map<ElkEdge, ElkNode> newContainedEdge = new HashMap<>();
+            while (parent != null) {
+                List<ElkEdge> edgesToRemove = new ArrayList<>();
+                for (ElkEdge potentialHierarchicalEdge : parent.getContainedEdges()) {
+                    // Split edge.
+                    if (child.getIncomingEdges().contains(potentialHierarchicalEdge)
+                            || child.getOutgoingEdges().contains(potentialHierarchicalEdge)) {
+                        // Clone edge to not destroy the original edge.
+                        ElkEdge clone = potentialHierarchicalEdge;
+                        boolean clonedFromOriginal = false;
+                        // Original edge is removed from graph and readded if layout is applied.
+                        if (!potentialHierarchicalEdge.hasProperty(InternalProperties.PART_OF_EDGE)) {
+                            edgesToRemove.add(potentialHierarchicalEdge);
+                            potentialHierarchicalEdge.setProperty(InternalProperties.ORIGINAL_PARENT, parent);
+                            clone = ElkGraphUtil.createEdge(null);
+                            newContainedEdge.put(clone, parent);
+
+                            for (ElkConnectableShape source : potentialHierarchicalEdge.getSources()) {
+                                clone.getSources().add(source);
+                            }
+                            for (ElkConnectableShape target : potentialHierarchicalEdge.getTargets()) {
+                                clone.getTargets().add(target);
+                            }
+                            clone.copyProperties(potentialHierarchicalEdge);
+                            clonedFromOriginal = true;
+                        }
+                        
+                        // Depending on whether the edge is incoming or outgoing the new edge must be create in the
+                        // correct direction to apply the control points in the correct manner.
+                        boolean incoming = child.getIncomingEdges().contains(potentialHierarchicalEdge);
+                        // Since the hierarchical edge might already be a split edge, save the original hierarchical
+                        // edge.
+                        ElkEdge originalEdge = potentialHierarchicalEdge;
+                        if (potentialHierarchicalEdge.hasProperty(InternalProperties.PART_OF_EDGE)) {
+                            originalEdge = potentialHierarchicalEdge.getProperty(InternalProperties.PART_OF_EDGE);
+                        }
+                        
+                        // Get current list of edges the original edge already consists of.
+                        List<ElkEdge> elements = originalEdge.getProperty(InternalProperties.EDGE_PARTS);
+                        if (elements == null) {
+                            elements = new ArrayList<>();
+                            originalEdge.setProperty(InternalProperties.EDGE_PARTS, elements);
+                            clone.setProperty(InternalProperties.PART_OF_EDGE, originalEdge);
+                        }
+                        if (clonedFromOriginal) {
+                            elements.add(clone);
+                        }
+                        
+                        // Add dummy port as a new source and target of the edge.
+                        ElkPort dummyPort = ElkGraphUtil.createPort(elkgraph);
+                        
+                        // Update the clone such that it no longer point to the child node but to the new dummy port.
+                        int index = incoming ? clone.getTargets().indexOf(child)
+                                : clone.getSources().indexOf(child);
+                        if (incoming) {
+                            clone.getTargets().remove(index);
+                            clone.getTargets().add(index, dummyPort);
+                        } else {
+                            clone.getSources().remove(index);
+                            clone.getSources().add(index, dummyPort);
+                        }
+                        
+                        // Create edge from dummy port to child node.
+                        ElkEdge dummyEdge = ElkGraphUtil.createEdge(elkgraph);
+                        dummyEdge.setProperty(InternalProperties.PART_OF_EDGE, originalEdge);
+                        // Add the dummy edge to the edge elements of the original edge.
+                        elements.add(dummyEdge);
+
+                        dummyEdge.getSources().add(incoming ? dummyPort : child);
+                        dummyEdge.getTargets().add(incoming ? child : dummyPort);
+                        newContainedEdge.put(dummyEdge, child.getParent());
+                    }
+                }
+                for (ElkEdge edge : edgesToRemove) {
+                    parent.getContainedEdges().remove(edge);
+                }
+                parent = parent.getParent();
+            }
+            for (ElkEdge edge : newContainedEdge.keySet()) {
+                edge.setContainingNode(newContainedEdge.get(edge));
+            }
+        }
         
         // Assign defined port sides to all external ports 
         elkgraph.getPorts().stream().forEach(elkport -> ensureDefinedPortSide(topLevelGraph, elkport));

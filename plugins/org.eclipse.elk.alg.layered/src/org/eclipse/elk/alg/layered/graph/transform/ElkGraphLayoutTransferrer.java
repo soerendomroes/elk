@@ -10,7 +10,10 @@
 package org.eclipse.elk.alg.layered.graph.transform;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.elk.alg.layered.graph.LEdge;
@@ -35,8 +38,11 @@ import org.eclipse.elk.core.options.PortLabelPlacement;
 import org.eclipse.elk.core.options.SizeConstraint;
 import org.eclipse.elk.core.options.SizeOptions;
 import org.eclipse.elk.core.util.ElkUtil;
+import org.eclipse.elk.graph.ElkBendPoint;
+import org.eclipse.elk.graph.ElkConnectableShape;
 import org.eclipse.elk.graph.ElkEdge;
 import org.eclipse.elk.graph.ElkEdgeSection;
+import org.eclipse.elk.graph.ElkGraphFactory;
 import org.eclipse.elk.graph.ElkLabel;
 import org.eclipse.elk.graph.ElkNode;
 import org.eclipse.elk.graph.ElkPort;
@@ -140,6 +146,169 @@ class ElkGraphLayoutTransferrer {
                 applyLayout(nestedGraph);
             }
         }
+        
+        // Apply layout of hierarchical dummy edges.
+        for (LEdge ledge : edgeList) {
+            applyHierarchicalEdgePartLayout(ledge);
+        }
+    }
+
+    /**
+     * @param ledge
+     */
+    private void applyHierarchicalEdgePartLayout(LEdge ledge) {
+        ElkEdge elkedge = (ElkEdge) ledge.getProperty(InternalProperties.ORIGIN);
+
+        if (elkedge.hasProperty(InternalProperties.PART_OF_EDGE)) {
+            ElkEdge originalEdge = elkedge.getProperty(InternalProperties.PART_OF_EDGE);
+            if (elkedge.getContainingNode() != originalEdge.getProperty(InternalProperties.ORIGINAL_PARENT)) {
+                return;
+            }
+            // Handle all edge parts.
+            List<ElkEdge> edgeParts = originalEdge.getProperty(InternalProperties.EDGE_PARTS);
+            ElkEdgeSection originalEdgeSection = ElkGraphUtil.firstEdgeSection(originalEdge, true, true);
+            
+            // Sort edge parts.
+            List<ElkEdge> sortedEdgeParts = new LinkedList<>();
+            ElkConnectableShape target = originalEdge.getSources().get(0);
+            for (int i = 0; i < edgeParts.size(); i++) {
+                boolean changed = false;
+                for (ElkEdge edgeToSort : edgeParts) {
+                    if (edgeToSort.getSources().get(0) == target) {
+                        sortedEdgeParts.add(edgeToSort);
+                        target = edgeToSort.getTargets().get(0);
+                        changed = true;
+                        break;
+                    }
+                }
+                if (!changed) {
+                    return;
+                }
+            }
+            assert target == originalEdge.getTargets().get(0);
+            originalEdge.getProperty(InternalProperties.ORIGINAL_PARENT).getContainedEdges().add(originalEdge);
+            // Handle them and edge the connections one other another.
+            int index = 0;
+            for (ElkEdge sortedPart : sortedEdgeParts) {
+                sortedPart.setProperty(InternalProperties.PART_OF_EDGE, null);
+                ElkEdgeSection sortedPartSection = ElkGraphUtil.firstEdgeSection(sortedPart, false, true);
+                List<ElkBendPoint> originalBendpoints = originalEdgeSection.getBendPoints();
+                List<ElkBendPoint> edgeBendpoints = originalEdgeSection.getBendPoints();
+                ElkNode parent = sortedPart.getContainingNode();
+                ElkNode originalParent = originalEdge.getContainingNode();
+                KVector offset = determineCoordinateRelativeToAnchestor(parent, originalParent);
+                if (index == 0) {
+                    originalEdgeSection.setStartLocation(sortedPartSection.getStartX() + offset.x,
+                            sortedPartSection.getStartY() + offset.y);
+                    originalBendpoints.addAll(edgeBendpoints);
+                    ElkBendPoint bp = ElkGraphFactory.eINSTANCE.createElkBendPoint();
+                    bp.set(sortedPartSection.getEndX() + offset.x, sortedPartSection.getEndY() + offset.y);
+                    originalBendpoints.add(bp);
+                    
+                } else if (index == sortedEdgeParts.size() - 1) {
+                    originalEdgeSection.setEndLocation(sortedPartSection.getEndX() + offset.x, sortedPartSection.getEndY() + offset.y);
+                    ElkBendPoint bp = ElkGraphFactory.eINSTANCE.createElkBendPoint();
+                    // Position of part is relative to the parent but not to the original parent.
+                    // Go through ancestors add add their displacement until reaching original parent.
+                    bp.set(sortedPartSection.getStartX() + offset.x, sortedPartSection.getStartY() + offset.y);
+                    originalBendpoints.add(bp);
+                    originalBendpoints.addAll(edgeBendpoints);
+                    parent.getPorts().remove(sortedPart.getSources().get(0));
+                } else {
+                    ElkBendPoint bp = ElkGraphFactory.eINSTANCE.createElkBendPoint();
+                    bp.set(sortedPartSection.getStartX() + offset.x, sortedPartSection.getStartY() + offset.y);
+                    originalBendpoints.add(bp);
+                    originalBendpoints.addAll(edgeBendpoints);
+                    ElkBendPoint bpEnd = ElkGraphFactory.eINSTANCE.createElkBendPoint();
+                    bpEnd.set(sortedPartSection.getEndX() + offset.x, sortedPartSection.getEndY() + offset.y);
+                    originalBendpoints.add(bpEnd);
+                    parent.getPorts().remove(sortedPart.getSources().get(0));
+                }
+                boolean didIt = parent.getContainedEdges().remove(sortedPart);
+                assert didIt;
+                index++;
+            }
+            // Delete all part of edge stuff such that the original edge is only handled once.
+//            // Sort edge parts based such that the edges connect since their ordering may be invalid.
+//            // TODO
+//            int partIndex = edgeParts.indexOf(elkedge);
+////            originalEdgeSection.setIncomingShape(originalEdge.getSources().get(0));
+////            originalEdgeSection.setOutgoingShape(originalEdge.getTargets().get(0));
+//            List<ElkBendPoint> originalBendpoints = originalEdgeSection.getBendPoints();
+//            // The bendpoints of the different edge parts have to be added in the right order.
+//            // The order of the edge parts needs to be respected and the start/end indices inside the bendpoint list
+//            // have to be saved for all edges to be sure where to add the next part of the edge.
+//            if (!originalEdge.hasProperty(InternalProperties.EDGE_PART_LENGTH)) {
+//                // It needs to be saved how many bend points each edge part has
+//                HashMap<ElkEdge, Integer> endMap = new HashMap<>();
+//                endMap.put(elkedge, bendPoints.size());
+//                originalEdge.setProperty(InternalProperties.EDGE_PART_LENGTH, endMap);
+//                originalBendpoints.addAll(elkedgeSection.getBendPoints());
+//            } else {
+//                Map<ElkEdge, Integer> endMap = originalEdge.getProperty(InternalProperties.EDGE_PART_LENGTH);
+//                int insertionIndex = 0;
+//                // Get the maximum index that has a lower order than in the edge part list of the original edge.
+//                int currentIndex = 0;
+//                boolean firstEdgePart = true;
+//                for (ElkEdge otherEdge : edgeParts) {
+//                    if (otherEdge.hasProperty(InternalProperties.EDGE_PART_LENGTH)) {
+//                        firstEdgePart = false;
+//                        insertionIndex += endMap.get(otherEdge);
+//                    }
+//                    currentIndex++;
+//                    if (currentIndex == partIndex) {
+//                        break;
+//                    }
+//                }
+//                if (insertionIndex == 0 && firstEdgePart) {
+//                    if (originalEdgeSection.getStartX() != 0 && originalEdgeSection.getStartY() != 0) {
+//                        ElkBendPoint newBendPoint = ElkGraphFactory.eINSTANCE.createElkBendPoint();
+//                        newBendPoint.set(originalEdgeSection.getStartX(), originalEdgeSection.getStartY());
+//                        originalBendpoints.add(0, newBendPoint);
+//                    }
+//                    // Find the current first element and increment its bendpoint size.
+//                    ElkEdge firstEdge = edgeParts.get(0);
+//                    endMap.put(firstEdge, endMap.get(firstEdge) + 1);
+//                    originalEdgeSection.setStartLocation(elkedgeSection.getStartX(), elkedgeSection.getStartY());
+//                }
+//                if (insertionIndex == originalBendpoints.size() - 1 || !firstEdgePart && originalBendpoints.size() == 0) {
+//                    if (originalEdgeSection.getEndX() != 0 && originalEdgeSection.getEndY() != 0) {
+//                        ElkBendPoint newBendPoint = ElkGraphFactory.eINSTANCE.createElkBendPoint();
+//                        newBendPoint.set(originalEdgeSection.getEndX(), originalEdgeSection.getEndY());
+//                        originalBendpoints.add(newBendPoint);
+//                    }
+//                    ElkEdge lastEdge = edgeParts.get(edgeParts.size() - 1);
+//                    if (lastEdge == elkedge) {
+//                        lastEdge = edgeParts.get(edgeParts.size() - 2);
+//                    }
+//                    endMap.put(lastEdge, endMap.get(lastEdge) + 1);
+//                    originalEdgeSection.setEndLocation(elkedgeSection.getEndX(), elkedgeSection.getEndY());
+//                }
+//                
+//                originalBendpoints.addAll(Math.max(0, insertionIndex - 1), elkedgeSection.getBendPoints());
+//            }
+//            originalEdgeSection.getBendPoints().clear();
+//            ElkUtil.applyVectorChain(originalBendpoints, originalEdgeSection);
+//            KVectorChain chain = originalEdge.getProperty(LayeredOptions.JUNCTION_POINTS);
+//            if (chain == null) {
+//                chain = new KVectorChain();
+//                originalEdge.setProperty(LayeredOptions.JUNCTION_POINTS, chain);
+//            }
+//            chain.addAll(elkedge.getProperty(LayeredOptions.JUNCTION_POINTS));
+////            originalEdge.getSections().addAll(elkedge.getSections());
+            int x = 0;
+        }
+        
+    }
+    
+    public KVector determineCoordinateRelativeToAnchestor(ElkNode node, ElkNode ancestor) {
+        KVector vector = new KVector(node.getX(), node.getY());
+        ElkNode parent = node.getParent();
+        while (parent != ancestor && parent != null) {
+            vector.add(parent.getX(), parent.getY());
+            parent = parent.getParent();
+        }
+        return vector;
     }
 
     /**
@@ -290,6 +459,7 @@ class ElkGraphLayoutTransferrer {
         
         // Copy junction points
         KVectorChain junctionPoints = ledge.getProperty(LayeredOptions.JUNCTION_POINTS);
+//        if 
         if (junctionPoints != null) {
             junctionPoints.offset(edgeOffset);
             elkedge.setProperty(LayeredOptions.JUNCTION_POINTS, junctionPoints);

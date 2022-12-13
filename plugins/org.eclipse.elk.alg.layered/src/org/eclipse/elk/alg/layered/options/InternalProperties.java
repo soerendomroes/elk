@@ -36,6 +36,9 @@ import org.eclipse.elk.core.math.KVectorChain;
 import org.eclipse.elk.core.options.LabelSide;
 import org.eclipse.elk.core.options.PortConstraints;
 import org.eclipse.elk.core.options.PortSide;
+import org.eclipse.elk.graph.ElkConnectableShape;
+import org.eclipse.elk.graph.ElkEdge;
+import org.eclipse.elk.graph.ElkNode;
 import org.eclipse.elk.graph.properties.IProperty;
 import org.eclipse.elk.graph.properties.Property;
 
@@ -453,6 +456,31 @@ public final class InternalProperties {
      */
     public static final IProperty<Map<LNode, Integer>> TARGET_NODE_MODEL_ORDER = new Property<>("targetNode.modelOrder");
     
+    /**
+     * The ELkEdge the port was created for.
+     */
+    public static final IProperty<ElkEdge> PART_OF_EDGE = new Property<>("partOfEdge");
+    
+    /**
+     * The control points for an hierarchical edge.
+     */
+    public static final IProperty<List<ElkEdge>> EDGE_PARTS = new Property<>("edgeParts");
+
+    /**
+     * The original source or target of the edge.
+     */
+    public static final IProperty<ElkConnectableShape> ORIGINAL_DESTINATION = new Property<>("destination");
+
+    /**
+     * The original containing node of an edge.
+     */
+    public static final IProperty<ElkNode> ORIGINAL_PARENT = new Property<>("original.parent");
+
+    /**
+     * Number of bendpoints of edge part.
+     */
+    public static final IProperty<Map<ElkEdge, Integer>> EDGE_PART_LENGTH = new Property<>("edgePart.length");
+
     /**
      * Hidden default constructor.
      */
