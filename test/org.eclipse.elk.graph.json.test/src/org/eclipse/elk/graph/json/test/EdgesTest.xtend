@@ -9,6 +9,8 @@
  *******************************************************************************/
 package org.eclipse.elk.graph.json.test
 
+import org.eclipse.elk.core.RecursiveGraphLayoutEngine
+import org.eclipse.elk.core.util.NullElkProgressMonitor
 import org.eclipse.elk.graph.json.ElkGraphJson
 import org.junit.Test
 
@@ -88,5 +90,63 @@ class EdgesTest {
         
         val root = ElkGraphJson.forGraph(graph).toElk
         assertTrue(root.containedEdges.size === 1)
+    }
+    
+    @Test
+    def void edgeContainmentRoutingTest() {
+        val graph = '''
+        {
+          "id": "0",
+          "ports": [],
+          "edges": [],
+          "properties": {
+            "org.eclipse.elk.algorithm": "layered",
+            "org.eclipse.elk.edgeRouting": "ORTHOGONAL"
+          },
+          "children": [
+            {
+              "id": "1",
+              "width": 100,
+              "height": 20,
+              "properties": {
+                "org.eclipse.elk.portConstraints": "FIXED_ORDER"
+              },
+              "ports": [
+                {
+                  "id": "2",
+                  "width": 20, "height": 10,
+                  "properties": {
+                    "side": "WEST",
+                    "index": 0
+                  }
+                },
+                {
+                  "id": "3",
+                   "width": 20, "height": 10,
+                  "properties": {
+                    "side": "EAST",
+                    "index": 1
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "4",
+                  "sources": [
+                      "2"
+                  ],
+                  "targets": [
+                      "3"
+                  ]
+                }
+              ],
+              "children": []
+            }
+          ]
+        }
+        '''
+        val root = ElkGraphJson.forGraph(graph).toElk
+        new RecursiveGraphLayoutEngine().layout(root, new NullElkProgressMonitor())
+        assertTrue(root.containedEdges.get(0).sections.get(0).bendPoints.get(0).y == root.containedEdges.get(0).sections.get(0).startY)
     }
 }
