@@ -189,14 +189,19 @@ class ElkGraphLayoutTransferrer {
             originalEdge.getProperty(InternalProperties.ORIGINAL_PARENT).getContainedEdges().add(originalEdge);
             // Handle them and edge the connections one other another.
             int index = 0;
+            List<ElkEdgeSection> originalSections = originalEdge.getSections();
+//            originalSections.clear();
             for (ElkEdge sortedPart : sortedEdgeParts) {
                 sortedPart.setProperty(InternalProperties.PART_OF_EDGE, null);
+                List<ElkEdgeSection> sortedPartSections = sortedPart.getSections();
                 ElkEdgeSection sortedPartSection = ElkGraphUtil.firstEdgeSection(sortedPart, false, true);
                 List<ElkBendPoint> originalBendpoints = originalEdgeSection.getBendPoints();
                 List<ElkBendPoint> edgeBendpoints = originalEdgeSection.getBendPoints();
                 ElkNode parent = sortedPart.getContainingNode();
                 ElkNode originalParent = originalEdge.getContainingNode();
                 KVector offset = determineCoordinateRelativeToAnchestor(parent, originalParent);
+//                addOffset(sortedPartSections, offset);
+//                originalSections.addAll(sortedPartSections);
                 if (index == 0) {
                     originalEdgeSection.setStartLocation(sortedPartSection.getStartX() + offset.x,
                             sortedPartSection.getStartY() + offset.y);
@@ -213,7 +218,7 @@ class ElkGraphLayoutTransferrer {
                     bp.set(sortedPartSection.getStartX() + offset.x, sortedPartSection.getStartY() + offset.y);
                     originalBendpoints.add(bp);
                     originalBendpoints.addAll(edgeBendpoints);
-                    parent.getPorts().remove(sortedPart.getSources().get(0));
+//                    parent.getPorts().remove(sortedPart.getSources().get(0));
                 } else {
                     ElkBendPoint bp = ElkGraphFactory.eINSTANCE.createElkBendPoint();
                     bp.set(sortedPartSection.getStartX() + offset.x, sortedPartSection.getStartY() + offset.y);
@@ -222,10 +227,10 @@ class ElkGraphLayoutTransferrer {
                     ElkBendPoint bpEnd = ElkGraphFactory.eINSTANCE.createElkBendPoint();
                     bpEnd.set(sortedPartSection.getEndX() + offset.x, sortedPartSection.getEndY() + offset.y);
                     originalBendpoints.add(bpEnd);
-                    parent.getPorts().remove(sortedPart.getSources().get(0));
+//                    parent.getPorts().remove(sortedPart.getSources().get(0));
                 }
-                boolean didIt = parent.getContainedEdges().remove(sortedPart);
-                assert didIt;
+//                boolean didIt = parent.getContainedEdges().remove(sortedPart);
+//                assert didIt;
                 index++;
             }
             // Delete all part of edge stuff such that the original edge is only handled once.
@@ -299,6 +304,16 @@ class ElkGraphLayoutTransferrer {
             int x = 0;
         }
         
+    }
+    
+    public void addOffset(List<ElkEdgeSection> sections, KVector offset) {
+        for (ElkEdgeSection section : sections) {
+            section.setStartLocation(section.getStartX() + offset.x, section.getStartY() + offset.y);
+            section.setEndLocation(section.getEndX() + offset.x, section.getEndY() + offset.y);
+            for (ElkBendPoint bp : section.getBendPoints()) {
+                bp.set(bp.getX() + offset.x, bp.getY() + offset.y);
+            }
+        }
     }
     
     public KVector determineCoordinateRelativeToAnchestor(ElkNode node, ElkNode ancestor) {
