@@ -187,10 +187,11 @@ public final class SwitchDecider {
 
         // If upperNode and lowerNode are part of a layout unit not only containing themselves,
         // then the layout units must be equal for a switch to be allowed.
-        LNode upperLayoutUnit = upperNode.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
-        LNode lowerLayoutUnit = lowerNode.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+        List<LNode> upperLayoutUnit = upperNode.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+        List<LNode> lowerLayoutUnit = lowerNode.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
         
-        boolean areInDifferentLayoutUnits = upperLayoutUnit != lowerLayoutUnit;
+        boolean areInDifferentLayoutUnits = upperLayoutUnit == null || lowerLayoutUnit == null
+                || !(upperLayoutUnit.contains(lowerNode) && lowerLayoutUnit.contains(upperNode));
 
         // FIXME the following predicate is problematic, layout units are represented by a regular node,
         // thus 'upperNode' can be 'upperLayoutUnit' and still have more nodes in the layout unit
@@ -221,8 +222,8 @@ public final class SwitchDecider {
         return false;
     }
 
-    private boolean partOfMultiNodeLayoutUnit(final LNode node, final LNode layoutUnit) {
-        return layoutUnit != null && layoutUnit != node;
+    private boolean partOfMultiNodeLayoutUnit(final LNode node, final List<LNode> layoutUnit) {
+        return layoutUnit != null && layoutUnit.size() > 1;
     }
 
     private boolean areNormalAndNorthSouthPortDummy(final LNode upperNode, final LNode lowerNode) {

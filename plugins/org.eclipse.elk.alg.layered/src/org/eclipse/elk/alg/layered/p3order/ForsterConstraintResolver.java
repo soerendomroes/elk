@@ -97,9 +97,11 @@ public class ForsterConstraintResolver implements IInitializable {
         if (fullInit) {
             barycenterStates[layerIndex][nodeIndex] = new BarycenterState(node);
             
-            LNode layoutUnit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+            List<LNode> layoutUnit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
             if (layoutUnit != null) {
-                layoutUnits.put(layoutUnit, node);
+                for (LNode lNode : layoutUnit) {                    
+                    layoutUnits.put(lNode, node);
+                }
             }
         }
     }

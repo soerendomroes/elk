@@ -330,9 +330,11 @@ public class BarycenterHeuristicTest extends TestGraphCreator {
         LNode[][] nodes = getGraph().toNodeArray();
         for (LNode[] list : nodes) {
             for (LNode node : list) {
-                LNode layoutUnit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+                List<LNode> layoutUnit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
                 if (layoutUnit != null) {
-                    layoutUnits.put(layoutUnit, node);
+                    for (LNode unitNode : layoutUnit) {                        
+                        layoutUnits.put(unitNode, node);
+                    }
                 }
             }
         }

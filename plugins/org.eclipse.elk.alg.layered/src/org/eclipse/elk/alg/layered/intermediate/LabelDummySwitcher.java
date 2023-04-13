@@ -167,7 +167,8 @@ public final class LabelDummySwitcher implements ILayoutProcessor<LGraph> {
         // From the graph's nodes, filter out the label dummies and add them to the appropriate lists
         layeredGraph.getLayers().stream()
                 .flatMap((layer) -> layer.getNodes().stream())
-                .filter(node -> node.getType() == NodeType.LABEL)
+                .filter(node -> node.getType() == NodeType.LABEL
+                    && !node.hasProperty(InternalProperties.IN_LAYER_SUCCESSOR_CONSTRAINTS))
                 .map(labelDummy -> new LabelDummyInfo(labelDummy, defaultPlacementStrategy))
                 .forEach(dummyInfo -> infos.get(dummyInfo.placementStrategy).add(dummyInfo));
         

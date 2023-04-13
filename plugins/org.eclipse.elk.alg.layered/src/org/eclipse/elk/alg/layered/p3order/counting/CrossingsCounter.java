@@ -486,7 +486,8 @@ public final class CrossingsCounter {
         final List<LPort> ports = Lists.newArrayList();
         final Deque<LNode> stack = new ArrayDeque<>();
         
-        LNode lastLayoutUnit = null;
+        // TODO this has to be a queue of layout units?
+        List<LNode> lastLayoutUnit = null;
         int index = 0;
         for (int i = 0; i < nodes.length; ++i) {
             LNode current = nodes[i];
@@ -497,6 +498,8 @@ public final class CrossingsCounter {
             }
             if (current.hasProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT)) {
                 lastLayoutUnit = current.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+//                lastLayoutUnit = unit.get(unit.size() - 1); // randomly take the last one. I don't know why.
+//                // maybe i need a different property for this for in-layer edges.
             }
             
             switch (current.getType()) {
@@ -617,11 +620,17 @@ public final class CrossingsCounter {
         return edge.getSource() == edge.getTarget();
     }
     
-    private boolean isLayoutUnitChanged(final LNode lastUnit, final LNode node) {
-        if (lastUnit == null || lastUnit == node || !node.hasProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT)) {
+    private boolean isLayoutUnitChanged(final List<LNode> lastUnit, final LNode node) {
+        List<LNode> unit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+        if (lastUnit == null || lastUnit.size() == 1 || !node.hasProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT)
+                || lastUnit.size() != unit.size()) {
             return false;
         }
-        LNode unit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
-        return unit != lastUnit;
+        for (int i = 0; i < unit.size(); i++) {
+            if (unit.get(i) != lastUnit.get(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

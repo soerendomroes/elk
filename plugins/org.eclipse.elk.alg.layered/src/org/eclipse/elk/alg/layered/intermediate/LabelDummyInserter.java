@@ -70,44 +70,7 @@ public final class LabelDummyInserter implements ILayoutProcessor<LGraph> {
         for (LNode node : layeredGraph.getLayerlessNodes()) {
             for (LEdge edge : node.getOutgoingEdges()) {
                 if (edgeNeedsToBeProcessed(edge)) {
-                    double thickness = retrieveThickness(edge);
-                    
-                    // Create dummy node and remember represented labels (to be filled below)
-                    List<LLabel> representedLabels = Lists.newArrayListWithCapacity(edge.getLabels().size());
-                    LNode dummyNode = createLabelDummy(layeredGraph, edge, thickness, representedLabels);
-                    newDummyNodes.add(dummyNode);
-                    
-                    // Determine the size of the dummy node and move labels over to it
-                    KVector dummySize = dummyNode.getSize();
-                    
-                    ListIterator<LLabel> iterator = edge.getLabels().listIterator();
-                    while (iterator.hasNext()) {
-                        LLabel label = iterator.next();
-                        
-                        if (label.getProperty(LayeredOptions.EDGE_LABELS_PLACEMENT) == EdgeLabelPlacement.CENTER) {
-                            // The way we stack labels depends on the layout direction
-                            if (layoutDirection.isVertical()) {
-                                dummySize.x += label.getSize().x + labelLabelSpacing;
-                                dummySize.y = Math.max(dummySize.y, label.getSize().y);
-                            } else {
-                                dummySize.x = Math.max(dummySize.x, label.getSize().x);
-                                dummySize.y += label.getSize().y + labelLabelSpacing;
-                            }
-                            
-                            // Move the label over to the dummy node's REPRESENTED_LABELS property
-                            representedLabels.add(label);
-                            iterator.remove();
-                        }
-                    }
-                    
-                    // The dummy node now contains a superfluous label-label spacing and does not include the
-                    // edge-label spacing yet
-                    if (layoutDirection.isVertical()) {
-                        dummySize.x -= labelLabelSpacing;
-                        dummySize.y += edgeLabelSpacing + thickness;
-                    } else {
-                        dummySize.y += edgeLabelSpacing - labelLabelSpacing + thickness;
-                    }
+                    processEdge(edge, layeredGraph, newDummyNodes, layoutDirection, labelLabelSpacing, edgeLabelSpacing);
                 }
             }
         }
@@ -119,10 +82,64 @@ public final class LabelDummyInserter implements ILayoutProcessor<LGraph> {
     }
     
     /**
+     * Creates a label dummy node with correct spacing and size for the given edge.
+     * This method assumes that the edge needs a label dummy.
+     * This should be checked beforehand with {@link #edgeNeedsToBeProcessed(LEdge)}
+     * 
+     * @param edge The edge to process.
+     * @param layeredGraph The parent graph.
+     * @param newDummyNodes The list of new dummy nodes that where created.
+     * @param layoutDirection The layout direction.
+     * @param labelLabelSpacing The spacing between two labels.
+     * @param edgeLabelSpacing The spacing between edges and labels.
+     */
+    public static void processEdge(final LEdge edge, final LGraph layeredGraph, final List<LNode> newDummyNodes,
+            final Direction layoutDirection, final double labelLabelSpacing, final double edgeLabelSpacing) {
+        double thickness = retrieveThickness(edge);
+    
+        // Create dummy node and remember represented labels (to be filled below)
+        List<LLabel> representedLabels = Lists.newArrayListWithCapacity(edge.getLabels().size());
+        LNode dummyNode = createLabelDummy(layeredGraph, edge, thickness, representedLabels);
+        newDummyNodes.add(dummyNode);
+        
+        // Determine the size of the dummy node and move labels over to it
+        KVector dummySize = dummyNode.getSize();
+        
+        ListIterator<LLabel> iterator = edge.getLabels().listIterator();
+        while (iterator.hasNext()) {
+            LLabel label = iterator.next();
+            
+            if (label.getProperty(LayeredOptions.EDGE_LABELS_PLACEMENT) == EdgeLabelPlacement.CENTER) {
+                // The way we stack labels depends on the layout direction
+                if (layoutDirection.isVertical()) {
+                    dummySize.x += label.getSize().x + labelLabelSpacing;
+                    dummySize.y = Math.max(dummySize.y, label.getSize().y);
+                } else {
+                    dummySize.x = Math.max(dummySize.x, label.getSize().x);
+                    dummySize.y += label.getSize().y + labelLabelSpacing;
+                }
+                
+                // Move the label over to the dummy node's REPRESENTED_LABELS property
+                representedLabels.add(label);
+                iterator.remove();
+            }
+        }
+        
+        // The dummy node now contains a superfluous label-label spacing and does not include the
+        // edge-label spacing yet
+        if (layoutDirection.isVertical()) {
+            dummySize.x -= labelLabelSpacing;
+            dummySize.y += edgeLabelSpacing + thickness;
+        } else {
+            dummySize.y += edgeLabelSpacing - labelLabelSpacing + thickness;
+        }
+    }
+    
+    /**
      * Checks whether the given edge needs to be processed. That's the case if the edge is not a self-loop
      * and if it has center edge labels in the first place.
      */
-    private boolean edgeNeedsToBeProcessed(final LEdge edge) {
+    public static boolean edgeNeedsToBeProcessed(final LEdge edge) {
         return edge.getSource().getNode() != edge.getTarget().getNode()
                 && Iterables.any(edge.getLabels(), CENTER_LABEL);
     }
@@ -130,7 +147,7 @@ public final class LabelDummyInserter implements ILayoutProcessor<LGraph> {
     /**
      * Retrieves the given edge's thickness. If this is a negative value, zero is returned and set on the edge.
      */
-    private double retrieveThickness(final LEdge edge) {
+    private static double retrieveThickness(final LEdge edge) {
         double thickness = edge.getProperty(LayeredOptions.EDGE_THICKNESS);
         if (thickness < 0) {
             thickness = 0;
@@ -153,7 +170,7 @@ public final class LabelDummyInserter implements ILayoutProcessor<LGraph> {
      *            currently empty list of labels represented by the new label dummy. This is set on the edge as a
      *            property and will later be filled with the represented labels by the calling method.
      */
-    private LNode createLabelDummy(final LGraph layeredGraph, final LEdge edge, final double thickness,
+    private static LNode createLabelDummy(final LGraph layeredGraph, final LEdge edge, final double thickness,
             final List<LLabel> representedLabels) {
         
         LNode dummyNode = new LNode(layeredGraph);

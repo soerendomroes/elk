@@ -83,11 +83,11 @@ public class ForsterConstraintResolverTest {
         for (Layer layer : (LGraph) graph) {
             // We iterate over the layer's nodes and keep track of two things: the layout units we've encountered so
             // far, and the current layout unit. Layout units are identified through a representing node.
-            Set<LNode> encounteredLayoutUnits = new HashSet<>();
-            LNode currentLayoutUnit = null;
+            Set<List<LNode>> encounteredLayoutUnits = new HashSet<>();
+            List<LNode> currentLayoutUnit = null;
             
             for (LNode node : layer) {
-                LNode newLayoutUnit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+                List<LNode> newLayoutUnit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
                 
                 if (newLayoutUnit != null && newLayoutUnit != currentLayoutUnit) {
                     // We have a node which does not belong to the current layout unit. That's okay if the new layout

@@ -196,6 +196,7 @@ algorithm layered(LayeredLayoutProvider) {
     supports considerModelOrder.components
     supports considerModelOrder.portModelOrder
     supports generatePositionAndLayerIds
+    supports inLayerEdge
 }
 
 /* ------------------------
@@ -1126,5 +1127,15 @@ advanced option generatePositionAndLayerIds: boolean {
         when setting the interactiveLayout option. This option should be specified on the root node."
     default = false
     targets parents
+        
+}
+
+advanced option inLayerEdge: boolean {
+    label "In-Layer Edge"
+    description
+        "Marks an edge as an in-layer edge. Hence it should be ignored for cycle breaking and layer assignment.
+        Nodes connected via an in-layer edge should be next to each other during crossing minimization."
+    default = false
+    targets edges
         
 }

@@ -669,9 +669,14 @@ public class TestGraphCreator {
         LPort northPort = addPortOnSide(rightNodes[2], PortSide.NORTH);
 
         addEdgeBetweenPorts(southPort, northPort);
+        
+        List<LNode> layoutUnit1 = new ArrayList<>();
+        layoutUnit1.add(rightNodes[2]);
+        List<LNode> layoutUnit2 = new ArrayList<>();
+        layoutUnit2.add(rightNodes[2]);
 
-        rightNodes[1].setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, rightNodes[2]);
-        rightNodes[2].setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, rightNodes[2]);
+        rightNodes[1].setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, layoutUnit1);
+        rightNodes[2].setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, layoutUnit2);
 
         setUpIds();
         return graph;
@@ -971,8 +976,13 @@ public class TestGraphCreator {
         } else {
             addEdgeBetweenPorts(dummyNodePort, normalNodePort);
         }
-
-        northSouthDummy.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, nodeWithNSPorts);
+        
+        List<LNode> unit = northSouthDummy.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+        if (unit == null) {
+            unit = new ArrayList<>();
+            northSouthDummy.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, unit);
+        }
+        unit.add(nodeWithNSPorts);
         northSouthDummy.setProperty(InternalProperties.ORIGIN, nodeWithNSPorts);
 
         setAsNorthSouthNode(northSouthDummy);
@@ -1050,7 +1060,13 @@ public class TestGraphCreator {
     protected LNode addNodeToLayer(final Layer layer) {
         LNode node = new LNode(graph);
         node.setType(NodeType.NORMAL);
-        node.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, node);
+
+        List<LNode> unit = node.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+        if (unit == null) {
+            unit = new ArrayList<>();
+            node.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, unit);
+        }
+        unit.add(node);
         node.setLayer(layer);
         node.id = nodeId++;
         return node;

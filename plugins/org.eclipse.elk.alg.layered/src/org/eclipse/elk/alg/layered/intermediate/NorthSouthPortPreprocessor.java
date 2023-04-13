@@ -174,7 +174,9 @@ public final class NorthSouthPortPreprocessor implements ILayoutProcessor<LGraph
                 }
 
                 // Nodes form their own layout unit
-                node.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, node);
+                List<LNode> inLayerUnit = new ArrayList<>();
+                inLayerUnit.add(node);
+                node.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, inLayerUnit);
 
                 // Clear the lists of northern and southern dummy nodes
                 northDummyNodes.clear();
@@ -207,7 +209,12 @@ public final class NorthSouthPortPreprocessor implements ILayoutProcessor<LGraph
 
                     // The dummy nodes form a layout unit identified by the node they were created from.
                     // In addition, northern dummy nodes must appear before the regular node
-                    dummy.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, node);
+                    List<LNode> unit = dummy.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+                    if (unit == null) {
+                        unit = new ArrayList<>();
+                        dummy.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, unit);
+                    }
+                    unit.add(node);
                  
                     // If originPort has port constraint ALLOW_NON_FLOW_PORTS_TO_SWITCH_SIDES,
                     // do not apply successor constraints to the dummy node dummy.
@@ -250,7 +257,12 @@ public final class NorthSouthPortPreprocessor implements ILayoutProcessor<LGraph
 
                     // The dummy nodes form a layout unit identified by the node they were created from.
                     // In addition, southern dummy nodes must appear after the regular node
-                    dummy.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, node);
+                    List<LNode> unit = dummy.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+                    if (unit == null) {
+                        unit = new ArrayList<>();
+                        dummy.setProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT, unit);
+                    }
+                    unit.add(node);
 
                     // If originPort has port constraint ALLOW_NON_FLOW_PORTS_TO_SWITCH_SIDES,
                     // do not apply successor constraints to the dummy node dummy.

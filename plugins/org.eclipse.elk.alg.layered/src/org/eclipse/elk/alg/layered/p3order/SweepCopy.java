@@ -143,12 +143,20 @@ class SweepCopy {
     private LNode assertCorrectPortSides(final LNode dummy) {
         assert dummy.getType() == NodeType.NORTH_SOUTH_PORT;
 
-        LNode origin = dummy.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
-
+        List<LNode> unit = dummy.getProperty(InternalProperties.IN_LAYER_LAYOUT_UNIT);
+        LNode origin = null;
+        if (unit != null && unit.size() > 1) {
+            origin = unit.get(1); // THis will not work I guess.
+        } else if (unit != null && unit.size() == 1){
+            origin = unit.get(0); // TODO bad
+        }
+        if (origin == null) {
+            return origin;
+        }
         // a north south port dummy has exactly one port
         List<LPort> dummyPorts = dummy.getPorts();
         LPort dummyPort = dummyPorts.get(0);
-
+        
         // find the corresponding port on the regular node
         for (LPort port : origin.getPorts()) {
             if (port.equals(dummyPort.getProperty(InternalProperties.ORIGIN))) {

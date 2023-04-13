@@ -78,6 +78,8 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
     PORT_SIDE_PROCESSOR,
     /** Takes a layered graph and inserts dummy nodes for edges connected to inverted ports. */
     INVERTED_PORT_PROCESSOR,
+    /** Readds in-layer edges to the graph. TODO position unclear, maybe before north south, maybe after, has to be before MO? */
+    IN_LAYER_EDGE_PROCESSOR,
     /** Orders the port lists of nodes with fixed port order. */
     PORT_LIST_SORTER,
     /** Sorts nodes and edges according to their order in the input model. */
@@ -115,6 +117,8 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
     LABEL_DUMMY_SWITCHER,
     /** Tries to shorten edge center labels where necessary. */
     CENTER_LABEL_MANAGEMENT_PROCESSOR,
+    /** TODO correct position? Removes the in-layer edges again. */
+    IN_LAYER_EDGE_PRE_NP_PROCESSOR,
     /** Decides, on which side of an edge the edge labels should be placed. */
     LABEL_SIDE_SELECTOR,
     /** Merges long edge dummy nodes belonging to the same hyperedge. */
@@ -124,6 +128,8 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
 
     // Before Phase 5
 
+    /** TODO correct position? Readds in-layer edges after NP. */
+    IN_LAYER_EDGE_POST_NP_PROCESSOR,
     /** Calculate the size of layers and the graph's height and offset. */
     LAYER_SIZE_AND_GRAPH_HEIGHT_CALCULATOR,
     /** Fix coordinates of hierarchical port dummy nodes. */
@@ -249,6 +255,15 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
 
         case IN_LAYER_CONSTRAINT_PROCESSOR:
             return new InLayerConstraintProcessor();
+            
+        case IN_LAYER_EDGE_POST_NP_PROCESSOR:
+            return new InLayerEdgePostNPProcessor();
+            
+        case IN_LAYER_EDGE_PRE_NP_PROCESSOR:
+            return new InLayerEdgePreNPProcessor();
+            
+        case IN_LAYER_EDGE_PROCESSOR:
+            return new InLayerEdgeProcessor();
 
         case INNERMOST_NODE_MARGIN_CALCULATOR:
             return new InnermostNodeMarginCalculator();

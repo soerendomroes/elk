@@ -318,6 +318,13 @@ final class GraphConfigurator {
             configuration
                 .addBefore(LayeredPhases.P3_NODE_ORDERING, IntermediateProcessorStrategy.SORT_BY_INPUT_ORDER_OF_MODEL);
         }
+        // In-layer edge support.
+        configuration
+            .addBefore(LayeredPhases.P3_NODE_ORDERING, IntermediateProcessorStrategy.IN_LAYER_EDGE_PROCESSOR);
+        configuration
+            .addBefore(LayeredPhases.P4_NODE_PLACEMENT, IntermediateProcessorStrategy.IN_LAYER_EDGE_PRE_NP_PROCESSOR);
+        configuration
+            .addBefore(LayeredPhases.P5_EDGE_ROUTING, IntermediateProcessorStrategy.IN_LAYER_EDGE_POST_NP_PROCESSOR);
         
         return configuration;
     }

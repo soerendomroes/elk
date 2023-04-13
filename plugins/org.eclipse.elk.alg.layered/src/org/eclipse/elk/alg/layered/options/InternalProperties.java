@@ -179,9 +179,20 @@ public final class InternalProperties {
      * Layer layout units are identified through one of their nodes.
      * The idea behind the latter is that for instance long edge dummies can be placed between 
      * an original node and one of its north port dummy nodes. It results in an edge crossing. 
+     */ 
+    public static final IProperty<List<LNode>> IN_LAYER_LAYOUT_UNIT = new Property<List<LNode>>(
+            "inLayerLayoutUnit"); // TODO maybe make it a set and not a list?
+
+    /**
+     * The layout unit a node belongs to. This property only makes sense for nodes. A layout unit is
+     * a set of nodes between which no nodes belonging to other layout units may be placed. Nodes
+     * not belonging to any layout unit may be placed arbitrarily between nodes of a layout unit.
+     * Layer layout units are identified through one of their nodes.
+     * The idea behind the latter is that for instance long edge dummies can be placed between 
+     * an original node and one of its north port dummy nodes. It results in an edge crossing. 
      */
-    public static final IProperty<LNode> IN_LAYER_LAYOUT_UNIT = new Property<LNode>(
-            "inLayerLayoutUnit");
+    public static final IProperty<List<LEdge>> IN_LAYER_EDGES = new Property<List<LEdge>>(
+            "inLayerEdges");
 
     /**
      * The in-layer constraint placed on a node. This indicates whether this node should be handled
