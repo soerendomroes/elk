@@ -240,6 +240,9 @@ public final class CrossingsCounter {
     public Pair<Integer, Integer> countInLayerCrossingsBetweenNodesInBothOrders(final LNode upperNode,
             final LNode lowerNode, final PortSide side) {
         List<LPort> ports = connectedInLayerPortsSortedByPosition(upperNode, lowerNode, side);
+        if (indexTree.getMaxNum() < ports.size()) {            
+            indexTree = new BinaryIndexedTree(ports.size());
+        }
         int upperLowerCrossings = countInLayerCrossingsOnPorts(ports);
         switchNodes(upperNode, lowerNode, side);
         // Since we might add endpositions of ports which are not in the ports list, we need to explicitly clear
