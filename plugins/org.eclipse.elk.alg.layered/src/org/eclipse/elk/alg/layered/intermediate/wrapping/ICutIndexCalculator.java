@@ -9,12 +9,13 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.intermediate.wrapping;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
 import org.eclipse.elk.alg.layered.options.WrappingStrategy;
+
+import com.google.common.collect.Lists;
 
 /**
  * Calculate cut indexes that are used to cut a graph's layering into multiple chunks and 'wrap' the drawing to improve
@@ -49,7 +50,7 @@ public interface ICutIndexCalculator {
             if (cuts != null) {
                 return cuts;
             } else {
-                return Collections.emptyList();
+                return Lists.newArrayList(4, 8); // Collections.emptyList();
             }
         }
         @Override

@@ -20,6 +20,7 @@ import org.eclipse.xtext.serializer.ISerializationContext
 import org.eclipse.xtext.util.Strings
 
 import static org.eclipse.elk.graph.ElkGraphPackage.Literals.*
+import java.util.List
 
 class ElkGraphSemanticSequencer extends AbstractElkGraphSemanticSequencer {
     

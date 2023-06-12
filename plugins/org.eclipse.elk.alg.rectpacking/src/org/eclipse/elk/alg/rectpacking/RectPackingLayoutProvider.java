@@ -105,7 +105,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
             // Output debug graph
             // elkjs-exclude-start
             if (progressMonitor.isLoggingEnabled()) {
-                progressMonitor.logGraph(layoutGraph, slotIndex + "-Before " + processor.getClass().getSimpleName());
+//                progressMonitor.logGraph(layoutGraph, slotIndex + "-Before " + processor.getClass().getSimpleName());
             }
             // elkjs-exclude-end
             
@@ -116,7 +116,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         // Graph debug output
         // elkjs-exclude-start
         if (progressMonitor.isLoggingEnabled()) {
-            progressMonitor.logGraph(layoutGraph, slotIndex + "-Finished");
+//            progressMonitor.logGraph(layoutGraph, slotIndex + "-Finished");
         }
         // elkjs-exclude-end
 

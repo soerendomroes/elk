@@ -9,6 +9,7 @@
  *******************************************************************************/
 package org.eclipse.elk.graph.util;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ public final class ElkReflect {
     static {
         // special treatment and no new instance function required for EnumSets, register clone here
         ElkReflect.registerClone(EnumSet.class, (es) -> ((EnumSet<?>) es).clone());
+        ElkReflect.registerClone(ArrayList.class, (es) -> ((ArrayList<?>) es).clone());
     }
     
     private ElkReflect() { }
@@ -102,6 +104,9 @@ public final class ElkReflect {
         // special treatment for EnumSets
         if (clonee instanceof EnumSet<?>) {
             return (T) REGISTRY_CLONE.get(EnumSet.class).clone(clonee);
+        }
+        if (clonee instanceof ArrayList<?>) {
+            return (T) REGISTRY_CLONE.get(ArrayList.class).clone(clonee);
         }
         
         if (REGISTRY_CLONE.containsKey(clonee.getClass())) {

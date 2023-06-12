@@ -56,11 +56,11 @@ public class RadiusExtensionOverlapRemoval extends AbstractRadiusExtensionCompac
             for (ElkNode node : nodes) {
                 oldPositions.add(new KVector(node.getX(), node.getY()));
             }
-            progressMonitor.logGraph(graph, "Before removing overlaps");
+//            progressMonitor.logGraph(graph, "Before removing overlaps");
             while (overlapLayer(nodes)) {
                 contractLayer(nodes, false);
             }
-            progressMonitor.logGraph(graph, "After removing overlaps");
+//            progressMonitor.logGraph(graph, "After removing overlaps");
 
             double movedX = 0;
             double movedY = 0;

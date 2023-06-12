@@ -9,6 +9,7 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.graph.transform;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -66,6 +67,8 @@ class ElkGraphLayoutTransferrer {
         
         // The ElkNode that represents this graph in the original ElkGraph
         ElkNode parentElkNode = (ElkNode) graphOrigin;
+        final ArrayList<Integer> cuts = lgraph.getProperty(LayeredOptions.WRAPPING_CUTTING_CUTS);
+        parentElkNode.setProperty(LayeredOptions.WRAPPING_CUTTING_CUTS, cuts);
         
         // The LNode that represents this graph in the upper hierarchy level, if any
         LNode parentLNode = (LNode) lgraph.getParentNode();
