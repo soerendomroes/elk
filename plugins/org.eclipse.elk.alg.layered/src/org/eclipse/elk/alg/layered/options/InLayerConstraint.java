@@ -14,7 +14,7 @@ package org.eclipse.elk.alg.layered.options;
  * parts: the normal part, a top part and a bottom part. This constraint can be set on nodes
  * to define in which part they may appear.
  * 
- * @see org.eclipse.elk.alg.layered.intermediate.InLayerConstraintProcessor
+ * @see org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerConstraintProcessor
  *        InLayerConstraintProcessor
  * @author cds
  */

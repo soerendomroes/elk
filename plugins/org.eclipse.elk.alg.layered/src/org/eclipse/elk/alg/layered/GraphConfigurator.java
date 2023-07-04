@@ -320,6 +320,8 @@ final class GraphConfigurator {
         }
         // In-layer edge support.
         configuration
+            .addBefore(LayeredPhases.P1_CYCLE_BREAKING, IntermediateProcessorStrategy.IN_LAYER_EDGE_PRE_PROCESSOR);
+        configuration
             .addBefore(LayeredPhases.P3_NODE_ORDERING, IntermediateProcessorStrategy.IN_LAYER_EDGE_PROCESSOR);
         configuration
             .addBefore(LayeredPhases.P4_NODE_PLACEMENT, IntermediateProcessorStrategy.IN_LAYER_EDGE_PRE_NP_PROCESSOR);

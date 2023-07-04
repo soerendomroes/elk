@@ -11,6 +11,11 @@ package org.eclipse.elk.alg.layered.intermediate;
 
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.intermediate.compaction.HorizontalGraphCompactor;
+import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerConstraintProcessor;
+import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePostNPProcessor;
+import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePreNPProcessor;
+import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePreProcessor;
+import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgeProcessor;
 import org.eclipse.elk.alg.layered.intermediate.wrapping.BreakingPointInserter;
 import org.eclipse.elk.alg.layered.intermediate.wrapping.BreakingPointProcessor;
 import org.eclipse.elk.alg.layered.intermediate.wrapping.BreakingPointRemover;
@@ -44,6 +49,8 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
     INTERACTIVE_EXTERNAL_PORT_POSITIONER,
     /** Reverse edges that run from higher-index to lower-index partitions. */
     PARTITION_PREPROCESSOR,
+    /** Remove all edges that are in-layer edges and their ports if they do not connect to other edges.*/
+    IN_LAYER_EDGE_PRE_PROCESSOR,
     
     // Before Phase 2
 
@@ -261,6 +268,9 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
             
         case IN_LAYER_EDGE_PRE_NP_PROCESSOR:
             return new InLayerEdgePreNPProcessor();
+            
+        case IN_LAYER_EDGE_PRE_PROCESSOR:
+            return new InLayerEdgePreProcessor();
             
         case IN_LAYER_EDGE_PROCESSOR:
             return new InLayerEdgeProcessor();

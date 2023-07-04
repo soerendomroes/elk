@@ -20,6 +20,7 @@ import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
 import org.eclipse.elk.alg.layered.graph.Layer;
 import org.eclipse.elk.alg.layered.intermediate.greedyswitch.TestGraphCreator;
+import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerConstraintProcessor;
 import org.eclipse.elk.alg.layered.options.InLayerConstraint;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;

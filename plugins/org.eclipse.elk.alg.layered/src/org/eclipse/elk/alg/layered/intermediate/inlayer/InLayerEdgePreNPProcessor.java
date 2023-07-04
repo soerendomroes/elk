@@ -7,14 +7,15 @@
  * 
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.elk.alg.layered.intermediate;
+package org.eclipse.elk.alg.layered.intermediate.inlayer;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
-import org.eclipse.elk.alg.layered.graph.LNode;
+import org.eclipse.elk.alg.layered.intermediate.loops.ordering.PortSideAssigner;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
+import org.eclipse.elk.alg.layered.options.LayeredOptions;
 import org.eclipse.elk.core.alg.ILayoutProcessor;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 
@@ -32,18 +33,28 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
  * </dl>
  */
 public class InLayerEdgePreNPProcessor implements ILayoutProcessor<LGraph> {
+    
+//    private final PortSideAssigner portSideAssigner = new PortSideAssigner();
 
     @Override
     public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
         progressMonitor.begin("Remove in-layer edges", 1);
         
-        List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
-        if (inLayerEdges != null) {
-            for (LEdge lEdge : inLayerEdges) {
-                lEdge.getSource().getOutgoingEdges().remove(lEdge);
-                lEdge.getTarget().getIncomingEdges().remove(lEdge);
-            }
-        }
+//        boolean leftOrRight = graph.getProperty(LayeredOptions.DIRECTION).isHorizontal();
+//        Set<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
+//        
+//        portSideAssigner.assignPortSides(inLayerEdges, leftOrRight);
+//        
+//        // Readd ports for node size calculation.
+        
+        
+        
+//        if (inLayerEdges != null) {
+//            for (LEdge lEdge : inLayerEdges) {
+//                lEdge.getSource().getOutgoingEdges().remove(lEdge);
+//                lEdge.getTarget().getIncomingEdges().remove(lEdge);
+//            }
+//        }
         
         progressMonitor.done();
     }

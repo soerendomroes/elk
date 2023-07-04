@@ -11,9 +11,13 @@ package org.eclipse.elk.alg.layered.intermediate.loops.ordering;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.elk.alg.layered.graph.LEdge;
+import org.eclipse.elk.alg.layered.graph.LPort;
+import org.eclipse.elk.alg.layered.graph.Layer;
 import org.eclipse.elk.alg.layered.intermediate.loops.SelfHyperLoop;
 import org.eclipse.elk.alg.layered.intermediate.loops.SelfLoopHolder;
 import org.eclipse.elk.alg.layered.intermediate.loops.SelfLoopPort;
@@ -27,6 +31,37 @@ import org.eclipse.elk.core.options.PortSide;
  * is assign port sides to hidden self loop ports. It will not make them visible again.
  */
 public class PortSideAssigner {
+    
+    /**
+     * Assume that port sides can be freely chosen then in-layer edge ports should point to each other
+     * @param inLayerEdges The list of in-layer edges for which the ports should get a port side.
+     * @param horizontal Whether the layout direction is horizontal
+     */
+    public void assignPortSides(final List<LEdge> inLayerEdges, final boolean horizontal) {
+        for (LEdge edge : inLayerEdges) {
+            LPort source = edge.getSource();
+            LPort target = edge.getTarget();
+            Layer layer = source.getNode().getLayer();
+            int sourceIndex = layer.getNodes().indexOf(source.getNode());
+            int targetIndex = layer.getNodes().indexOf(target.getNode());
+            if (sourceIndex < targetIndex) {
+                if (!source.getNode().getProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS).isSideFixed()) {
+                    source.setSide(horizontal ? PortSide.SOUTH : PortSide.EAST);
+                }
+                if (!target.getNode().getProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS).isSideFixed()) {
+                    target.setSide(horizontal ? PortSide.NORTH : PortSide.WEST);
+                }
+            } else {
+                if (!source.getNode().getProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS).isSideFixed()) {
+                    source.setSide(horizontal ? PortSide.NORTH : PortSide.WEST);
+                }
+                if (!target.getNode().getProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS).isSideFixed()) {
+                    target.setSide(horizontal ? PortSide.SOUTH : PortSide.EAST);
+                }
+            }
+        }
+        
+    }
     
     /**
      * Assigns port sides to all hidden ports subject to the self loop distribution strategy.

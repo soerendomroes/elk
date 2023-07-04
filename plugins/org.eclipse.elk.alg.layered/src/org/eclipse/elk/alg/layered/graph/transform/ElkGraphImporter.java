@@ -1158,17 +1158,17 @@ class ElkGraphImporter {
         // Finally set the source and target of the edge
         ledge.setSource(sourceLPort);
         ledge.setTarget(targetLPort);
-        // Remove in-layer edges and safe them for later.
-        if (ledge.getProperty(LayeredOptions.IN_LAYER_EDGE)) {
-            List<LEdge> inLayerEdges = lgraph.getProperty(InternalProperties.IN_LAYER_EDGES);
-            if (inLayerEdges == null) {
-                inLayerEdges = new ArrayList<>();
-                lgraph.setProperty(InternalProperties.IN_LAYER_EDGES, inLayerEdges);
-            }
-            inLayerEdges.add(ledge);
-            ledge.getSource().getOutgoingEdges().remove(ledge);
-            ledge.getTarget().getIncomingEdges().remove(ledge);
-        }
+//        // Remove in-layer edges and safe them for later.
+//        if (ledge.getProperty(LayeredOptions.IN_LAYER_EDGE)) {
+//            List<LEdge> inLayerEdges = lgraph.getProperty(InternalProperties.IN_LAYER_EDGES);
+//            if (inLayerEdges == null) {
+//                inLayerEdges = new ArrayList<>();
+//                lgraph.setProperty(InternalProperties.IN_LAYER_EDGES, inLayerEdges);
+//            }
+//            inLayerEdges.add(ledge);
+//            ledge.getSource().getOutgoingEdges().remove(ledge);
+//            ledge.getTarget().getIncomingEdges().remove(ledge);
+//        }
         
         // If the ports have multiple incoming or outgoing edges, the HYPEREDGE property needs to be set
         if (sourceLPort.getIncomingEdges().size() > 1 || sourceLPort.getOutgoingEdges().size() > 1

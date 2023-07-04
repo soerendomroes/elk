@@ -112,8 +112,4 @@ public class BinaryIndexedTree {
     public boolean isEmpty() {
         return size == 0;
     }
-    
-    public int getMaxNum() {
-        return this.maxNum;
-    }
 }

@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.elk.alg.layered.intermediate;
+package org.eclipse.elk.alg.layered.intermediate.inlayer;
 
 import java.util.List;
 

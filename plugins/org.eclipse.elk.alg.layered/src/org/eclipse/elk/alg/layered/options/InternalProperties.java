@@ -194,12 +194,15 @@ public final class InternalProperties {
     public static final IProperty<List<LEdge>> IN_LAYER_EDGES = new Property<List<LEdge>>(
             "inLayerEdges");
 
+    public static final IProperty<List<LPort>> IN_LAYER_PORTS = new Property<List<LPort>>(
+            "inLayerPorts");
+
     /**
      * The in-layer constraint placed on a node. This indicates whether this node should be handled
      * like any other node, or if it must be placed at the top or bottom of a layer. This is
      * important for external port dummy nodes. Crossing minimizers are not required to respect this
      * constraint. If they don't, however, they must include a dependency on
-     * {@link org.eclipse.elk.alg.layered.intermediate.InLayerConstraintProcessor}.
+     * {@link org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerConstraintProcessor}.
      */
     public static final IProperty<InLayerConstraint> IN_LAYER_CONSTRAINT
            = new Property<InLayerConstraint>("inLayerConstraint", InLayerConstraint.NONE);
