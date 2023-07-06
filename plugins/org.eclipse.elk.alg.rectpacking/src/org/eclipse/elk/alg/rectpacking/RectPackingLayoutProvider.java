@@ -292,7 +292,30 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                                 cp.and(cp.lt(cp.endOf(rectYs[i - 1]), cp.startOf(rectY)),
 //                                cp.and(cp.eq(choosenPosition[i], cp.constant(1)),
                                         cp.eq(currentMaxHeight[i - 1], cp.startOf(rectY))))))))); // // Bind y-coordinate
+                        
+                        // One of the previous nodes with the same row level as the last one has a row height equal
+                        // to the difference of the new row level and the last one.
+                        if (i > 2) {
+                            IloConstraint[] dominantElement = new IloConstraint[i-1];
+                            for (int index = 0; index < i - 1; index++) {
+                                dominantElement[index] = 
+                                    cp.imply(
+                                            cp.eq(currentRowLevel[index], currentRowLevel[i-1]),
+                                            cp.lt(currentRowLevel[i], cp.sum(cp.endOf(rectYs[index]), intSpacing + 1))
+                                    );
+                            }
+                            cp.add(cp.imply(
+                                    cp.neq(currentRowLevel[i-1], currentRowLevel[i]),
+                                        cp.or(dominantElement)
+                                )
+                            );
+                        }
+                        
+                        
 
+                        if (logging) {
+                            System.out.println("Added dominant");
+                        }
                         // Case left of current one in same subrow
                         constraint[0] =
                                 cp.and(cp.eq(cp.sum(intSpacing, cp.endOf(rectXs[i-1])), cp.startOf(rectX)), // Bind x
@@ -364,6 +387,10 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 //                        currentSubRowLevel[i] = cp.constant(0);
                     }
                 }
+
+                if (logging) {
+                    System.out.println("Trying to solve");
+                }
                 if (cp.solve()) {
                     if (logging) {
                         System.out.println("Scale Measure " + cp.getValue(scaleMeasure));
@@ -397,6 +424,9 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         System.out.println(cp.getValue(maxWidth2));
                         System.out.println(cp.getValue(maxHeight));
                     }
+                    applyPadding(rectangles, padding);
+                    ElkUtil.resizeNode(layoutGraph, drawing.getDrawingWidth() + padding.getHorizontal(),
+                            drawing.getDrawingHeight() + padding.getVertical(), false, true);
                     
                     // Expand nodes by iterating over all other nodes and check whether they are "visible" from the
                     // right or down border. Use this to calculate the width and height increase.
@@ -504,9 +534,13 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 RowFillingAndCompaction secondIt = new RowFillingAndCompaction(aspectRatio, expandNodes, expandToAspectRatio, compaction, nodeNodeSpacing);
                 // Modify the initial approximation if necessary.
                 maxWidth = Math.max(minSize.x, drawing.getDrawingWidth());
-                
+
+                minSize.x -= padding.getHorizontal();
+                minSize.y -= padding.getVertical();
                 // Run placement, compaction, and expansion (if enabled).
                 drawing = secondIt.start(rectangles, maxWidth, minSize, progressMonitor, layoutGraph);
+                minSize.x += padding.getHorizontal();
+                minSize.y += padding.getVertical();
             }
     
             // Final touch.
