@@ -29,6 +29,8 @@ import org.eclipse.elk.core.util.ElkUtil;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.graph.ElkNode;
 
+import com.google.common.collect.Lists;
+
 import ilog.cp.*;
 //import ilog.cplex.IloCplex;
 import ilog.concert.*;
@@ -202,7 +204,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                     widths[i] = cp.endOf(rectXs[i]);
 //                    rectWidths[i] = cp.constant((int) rectangles.get(i).getWidth());
                 }
-                IloNumExpr[] heights = new IloNumExpr[numberOfRects];
+                IloIntExpr[] heights = new IloIntExpr[numberOfRects];
 //                IloNumExpr[] rectHeights = new IloNumExpr[numberOfRects];
                 for (int i = 0; i < numberOfRects; i++) {
                     heights[i] = cp.endOf(rectYs[i]);
@@ -210,7 +212,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 }
 
                 IloNumExpr maxWidth2 = cp.max(widths);
-                IloNumExpr maxHeight = cp.max(heights);
+                IloIntExpr maxHeight = cp.max(heights);
                 IloNumExpr scaleMeasure = cp.min(cp.quot(aspectRatio, maxWidth2), cp.quot(1, maxHeight));
                 // Goal is to maximize the scale measure and minimize the area at the same time.
                 IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth2, maxHeight)));
@@ -293,29 +295,6 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 //                                cp.and(cp.eq(choosenPosition[i], cp.constant(1)),
                                         cp.eq(currentMaxHeight[i - 1], cp.startOf(rectY))))))))); // // Bind y-coordinate
                         
-                        // One of the previous nodes with the same row level as the last one has a row height equal
-                        // to the difference of the new row level and the last one.
-                        if (i > 2) {
-                            IloConstraint[] dominantElement = new IloConstraint[i-1];
-                            for (int index = 0; index < i - 1; index++) {
-                                dominantElement[index] = 
-                                    cp.imply(
-                                            cp.eq(currentRowLevel[index], currentRowLevel[i-1]),
-                                            cp.lt(currentRowLevel[i], cp.sum(cp.endOf(rectYs[index]), intSpacing + 1))
-                                    );
-                            }
-                            cp.add(cp.imply(
-                                    cp.neq(currentRowLevel[i-1], currentRowLevel[i]),
-                                        cp.or(dominantElement)
-                                )
-                            );
-                        }
-                        
-                        
-
-                        if (logging) {
-                            System.out.println("Added dominant");
-                        }
                         // Case left of current one in same subrow
                         constraint[0] =
                                 cp.and(cp.eq(cp.sum(intSpacing, cp.endOf(rectXs[i-1])), cp.startOf(rectX)), // Bind x
@@ -355,6 +334,36 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 //                                cp.and(cp.eq(choosenPosition[i], cp.constant(4)),
                                         cp.eq(currentSubRowEnd[i - 1], cp.startOf(rectY))))))))); //Bind y
                         
+                        // DOMINANT ELEMENT
+                        // FIXME maybe this constraint has to be added before the others to constrain positions and stuff.
+                        // One of the previous nodes with the same row level as the last one has a row height equal
+                        // to the difference of the new row level and the last one.
+                        
+                        // On every row change, there exists a previous element that begins at the previous row level
+                        // and reaches to the current row level.
+                        if (i > 2) {
+                            IloConstraint[] dominantElement = new IloConstraint[i-1];
+                            for (int index = 0; index < i - 1; index++) {
+                                dominantElement[index] = 
+                                    cp.and(
+                                            cp.eq(cp.startOf(rectYs[index]), currentRowLevel[i-1]),
+                                            cp.lt(currentRowLevel[i], cp.sum(cp.endOf(rectYs[index]), intSpacing + 1))
+                                    );
+                            }
+                            cp.add(cp.imply(
+                                    cp.neq(currentRowLevel[i-1], currentRowLevel[i]),
+                                        cp.or(dominantElement)
+                                )
+                            );                                
+                        }
+                        
+                        
+                        
+
+                        if (logging) {
+                            System.out.println("Added dominant");
+                        }
+                        
 
                         if (logging) {
                             System.out.println("FUn");
@@ -386,7 +395,26 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         currentSubRowEnd[i] = cp.intVar(intSpacing + rectHeight[i], intSpacing + rectHeight[i]);
 //                        currentSubRowLevel[i] = cp.constant(0);
                     }
+                    
                 }
+
+                // DOMINANT ELEMENT for last row
+                // Add the same constraint for the last row level and maxheight
+                IloConstraint[] dominantElementForLastRow = new IloConstraint[numberOfRects];
+                for (int index = 0; index < numberOfRects; index++) {
+                    dominantElementForLastRow[index] = 
+                        cp.and(
+                                cp.eq(cp.startOf(rectYs[index]), currentRowLevel[numberOfRects - 1]),
+                                cp.lt(
+                                    maxHeight,
+                                    cp.sum(
+                                        cp.endOf(rectYs[index]),
+                                        intSpacing + 1
+                                    )
+                                )
+                        );
+                }
+                cp.add(cp.or(dominantElementForLastRow));
 
                 if (logging) {
                     System.out.println("Trying to solve");
@@ -430,8 +458,9 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                     
                     // Expand nodes by iterating over all other nodes and check whether they are "visible" from the
                     // right or down border. Use this to calculate the width and height increase.
+                    // Nodes are looked at in the reverse order to make sure that the whitespace elimination works.
                     if (expandNodes) {
-                        for (ElkNode rect : rectangles) {
+                        for (ElkNode rect : Lists.reverse(rectangles)) {
                             double increaseRight = drawing.getDrawingWidth();
                             double increaseDown = drawing.getDrawingHeight();
                             for (ElkNode otherRect : rectangles) {
