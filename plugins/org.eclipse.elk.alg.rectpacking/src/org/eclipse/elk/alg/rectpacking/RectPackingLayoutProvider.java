@@ -452,9 +452,10 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         System.out.println(cp.getValue(maxWidth2));
                         System.out.println(cp.getValue(maxHeight));
                     }
-                    applyPadding(rectangles, padding);
-                    ElkUtil.resizeNode(layoutGraph, drawing.getDrawingWidth() + padding.getHorizontal(),
-                            drawing.getDrawingHeight() + padding.getVertical(), false, true);
+
+                    if (progressMonitor.isLoggingEnabled()) {
+                        progressMonitor.logGraph(layoutGraph, "Output");
+                    }
                     
                     // Expand nodes by iterating over all other nodes and check whether they are "visible" from the
                     // right or down border. Use this to calculate the width and height increase.
@@ -493,6 +494,18 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                             rect.setHeight(increaseDown - rect.getY());
                             ElkUtil.translate(rect, new KVector(increaseRight - rect.getX(), increaseDown - rect.getY()), new KVector(rect.getWidth(), rect.getHeight()));
                         }
+
+                        if (progressMonitor.isLoggingEnabled()) {
+                            progressMonitor.logGraph(layoutGraph, "Output after whitespace elim");
+                        }
+                    }
+                    
+                    applyPadding(rectangles, padding);
+                    ElkUtil.resizeNode(layoutGraph, drawing.getDrawingWidth() + padding.getHorizontal(),
+                            drawing.getDrawingHeight() + padding.getVertical(), false, true);
+
+                    if (progressMonitor.isLoggingEnabled()) {
+                        progressMonitor.logGraph(layoutGraph, "After padding");
                     }
                     
                     if (logging) {
