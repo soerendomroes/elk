@@ -276,8 +276,8 @@ public class RandomGraphGenerator {
             for (int i = 0; i < numberOfBigNodes; i++) {
                 int bigNodeIndex = random.nextInt(graph.getChildren().size());
                 graph.getChildren().get(bigNodeIndex).setDimensions(
-                        get(GeneratorOptions.BIG_NODE_WIDTH).floatVal(random),
-                        get(GeneratorOptions.BIG_NODE_HEIGHT).floatVal(random));
+                        get(GeneratorOptions.BIG_NODE_WIDTH).intVal(random),
+                        get(GeneratorOptions.BIG_NODE_HEIGHT).intVal(random));
             }
             if (get(GeneratorOptions.SET_PRIORITY)) {
                 int prio = graph.getChildren().size();
@@ -1102,8 +1102,8 @@ public class RandomGraphGenerator {
 
         // set size of the node
         if (get(GeneratorOptions.SET_NODE_SIZE)) {
-            node.setWidth(get(GeneratorOptions.NODE_WIDTH).floatVal(random));
-            node.setHeight(get(GeneratorOptions.NODE_HEIGHT).floatVal(random));
+            node.setWidth(get(GeneratorOptions.NODE_WIDTH).intVal(random));
+            node.setHeight(get(GeneratorOptions.NODE_HEIGHT).intVal(random));
         }
 
         // set port constraints

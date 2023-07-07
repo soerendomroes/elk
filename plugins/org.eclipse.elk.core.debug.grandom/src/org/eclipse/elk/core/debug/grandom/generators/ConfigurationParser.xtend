@@ -21,6 +21,7 @@ import org.eclipse.elk.core.debug.grandom.generators.GeneratorOptions.GraphType
 import org.eclipse.elk.core.debug.grandom.generators.GeneratorOptions.RandVal
 import org.eclipse.elk.core.options.PortConstraints
 import org.eclipse.elk.graph.properties.IProperty
+import org.eclipse.elk.core.debug.grandom.gRandom.Size
 
 /**
  * Knows how to turn a {@link Configuration} object into a {@link GeneratorOptions}
@@ -37,8 +38,11 @@ class ConfigurationParser {
         hierarchy(config, genOpt, r)
 
         setQuantities(genOpt, config.fraction, GeneratorOptions.PARTITION_FRAC)
+        setQuantities(genOpt, config.bigNodes, GeneratorOptions.NUMBER_BIG_NODES)
+        setBigNodeSize(genOpt, config.bigNodeSize, GeneratorOptions.BIG_NODE_WIDTH, GeneratorOptions.BIG_NODE_HEIGHT)
         genOpt.setIfExists(config.maxWidth, GeneratorOptions.MAX_WIDTH)
         genOpt.setIfExists(config.maxDegree, GeneratorOptions.MAX_DEGREE)
+        genOpt.setIfExists(config.prio, GeneratorOptions.SET_PRIORITY)
 
         genOpt
     }
@@ -118,6 +122,13 @@ class ConfigurationParser {
     private static def setQuantities(GeneratorOptions genOpt, DoubleQuantity quant, IProperty<RandVal> randomValue) {
         if (quant.exists)
             genOpt.setProperty(randomValue, quant.toRandVal)
+    }
+
+    private static def setBigNodeSize(GeneratorOptions genOpt, Size size, IProperty<RandVal> width, IProperty<RandVal> height) {
+        if (size.exists) {
+            setQuantities(genOpt, size.width, width)
+            setQuantities(genOpt, size.height, height)
+        }
     }
 
     private static def RandVal toRandVal(DoubleQuantity quant) {
@@ -208,6 +219,9 @@ class ConfigurationParser {
             }
             case TRICONNECTED: {
                 options.setProperty(GeneratorOptions.GRAPH_TYPE, GraphType.TRICONNECTED)
+            }
+            case RECTANGLE: {
+                options.setProperty(GeneratorOptions.GRAPH_TYPE, GraphType.RECTANGLES)
             }
         }
     }
