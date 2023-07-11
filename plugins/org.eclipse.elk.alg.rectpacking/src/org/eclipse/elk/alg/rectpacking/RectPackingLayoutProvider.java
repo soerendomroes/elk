@@ -94,7 +94,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         DrawingUtil.resetCoordinates(rectangles);
         DrawingData drawing = null;
         // XXX Do not commit Log input model
-        if (false) {
+        if (true) {
             System.out.println("\n Graph " + layoutGraph);
             // Log important properties
             System.out.println(CoreOptions.ALGORITHM + ": " + RectPackingOptions.ALGORITHM_ID);
@@ -147,7 +147,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         
         if (cplexEnalbed) {
             // Begin cp optimizer solving.
-            boolean logging = true;
+            boolean logging = false;
             try {
                 IloCP cp = new IloCP();
                 if (cplexOptTolerance >= 0) {
@@ -204,7 +204,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                     widths[i] = cp.endOf(rectXs[i]);
 //                    rectWidths[i] = cp.constant((int) rectangles.get(i).getWidth());
                 }
-                IloIntExpr[] heights = new IloIntExpr[numberOfRects];
+                IloNumExpr[] heights = new IloNumExpr[numberOfRects];
 //                IloNumExpr[] rectHeights = new IloNumExpr[numberOfRects];
                 for (int i = 0; i < numberOfRects; i++) {
                     heights[i] = cp.endOf(rectYs[i]);
@@ -212,7 +212,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 }
 
                 IloNumExpr maxWidth2 = cp.max(widths);
-                IloIntExpr maxHeight = cp.max(heights);
+                IloNumExpr maxHeight = cp.max(heights);
                 IloNumExpr scaleMeasure = cp.min(cp.quot(aspectRatio, maxWidth2), cp.quot(1, maxHeight));
                 // Goal is to maximize the scale measure and minimize the area at the same time.
                 IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth2, maxHeight)));
@@ -225,9 +225,9 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 //                IloNumVar[] currentStackWidth = new IloNumVar[numberOfRects];
 //                IloNumVar[] currentSubRowEnd = new IloNumVar[numberOfRects];
                 
-                IloIntVar[] lastStackWidth = new IloIntVar[numberOfRects];
+                IloIntVar[] lastStackEnd = new IloIntVar[numberOfRects];
                 IloIntVar[] currentRowLevel = new IloIntVar[numberOfRects];
-                IloIntVar[] currentStackWidth = new IloIntVar[numberOfRects];
+                IloIntVar[] currentStackEnd = new IloIntVar[numberOfRects];
                 IloIntVar[] currentSubRowEnd = new IloIntVar[numberOfRects];
 //                IloIntVar[] choosenPosition = new IloIntVar[numberOfRects];
 //                IloNumExpr[] currentSubRowLevel = new IloNumExpr[numberOfRects];
@@ -248,13 +248,13 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 //                        currentSubRowEnd[i] = cp.numVar(0, (int) totalHeight);
                         
                         // Constrain helper
-                        currentStackWidth[i] = cp.intVar(0, (int) totalWidth);
+                        currentStackEnd[i] = cp.intVar(0, (int) totalWidth);
                         // currentStackWidth[i - 1] + spacing + width >= currentStackWidth, otherwise space is wasted
-                        cp.addGe(cp.sum(currentStackWidth[i - 1],  intSpacing + rectWidth[i]), currentStackWidth[i]);
-                        lastStackWidth[i] = cp.intVar(0, (int) totalWidth);
+                        cp.addGe(cp.sum(currentStackEnd[i - 1],  intSpacing + rectWidth[i]), currentStackEnd[i]);
+                        lastStackEnd[i] = cp.intVar(0, (int) totalWidth);
                         // The lastStackWidth is at most the width of the current stack, if a new stack is created.
                         // Otherwise it does not change or is set to zero
-                        cp.addGe(currentStackWidth[i], lastStackWidth[i]);
+                        cp.addGe(currentStackEnd[i], lastStackEnd[i]);
                         currentRowLevel[i] = cp.intVar(0, (int) totalHeight);
                         // rowlvel[i-1] <= rowLevel[i] <= maxHeight[i-1]
                         cp.addLe(currentRowLevel[i - 1], currentRowLevel[i]);
@@ -268,7 +268,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         // New rectanbgle can at most be placed right of the previous stack by either
                         // forming their own stack
                         // or being placed right of the last rect in the same subrow
-                        cp.addGe(currentStackWidth[i - 1], cp.startOf(rectX));
+                        cp.addGe(currentStackEnd[i - 1], cp.startOf(rectX));
                         // A new rectangle can at most be placed on below all existing rectangles. (as new row or new subrow)
                         cp.addGe(currentMaxHeight[i - 1], cp.startOf(rectY));
                         
@@ -286,35 +286,35 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         constraint[3] = // cp.and(cp.eq(0, cp.startOf(rectX)), cp.eq(currentMaxHeight[i - 1], cp.startOf(rectY)));
                                 cp.and(cp.eq(0, cp.startOf(rectX)), // Bind x-coordinate
 //                                cp.and(cp.eq(currentSubRowLevel[i], cp.startOf(rectY)), // Bind subrow level
-                                cp.and(cp.eq(cp.constant(intSpacing + rectWidth[i]), currentStackWidth[i]), // Bind currentStackWidth
-                                cp.and(cp.eq(cp.constant(0), lastStackWidth[i]), // Bind lastStackWidth
+                                cp.and(cp.eq(cp.constant(intSpacing + rectWidth[i]), currentStackEnd[i]), // Bind currentStackWidth
+                                cp.and(cp.eq(cp.constant(0), lastStackEnd[i]), // Bind lastStackWidth
                                 cp.and(cp.eq(currentMaxHeight[i - 1], currentRowLevel[i]), // Bind row level
                                 cp.and(cp.eq(cp.sum(intSpacing + rectHeight[i], currentRowLevel[i]), currentSubRowEnd[i]), // Bind subrow end height
-                                cp.and(cp.ge(cp.startOf(rectXs[i - 1]), cp.startOf(rectX)),
-                                cp.and(cp.lt(cp.endOf(rectYs[i - 1]), cp.startOf(rectY)),
+                                cp.and(cp.ge(cp.startOf(rectXs[i - 1]), cp.startOf(rectX)), // I do not really ned this??
+                                cp.and(cp.lt(cp.endOf(rectYs[i - 1]), cp.startOf(rectY)), // why no spacing ehre for <=??
 //                                cp.and(cp.eq(choosenPosition[i], cp.constant(1)),
-                                        cp.eq(currentMaxHeight[i - 1], cp.startOf(rectY))))))))); // // Bind y-coordinate
+                                        cp.eq(currentMaxHeight[i - 1], cp.startOf(rectY))))))))); // // Bind y-coordinate, same as currentRowLevel
                         
                         // Case left of current one in same subrow
                         constraint[0] =
                                 cp.and(cp.eq(cp.sum(intSpacing, cp.endOf(rectXs[i-1])), cp.startOf(rectX)), // Bind x
-                                cp.and(cp.eq(lastStackWidth[i-1], lastStackWidth[i]), // Bind lastStackWidth
+                                cp.and(cp.eq(lastStackEnd[i-1], lastStackEnd[i]), // Bind lastStackWidth
                                 cp.and(cp.eq(currentRowLevel[i], currentRowLevel[i-1]), // Bind row level
-                                cp.and(cp.eq(currentStackWidth[i], cp.max(currentStackWidth[i - 1], cp.sum(intSpacing, cp.endOf(rectX)))), // Bind currentStackWidth
+                                cp.and(cp.eq(currentStackEnd[i], cp.max(currentStackEnd[i - 1], cp.sum(intSpacing, cp.endOf(rectX)))), // Bind currentStackWidth
 //                                cp.and(cp.eq(currentSubRowLevel[i], currentSubRowLevel[i - 1]), // Bind subrowlevel
                                 cp.and(cp.eq(currentSubRowEnd[i], cp.max(currentSubRowEnd[i-1], cp.sum(intSpacing, cp.endOf(rectY)))), // Bind subrow end height
-                                cp.and(cp.lt(cp.endOf(rectXs[i - 1]), cp.startOf(rectX)),
-                                cp.and(cp.eq(cp.startOf(rectYs[i - 1]), cp.startOf(rectY)),
+                                cp.and(cp.lt(cp.endOf(rectXs[i - 1]), cp.startOf(rectX)), // This is the reason why spacing 0 does not work!!!! FIXME
+                                cp.and(cp.eq(cp.startOf(rectYs[i - 1]), cp.startOf(rectY)), // Doubled with binding y FIXME
 //                                cp.and(cp.eq(choosenPosition[i], cp.constant(2)),
                                         cp.eq(cp.startOf(rectY), cp.startOf(rectYs[i - 1]))))))))); // Bind y
                         
                         // Case right of last one in new stack
                         constraint[1] =
-                                cp.and(cp.eq(currentStackWidth[i - 1], cp.startOf(rectX)), // Bind x
-                                cp.and(cp.eq(currentStackWidth[i], cp.sum(intSpacing, cp.endOf(rectX))), // Bind currentStackWidth
+                                cp.and(cp.eq(currentStackEnd[i - 1], cp.startOf(rectX)), // Bind x
+                                cp.and(cp.eq(currentStackEnd[i], cp.sum(intSpacing, cp.endOf(rectX))), // Bind currentStackWidth
                                 cp.and(cp.eq(currentRowLevel[i], currentRowLevel[i-1]), // Bind row level
 //                                cp.and(cp.eq(currentRowLevel[i-1], currentSubRowLevel[i]), // Bind subrowlevel
-                                cp.and(cp.eq(lastStackWidth[i], currentStackWidth[i-1]), // Bind lastStackWidth
+                                cp.and(cp.eq(lastStackEnd[i], currentStackEnd[i-1]), // Bind lastStackWidth
                                 cp.and(cp.eq(currentSubRowEnd[i], cp.sum(intSpacing + rectHeight[i], currentRowLevel[i])), // Bind subrow end height
                                 cp.and(cp.lt(cp.endOf(rectXs[i - 1]), cp.startOf(rectX)),
                                 cp.and(cp.ge(cp.startOf(rectYs[i - 1]), cp.startOf(rectY)),
@@ -323,11 +323,11 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         
                         // Case in new subrow
                         constraint[2] = 
-                                cp.and(cp.eq(lastStackWidth[i], cp.startOf(rectX)), // Bind x
-                                cp.and(cp.eq(currentStackWidth[i], cp.max(currentStackWidth[i-1], cp.sum(cp.endOf(rectX), intSpacing))), // Bind currentStackWidth
+                                cp.and(cp.eq(lastStackEnd[i], cp.startOf(rectX)), // Bind x
+                                cp.and(cp.eq(currentStackEnd[i], cp.max(currentStackEnd[i-1], cp.sum(cp.endOf(rectX), intSpacing))), // Bind currentStackWidth
                                 cp.and(cp.eq(currentRowLevel[i], currentRowLevel[i-1]), // Bind row level
 //                                cp.and(cp.eq(currentSubRowEnd[i-1], currentSubRowLevel[i]), // Bind subrowlevel
-                                cp.and(cp.eq(lastStackWidth[i], lastStackWidth[i-1]), // Bind lastStackWidth
+                                cp.and(cp.eq(lastStackEnd[i], lastStackEnd[i-1]), // Bind lastStackWidth
                                 cp.and(cp.eq(currentSubRowEnd[i], cp.sum(intSpacing + rectHeight[i], currentSubRowEnd[i - 1])), // Bind subrow end height
                                 cp.and(cp.ge(cp.startOf(rectXs[i - 1]), cp.startOf(rectX)),
                                 cp.and(cp.lt(cp.endOf(rectYs[i - 1]), cp.startOf(rectY)),
@@ -342,12 +342,12 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         // On every row change, there exists a previous element that begins at the previous row level
                         // and reaches to the current row level.
                         if (i > 2) {
-                            IloConstraint[] dominantElement = new IloConstraint[i-1];
-                            for (int index = 0; index < i - 1; index++) {
+                            IloConstraint[] dominantElement = new IloConstraint[i];
+                            for (int index = 0; index < i; index++) {
                                 dominantElement[index] = 
                                     cp.and(
                                             cp.eq(cp.startOf(rectYs[index]), currentRowLevel[i-1]),
-                                            cp.lt(currentRowLevel[i], cp.sum(cp.endOf(rectYs[index]), intSpacing + 1))
+                                            cp.eq(currentRowLevel[i], cp.sum(cp.endOf(rectYs[index]), intSpacing))
                                     );
                             }
                             cp.add(cp.imply(
@@ -389,9 +389,9 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
 //                        currentStackWidth[i] = cp.numVar(intSpacing + rectWidth[i], intSpacing + rectWidth[i]);
 //                        currentSubRowEnd[i] = cp.numVar(intSpacing + rectHeight[i], intSpacing + rectHeight[i]);
 
-                        lastStackWidth[i] = cp.intVar(0, 0);
+                        lastStackEnd[i] = cp.intVar(0, 0);
                         currentRowLevel[i] = cp.intVar(0, 0);
-                        currentStackWidth[i] = cp.intVar(intSpacing + rectWidth[i], intSpacing + rectWidth[i]);
+                        currentStackEnd[i] = cp.intVar(intSpacing + rectWidth[i], intSpacing + rectWidth[i]);
                         currentSubRowEnd[i] = cp.intVar(intSpacing + rectHeight[i], intSpacing + rectHeight[i]);
 //                        currentSubRowLevel[i] = cp.constant(0);
                     }
@@ -405,11 +405,11 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                     dominantElementForLastRow[index] = 
                         cp.and(
                                 cp.eq(cp.startOf(rectYs[index]), currentRowLevel[numberOfRects - 1]),
-                                cp.lt(
+                                cp.le( // FIXME maybe this should be eq?
                                     maxHeight,
                                     cp.sum(
-                                        cp.endOf(rectYs[index]),
-                                        intSpacing + 1
+                                        cp.endOf(rectYs[index]), // maxHeight does not include the spacing
+                                        1 // + 1 since the maxHeight always includes the spacing?
                                     )
                                 )
                         );
@@ -423,6 +423,14 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                     if (logging) {
                         System.out.println("Scale Measure " + cp.getValue(scaleMeasure));
                     }
+//                    int counter = 0;
+//                    for (IloIntVar rowLevel : currentRowLevel) {
+//                        if (true) {
+//                            System.out.println("Row level of " + counter + ":");
+//                            System.out.println(cp.getValue(rowLevel));
+//                        }
+//                        counter++;
+//                    }
                     for (IloIntervalVar rectX : rectXs) {
                         if (logging) {
                             System.out.println(rectX);
@@ -529,7 +537,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         
 
                         System.out.println("");
-                        for (IloNumVar choosen : currentStackWidth) {
+                        for (IloNumVar choosen : currentStackEnd) {
                             if (cp.isFixed(choosen)) {
                                 System.out.print(cp.getValue(choosen));
                             } else {
@@ -539,7 +547,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         
 
                         System.out.println("");
-                        for (IloNumVar choosen : lastStackWidth) {
+                        for (IloNumVar choosen : lastStackEnd) {
                             if (cp.isFixed(choosen)) {
                                 System.out.print(cp.getValue(choosen));
                             } else {
