@@ -82,6 +82,10 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
         boolean cplexEnalbed = layoutGraph.getProperty(RectPackingOptions.CPLEX);
         // cplexEnalbed = false;
         boolean cplexEnalbed2 = layoutGraph.getProperty(RectPackingOptions.FUNCPLEX2);
+        boolean dominant = layoutGraph.getProperty(RectPackingOptions.DOMINANT_ELEMENT_FOR_CPLEX);
+        boolean minimizeArea = layoutGraph.getProperty(RectPackingOptions.MINIMIZE_AREA);
+        boolean minimizeRules = layoutGraph.getProperty(RectPackingOptions.MINIMIZE_RULES);
+        boolean minimizeCoordinates = layoutGraph.getProperty(RectPackingOptions.MINIMIZE_COORDINATES);
         double cplexOptTolerance = -1;
         if (layoutGraph.hasProperty(RectPackingOptions.CPLEX_OPT_TOLERANCE)) {
             cplexOptTolerance = layoutGraph.getProperty(RectPackingOptions.CPLEX_OPT_TOLERANCE);
@@ -212,8 +216,23 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 }
              // The highest x coordinate that includes a rectangle. THis does not include the spacing.
                 IloNumExpr maxWidth2 = cp.max(widths); 
+                IloNumExpr maxWidthWithPadding = cp.sum(cp.max(widths), padding.getHorizontal()); 
                 // The highest y coordinate that includes a rectangle. THis does not include the spacing.
                 IloNumExpr maxHeight = cp.max(heights);
+                IloNumExpr maxHeightWithPadding = cp.sum(cp.max(heights), padding.getVertical());
+                
+
+                IloNumExpr[] xCoordinates = new IloNumExpr[numberOfRects];
+                for (int i = 0; i < numberOfRects; i++) {
+                    xCoordinates[i] = cp.startOf(rectXs[i]);
+                }
+                IloNumExpr sumXCoordinates = cp.sum(xCoordinates); 
+
+                IloNumExpr[] yCoordinates = new IloNumExpr[numberOfRects];
+                for (int i = 0; i < numberOfRects; i++) {
+                    yCoordinates[i] = cp.startOf(rectYs[i]);
+                }
+                IloNumExpr sumYCoordinates = cp.sum(xCoordinates); 
                 
                 // cp.addMinimize(cp.prod(maxWidth, maxHeight));
                 // Define constraints
@@ -362,11 +381,13 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                                             cp.eq(rowLevel[i], cp.sum(cp.endOf(rectYs[index]), intSpacing))
                                     );
                             }
-                            cp.add(cp.imply(
-                                    cp.not(cp.eq(rowLevel[i-1], rowLevel[i])),
-                                        cp.or(dominantElement)
-                                )
-                            );                                
+                            if (dominant) {
+                                cp.add(cp.imply(
+                                        cp.not(cp.eq(rowLevel[i-1], rowLevel[i])),
+                                            cp.or(dominantElement)
+                                    )
+                                );
+                            }                              
                         }
 
                         if (logging) {
@@ -432,7 +453,9 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                                 )
                         );
                 }
-                cp.add(cp.or(dominantElementForLastRow));
+                if (dominant) {
+                    cp.add(cp.or(dominantElementForLastRow));
+                }
                 
                 // Add goals
 
@@ -442,12 +465,20 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 IloNumExpr area = cp.quot(1, cp.prod(maxWidth2, maxHeight));
                 IloNumExpr minimalDecisions = cp.quot(1.0, cp.sum(decisions));
                 
-                IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth2, maxHeight)));
+                IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidthWithPadding, maxHeightWithPadding)));
 //                cp.add(cp.maximize(cpGoal, "Scale measure goal"));
-                IloNumExpr[] goals = new IloNumExpr[3];
+                IloNumExpr[] goals = new IloNumExpr[1 + (minimizeArea ? 1 : 0) + (minimizeRules ? 1 : 0) + (minimizeCoordinates ? 1 : 0)];
                 goals[0] = scaleMeasure;
-                goals[1] = area; // reversed since everything is maximized
-                goals[2] = minimalDecisions; // reversed since everythingis maximized
+                if (minimizeArea) {
+                    goals[1] = area; // reversed since everything is maximized                    
+                }
+                if (minimizeRules) {
+                    goals[1 + (minimizeArea ? 1 : 0)] = minimalDecisions; // reversed since everythingis maximized                  
+                }
+                if (minimizeCoordinates) {
+                    goals[1 + (minimizeArea ? 1 : 0) + (minimizeRules ? 1 : 0)] =
+                            cp.quot(1, cp.sum(cp.sum(xCoordinates), cp.sum(yCoordinates))); // minimal coordinates                      
+                }
                 
                 IloMultiCriterionExpr criteria = cp.staticLex(goals);
                 cp.add(cp.maximize(criteria));

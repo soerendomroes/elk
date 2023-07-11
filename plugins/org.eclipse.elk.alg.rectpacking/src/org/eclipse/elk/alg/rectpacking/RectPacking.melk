@@ -54,6 +54,10 @@ algorithm rectpacking(RectPackingLayoutProvider) {
     supports currentPosition
     supports cplex
     supports funcplex2
+    supports dominantElementForCplex
+    supports minimizeArea
+    supports minimizeRules
+    supports minimizeCoordinates
     supports cplexOptTolerance
     supports targetWidth
 }
@@ -86,6 +90,34 @@ programmatic option lastPlaceShift: boolean {
 programmatic option cplex: boolean {
     label "Cplex Solver"
     description "Solves the problem via cplex. This might take a while."
+    targets nodes
+    default = false
+}
+
+option dominantElementForCplex: boolean {
+    label "Dominant Element"
+    description "Each row in the cplex solution needs a biggest element."
+    targets nodes
+    default = true
+}
+
+option minimizeArea: boolean {
+    label "Minimize Area (cplex)"
+    description "Minimize area as a secondary criterion for cplex."
+    targets nodes
+    default = true
+}
+
+option minimizeRules: boolean {
+    label "Minimize Rules (cplex)"
+    description "Minimize area as a tertiary criterion for cplex."
+    targets nodes
+    default = true
+}
+
+option minimizeCoordinates: boolean {
+    label "Minimize Coordinates (cplex)"
+    description "Minimize area as a quartary criterion for cplex."
     targets nodes
     default = false
 }
