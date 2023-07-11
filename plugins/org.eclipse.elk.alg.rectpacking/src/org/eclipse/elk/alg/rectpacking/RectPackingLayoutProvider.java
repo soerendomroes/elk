@@ -214,11 +214,7 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 IloNumExpr maxWidth2 = cp.max(widths); 
                 // The highest y coordinate that includes a rectangle. THis does not include the spacing.
                 IloNumExpr maxHeight = cp.max(heights);
-                // The scale measure as it is defined.
-                IloNumExpr scaleMeasure = cp.min(cp.quot(aspectRatio, maxWidth2), cp.quot(1, maxHeight));
-                // Goal is to maximize the scale measure and minimize the area at the same time.
-                IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth2, maxHeight)));
-                cp.add(cp.maximize(cpGoal, "Scale measure goal"));
+                
                 // cp.addMinimize(cp.prod(maxWidth, maxHeight));
                 // Define constraints
                 // The current maximum y coordinate + spacing.
@@ -235,10 +231,12 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                 IloNumVar[] stackEndX = new IloNumVar[numberOfRects];
                 // The end in terms of height of the current subrow with spacing included.
                 IloNumVar[] subRowEndY = new IloNumVar[numberOfRects];
-                // Marks the different placement decisions of the algorithm.
-                IloIntVar[] decisions = new IloIntVar[numberOfRects];
 //                IloIntVar[] choosenPosition = new IloIntVar[numberOfRects];
 //                IloNumExpr[] currentSubRowLevel = new IloNumExpr[numberOfRects];
+
+                // Marks the different placement decisions of the algorithm.
+                IloNumExpr[] decisions = new IloNumExpr[numberOfRects];
+                
                 for (int i = 0; i < numberOfRects; i++) {
                     IloIntervalVar rectX = rectXs[i];
                     IloIntervalVar rectY = rectYs[i];
@@ -435,6 +433,24 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                         );
                 }
                 cp.add(cp.or(dominantElementForLastRow));
+                
+                // Add goals
+
+                // The scale measure as it is defined.
+                IloNumExpr scaleMeasure = cp.min(cp.quot(aspectRatio, maxWidth2), cp.quot(1, maxHeight));
+                // Goal is to maximize the scale measure and minimize the area at the same time.
+                IloNumExpr area = cp.quot(1, cp.prod(maxWidth2, maxHeight));
+                IloNumExpr minimalDecisions = cp.quot(1.0, cp.sum(decisions));
+                
+                IloNumExpr cpGoal = cp.sum(scaleMeasure, cp.quot(1, cp.prod(maxWidth2, maxHeight)));
+//                cp.add(cp.maximize(cpGoal, "Scale measure goal"));
+                IloNumExpr[] goals = new IloNumExpr[3];
+                goals[0] = scaleMeasure;
+                goals[1] = area; // reversed since everything is maximized
+                goals[2] = minimalDecisions; // reversed since everythingis maximized
+                
+                IloMultiCriterionExpr criteria = cp.staticLex(goals);
+                cp.add(cp.maximize(criteria));
 
                 if (logging) {
                     System.out.println("Trying to solve");
@@ -578,12 +594,8 @@ public class RectPackingLayoutProvider extends AbstractLayoutProvider {
                     
                     // Currently not part of logging
                     System.out.println("");
-                    for (IloIntVar decision : decisions) {
-                        if (cp.isFixed(decision)) {
-                            System.out.print((int) cp.getValue(decision) + ", ");
-                        } else {
-                            System.out.print("W");
-                        }
+                    for (IloNumExpr decision : decisions) {
+                        System.out.print((int) cp.getValue(decision) + ", ");
                     }
                 } else {
                     System.out.println("No solution found");
