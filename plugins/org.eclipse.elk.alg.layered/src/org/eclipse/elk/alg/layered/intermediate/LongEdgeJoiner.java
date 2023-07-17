@@ -82,12 +82,12 @@ public final class LongEdgeJoiner implements ILayoutProcessor<LGraph> {
                     // Remove the node
                     nodeIterator.remove();
                 }
-                if (node.getType() == NodeType.IN_LAYER) {
-                    joinAt(node, addUnnecessaryBendpoints);
-                    
-                    // Remove the node
-                    nodeIterator.remove();
-                }
+//                if (node.getType() == NodeType.IN_LAYER) {
+//                    joinAt(node, addUnnecessaryBendpoints);
+//                    
+//                    // Remove the node
+//                    nodeIterator.remove();
+//                }
             }
         }
         DebugUtil.logLGraphNodesAndPorts(monitor, layeredGraph, 2, "Removed all in-layer edges");

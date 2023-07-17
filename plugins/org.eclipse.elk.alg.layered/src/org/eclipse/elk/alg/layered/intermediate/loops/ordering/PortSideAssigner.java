@@ -45,17 +45,21 @@ public class PortSideAssigner {
             int sourceIndex = layer.getNodes().indexOf(source.getNode());
             int targetIndex = layer.getNodes().indexOf(target.getNode());
             if (sourceIndex < targetIndex) {
-                if (!source.getNode().getProperty(LayeredOptions.PORT_CONSTRAINTS).isSideFixed()) {
+                if (source.getNode().hasProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS)
+                        || !source.getNode().getProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS).isSideFixed()) {
                     source.setSide(horizontal ? PortSide.SOUTH : PortSide.EAST);
                 }
-                if (!target.getNode().getProperty(LayeredOptions.PORT_CONSTRAINTS).isSideFixed()) {
+                if (target.getNode().hasProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS)
+                        || !target.getNode().getProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS).isSideFixed()) {
                     target.setSide(horizontal ? PortSide.NORTH : PortSide.WEST);
                 }
             } else {
-                if (!source.getNode().getProperty(LayeredOptions.PORT_CONSTRAINTS).isSideFixed()) {
+                if (source.getNode().hasProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS)
+                        || !source.getNode().getProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS).isSideFixed()) {
                     source.setSide(horizontal ? PortSide.NORTH : PortSide.WEST);
                 }
-                if (!target.getNode().getProperty(LayeredOptions.PORT_CONSTRAINTS).isSideFixed()) {
+                if (target.getNode().hasProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS)
+                        || !target.getNode().getProperty(InternalProperties.ORIGINAL_PORT_CONSTRAINTS).isSideFixed()) {
                     target.setSide(horizontal ? PortSide.SOUTH : PortSide.EAST);
                 }
             }

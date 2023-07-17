@@ -324,6 +324,8 @@ final class GraphConfigurator {
         configuration
             .addBefore(LayeredPhases.P3_NODE_ORDERING, IntermediateProcessorStrategy.IN_LAYER_EDGE_PROCESSOR);
         configuration
+            .addAfter(LayeredPhases.P3_NODE_ORDERING, IntermediateProcessorStrategy.IN_LAYER_EDGE_POST_CM_PROCESSOR);
+        configuration
             .addBefore(LayeredPhases.P4_NODE_PLACEMENT, IntermediateProcessorStrategy.IN_LAYER_EDGE_PRE_NP_PROCESSOR);
         configuration
             .addBefore(LayeredPhases.P5_EDGE_ROUTING, IntermediateProcessorStrategy.IN_LAYER_EDGE_POST_NP_PROCESSOR);

@@ -23,7 +23,7 @@ import org.eclipse.elk.core.alg.ILayoutProcessor;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 
 /**
- * Remove all in-layer edges by disconnecting their ports.
+ * Since the node order is now fix, we can assign ports sides to the in-layer edges (if they are free).
  * <dl><dl>
  *   <dt>Precondition:</dt>
  *     <dd>TODO</dd>
@@ -32,19 +32,28 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
  *   <dt>Slots:</dt>
  *     <dd>Before phase 4.</dd>
  *   <dt>Same-slot dependencies:</dt>
- *     <dd>Has be after {@link LabelAndNodeSizeProcessor}
+ *     <dd>Has be be before {@link LabelAndNodeSizeProcessor}
  * </dl>
  */
-public class InLayerEdgePreNPProcessor implements ILayoutProcessor<LGraph> {
+public class InLayerEdgePostCMProcessor implements ILayoutProcessor<LGraph> {
+    
+    private final PortSideAssigner portSideAssigner = new PortSideAssigner();
 
     @Override
     public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
-        progressMonitor.begin("In-Layer Edge Pre Node Placement", 1);
+        progressMonitor.begin("In-Layer Edge Post Crossing Minimization", 1);
 
         List<LPort> inLayerPorts = graph.getProperty(InternalProperties.IN_LAYER_PORTS);
-        for (LPort lPort : inLayerPorts) {
-            lPort.getNode().getPorts().remove(lPort);
+        if (inLayerPorts != null) {
+            for (LPort lPort : inLayerPorts) {
+                lPort.setNode(lPort.getNode());
+            }
         }
+
+        List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
+        boolean leftOrRight = graph.getProperty(LayeredOptions.DIRECTION).isHorizontal();
+        // Use special method to assign in-layer edge ports to a side.
+        portSideAssigner.assignPortSides(inLayerEdges, leftOrRight);
         
         progressMonitor.done();
     }

@@ -29,6 +29,7 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
 /**
  * Readds all in-layer ports (not the edges) and assigns PORT_SIDEs to them and adds constraints
  * such that the can be next to each other.
+ * FIXME do not add the in-layer ports
  * <dl><dl>
  *   <dt>Precondition:</dt>
  *     <dd>a proper layered graph</dd>
@@ -47,7 +48,7 @@ public class InLayerEdgeProcessor implements ILayoutProcessor<LGraph> {
     @Override
     public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
         progressMonitor.begin("In-Layer Edge Processor", 1);
-        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 1, "Before");
+//        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 1, "Before");
 
         List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
         List<LPort> inLayerPorts = graph.getProperty(InternalProperties.IN_LAYER_PORTS);
@@ -73,13 +74,13 @@ public class InLayerEdgeProcessor implements ILayoutProcessor<LGraph> {
         }
         graph.setProperty(InternalProperties.IN_LAYER_DUMMIES, inLayerDummies);
 
-        if (inLayerPorts != null) {
-            for (LPort lPort : inLayerPorts) {
-                lPort.setNode(lPort.getNode());
-            }
-        }
+//        if (inLayerPorts != null) {
+//            for (LPort lPort : inLayerPorts) {
+//                lPort.setNode(lPort.getNode());
+//            }
+//        }
         
-        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 2, "After");
+//        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 2, "After");
         
         progressMonitor.done();
     }

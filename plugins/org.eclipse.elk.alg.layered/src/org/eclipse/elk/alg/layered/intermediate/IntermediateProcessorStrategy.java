@@ -12,6 +12,7 @@ package org.eclipse.elk.alg.layered.intermediate;
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.intermediate.compaction.HorizontalGraphCompactor;
 import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerConstraintProcessor;
+import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePostCMProcessor;
 import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePostNPProcessor;
 import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePreNPProcessor;
 import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePreProcessor;
@@ -111,8 +112,12 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
     IN_LAYER_CONSTRAINT_PROCESSOR,
     /** Manages edge end labels, node labels, and port labels. */
     END_NODE_PORT_LABEL_MANAGEMENT_PROCESSOR,
+    /** Sets port sides. */
+    IN_LAYER_EDGE_POST_CM_PROCESSOR,
     /** Sets the positions of ports and labels, and sets the node sizes. */
     LABEL_AND_NODE_SIZE_PROCESSOR,
+    /** TODO correct position? Removes the in-layer edges again. */
+    IN_LAYER_EDGE_PRE_NP_PROCESSOR,
     /** Calculates the margins of nodes according to the sizes of ports and port labels. */
     INNERMOST_NODE_MARGIN_CALCULATOR,
     /** Calculate the bendpoints for the self-loop edges. */
@@ -125,8 +130,6 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
     LABEL_DUMMY_SWITCHER,
     /** Tries to shorten edge center labels where necessary. */
     CENTER_LABEL_MANAGEMENT_PROCESSOR,
-    /** TODO correct position? Removes the in-layer edges again. */
-    IN_LAYER_EDGE_PRE_NP_PROCESSOR,
     /** Decides, on which side of an edge the edge labels should be placed. */
     LABEL_SIDE_SELECTOR,
     /** Merges long edge dummy nodes belonging to the same hyperedge. */
@@ -265,6 +268,9 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
 
         case IN_LAYER_CONSTRAINT_PROCESSOR:
             return new InLayerConstraintProcessor();
+            
+        case IN_LAYER_EDGE_POST_CM_PROCESSOR:
+            return new InLayerEdgePostCMProcessor();
             
         case IN_LAYER_EDGE_POST_NP_PROCESSOR:
             return new InLayerEdgePostNPProcessor();
