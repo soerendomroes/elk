@@ -9,10 +9,13 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.intermediate.inlayer;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
+import org.eclipse.elk.alg.layered.graph.LPort;
+import org.eclipse.elk.alg.layered.intermediate.LabelAndNodeSizeProcessor;
 import org.eclipse.elk.alg.layered.intermediate.loops.ordering.PortSideAssigner;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
@@ -21,6 +24,7 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
 
 /**
  * Remove all in-layer edges by disconnecting their ports.
+ * Since the node order is now fix, we can assign ports sides to the in-layer edges (if they are free).
  * <dl><dl>
  *   <dt>Precondition:</dt>
  *     <dd>TODO</dd>
@@ -29,32 +33,25 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
  *   <dt>Slots:</dt>
  *     <dd>Before phase 4.</dd>
  *   <dt>Same-slot dependencies:</dt>
- *     <dd>Maybe Center Label Management Processor</dd>
+ *     <dd>Has be be before {@link LabelAndNodeSizeProcessor}
  * </dl>
  */
 public class InLayerEdgePreNPProcessor implements ILayoutProcessor<LGraph> {
     
-//    private final PortSideAssigner portSideAssigner = new PortSideAssigner();
+    private final PortSideAssigner portSideAssigner = new PortSideAssigner();
 
     @Override
     public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
-        progressMonitor.begin("Remove in-layer edges", 1);
-        
-//        boolean leftOrRight = graph.getProperty(LayeredOptions.DIRECTION).isHorizontal();
-//        Set<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
-//        
-//        portSideAssigner.assignPortSides(inLayerEdges, leftOrRight);
-//        
-//        // Readd ports for node size calculation.
-        
-        
-        
-//        if (inLayerEdges != null) {
-//            for (LEdge lEdge : inLayerEdges) {
-//                lEdge.getSource().getOutgoingEdges().remove(lEdge);
-//                lEdge.getTarget().getIncomingEdges().remove(lEdge);
-//            }
-//        }
+        progressMonitor.begin("In-Layer Edge Pre Node Placement", 1);
+
+        List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
+        boolean leftOrRight = graph.getProperty(LayeredOptions.DIRECTION).isHorizontal();
+        portSideAssigner.assignPortSides(inLayerEdges, leftOrRight);
+
+        List<LPort> inLayerPorts = graph.getProperty(InternalProperties.IN_LAYER_PORTS);
+        for (LPort lPort : inLayerPorts) {
+            lPort.getNode().getPorts().remove(lPort);
+        }
         
         progressMonitor.done();
     }

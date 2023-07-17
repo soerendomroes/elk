@@ -12,6 +12,7 @@ package org.eclipse.elk.alg.layered.intermediate;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.eclipse.elk.alg.layered.DebugUtil;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LLabel;
@@ -60,6 +61,7 @@ public final class LongEdgeJoiner implements ILayoutProcessor<LGraph> {
     @Override
     public void process(final LGraph layeredGraph, final IElkProgressMonitor monitor) {
         monitor.begin("Edge joining", 1);
+        DebugUtil.logLGraphNodesAndPorts(monitor, layeredGraph, 2, "Removed all in-layer edges");
         
         final boolean addUnnecessaryBendpoints =
                 layeredGraph.getProperty(LayeredOptions.UNNECESSARY_BENDPOINTS);
@@ -80,8 +82,15 @@ public final class LongEdgeJoiner implements ILayoutProcessor<LGraph> {
                     // Remove the node
                     nodeIterator.remove();
                 }
+                if (node.getType() == NodeType.IN_LAYER) {
+                    joinAt(node, addUnnecessaryBendpoints);
+                    
+                    // Remove the node
+                    nodeIterator.remove();
+                }
             }
         }
+        DebugUtil.logLGraphNodesAndPorts(monitor, layeredGraph, 2, "Removed all in-layer edges");
         
         monitor.done();
     }

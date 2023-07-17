@@ -122,6 +122,8 @@ public final class Spacings {
                 LayeredOptions.SPACING_EDGE_EDGE_BETWEEN_LAYERS);
         nodeTypeSpacing(NodeType.IN_LAYER, NodeType.NORMAL, 
                 LayeredOptions.SPACING_EDGE_NODE, LayeredOptions.SPACING_EDGE_NODE_BETWEEN_LAYERS);
+        nodeTypeSpacing(NodeType.IN_LAYER, NodeType.NORTH_SOUTH_PORT, 
+                LayeredOptions.SPACING_EDGE_NODE, LayeredOptions.SPACING_EDGE_NODE_BETWEEN_LAYERS);
         
     }
 

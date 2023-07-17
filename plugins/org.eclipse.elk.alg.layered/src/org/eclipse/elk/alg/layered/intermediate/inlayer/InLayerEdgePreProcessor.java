@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.elk.alg.layered.DebugUtil;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
@@ -24,7 +25,8 @@ import org.eclipse.elk.core.alg.ILayoutProcessor;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 
 /**
- * Remove all in-layer edges by disconnecting their ports. If their ports have no further connections also remove them.
+ * Remove all in-layer edges by disconnecting their ports.
+ * If their ports have no further connections also remove them.
  * <dl><dl>
  *   <dt>Precondition:</dt>
  *     <dd>TODO</dd>
@@ -44,7 +46,8 @@ public class InLayerEdgePreProcessor implements ILayoutProcessor<LGraph> {
 
     @Override
     public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
-        progressMonitor.begin("Remove in-layer edges", 1);
+        progressMonitor.begin("In-Layer Edge Pre Processor", 1);
+        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 1, "Initial graph");
         List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
         if (inLayerEdges == null) {
             inLayerEdges = new ArrayList<>();
@@ -77,21 +80,23 @@ public class InLayerEdgePreProcessor implements ILayoutProcessor<LGraph> {
                         normallyConnected = true;
                     }
                 }
-                if (!normallyConnected) {
+                if (!normallyConnected && port.getConnectedEdges().iterator().hasNext()) {
                     // Also remove the ports
                     inLayerPorts.add(port);
                     
                 }
             }
         }
-        // There should be a better way to remove all of them, this seems slow.
+        // Only remove the edge from the port. The edge does still know where it connects to.
         for (LEdge lEdge : inLayerEdges) {
             lEdge.getSource().getOutgoingEdges().remove(lEdge);
             lEdge.getTarget().getIncomingEdges().remove(lEdge);
         }
+        // Only remove the port from the node. The port does still know its node.
         for (LPort lPort : inLayerPorts) {
             lPort.getNode().getPorts().remove(lPort);
         }
+        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 2, "Removed all in-layer edges");
         
         progressMonitor.done();
     }

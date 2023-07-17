@@ -197,6 +197,9 @@ public final class InternalProperties {
     public static final IProperty<List<LPort>> IN_LAYER_PORTS = new Property<List<LPort>>(
             "inLayerPorts");
 
+    public static final IProperty<List<LNode>> IN_LAYER_DUMMIES = new Property<List<LNode>>(
+            "inLayerDummies");
+
     /**
      * The in-layer constraint placed on a node. This indicates whether this node should be handled
      * like any other node, or if it must be placed at the top or bottom of a layer. This is

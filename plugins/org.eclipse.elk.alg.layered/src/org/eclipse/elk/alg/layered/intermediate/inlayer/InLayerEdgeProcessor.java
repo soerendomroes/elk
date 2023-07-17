@@ -12,6 +12,7 @@ package org.eclipse.elk.alg.layered.intermediate.inlayer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.elk.alg.layered.DebugUtil;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
@@ -26,14 +27,15 @@ import org.eclipse.elk.core.options.PortSide;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 
 /**
- * Readds all in-layer ports and assigns PORT_SIDEs to them and adds constraints
+ * Readds all in-layer ports (not the edges) and assigns PORT_SIDEs to them and adds constraints
  * such that the can be next to each other.
  * <dl><dl>
  *   <dt>Precondition:</dt>
  *     <dd>a proper layered graph</dd>
  *     <dd>TODO</dd>
  *   <dt>Postcondition:</dt>
- *     <dd>TODO</dd>
+ *     <dd>A dummy node between two nodes linked by an in-layer edge is created.</dd>
+ *     <dd>The two nodes and the dummy node are linked by in-layer succesor constraints..</dd>
  *   <dt>Slots:</dt>
  *     <dd>Before phase 3.</dd>
  *   <dt>Same-slot dependencies:</dt>
@@ -42,24 +44,23 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
  */
 public class InLayerEdgeProcessor implements ILayoutProcessor<LGraph> {
     
-    private final PortSideAssigner portSideAssigner = new PortSideAssigner();
-    
     @Override
     public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
-        progressMonitor.begin("Begin to readd in-layer edges", 1);
-            
-        boolean leftOrRight = graph.getProperty(LayeredOptions.DIRECTION).isHorizontal();
+        progressMonitor.begin("In-Layer Edge Processor", 1);
+        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 1, "Before");
+
         List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
         List<LPort> inLayerPorts = graph.getProperty(InternalProperties.IN_LAYER_PORTS);
+        List<LNode> inLayerDummies = new ArrayList<>();
         List<LEdge> dummies = new ArrayList<>();
         if (inLayerEdges != null) {
             // If we have in-layer constraints, constraints between nodes may be between non-dummies.
-            graph.setProperty(InternalProperties.IN_LAYER_SUCCESSOR_CONSTRAINTS_BETWEEN_NON_DUMMIES, true);
             for (LEdge lEdge : inLayerEdges) {
-                LNode dummy = createDummy(graph, lEdge, lEdge.getSource(), lEdge.getTarget(),
-                        inLayerEdges, inLayerPorts, dummies);
                 LNode sourceNode = lEdge.getSource().getNode();
                 LNode targetNode = lEdge.getTarget().getNode();
+                LNode dummy = createDummy(graph, lEdge, lEdge.getSource(), lEdge.getTarget(),
+                        inLayerEdges, inLayerPorts, dummies);
+                inLayerDummies.add(dummy);
                 // Source should be next to dummy
                 List<LNode> unit = sourceNode.getProperty(InternalProperties.IN_LAYER_SUCCESSOR_CONSTRAINTS);
                 unit.add(dummy);
@@ -70,58 +71,15 @@ public class InLayerEdgeProcessor implements ILayoutProcessor<LGraph> {
             }
             inLayerEdges.addAll(dummies);
         }
-        
-        portSideAssigner.assignPortSides(inLayerEdges, leftOrRight);
-        
-        // Readd ports for node size calculation. Wrong, size calculation after CM
-        for (LPort lPort : inLayerPorts) {
-//            lPort.getNode().getPorts().add(lPort);
+        graph.setProperty(InternalProperties.IN_LAYER_DUMMIES, inLayerDummies);
+
+        if (inLayerPorts != null) {
+            for (LPort lPort : inLayerPorts) {
+                lPort.setNode(lPort.getNode());
+            }
         }
         
-        if (inLayerEdges != null) {
-            // If we have in-layer constraints, constraints between nodes may be between non-dummies.
-            graph.setProperty(InternalProperties.IN_LAYER_SUCCESSOR_CONSTRAINTS_BETWEEN_NON_DUMMIES, true);
-//            
-//            Direction layoutDirection = graph.getProperty(LayeredOptions.DIRECTION);
-//            double labelLabelSpacing = graph.getProperty(LayeredOptions.SPACING_LABEL_LABEL);
-//            double edgeLabelSpacing = graph.getProperty(LayeredOptions.SPACING_EDGE_LABEL);
-//            List<LNode> newLabelDummies = Lists.newArrayList();
-//            for (LEdge lEdge : inLayerEdges) {
-////                
-//                // Check whether label dummies need to be handled.
-//                if (LabelDummyInserter.edgeNeedsToBeProcessed(lEdge)) {
-//                    throw new UnsupportedConfigurationException("An in-layer edge cannot have a label.");
-////                    // FIXME add support for labels
-//                    LabelDummyInserter.processEdge(lEdge, graph, newLabelDummies, layoutDirection, labelLabelSpacing,
-//////                            edgeLabelSpacing);
-//////                    graph.getLayerlessNodes().addAll(newLabelDummies);
-//////                    // Add constraint from source to label dummy and from dummy to target.
-//////                    // The size of newLabelDummies should always be one.
-//////                    assert newLabelDummies.size() == 1;
-//                } else {
-//                    // Add constraint for direct in-layer edge
-//                    List<LNode> unit =
-//                            lEdge.getSource().getNode().getProperty(InternalProperties.IN_LAYER_SUCCESSOR_CONSTRAINTS);
-//                    unit.add(lEdge.getTarget().getNode());
-//                }
-//            }
-//            // FIXME add support for labels
-////            if (!newLabelDummies.isEmpty()) {
-////                LNode labelDummy = newLabelDummies.get(0);
-////                LNode sourceNode = Iterables.getOnlyElement(labelDummy.getIncomingEdges()).getSource().getNode();
-////                LNode targetNode = Iterables.getOnlyElement(labelDummy.getOutgoingEdges()).getTarget().getNode();
-////                // Add constraint from source to dummy.
-////                List<LNode> unit = sourceNode.getProperty(InternalProperties.IN_LAYER_SUCCESSOR_CONSTRAINTS);
-////                unit.add(labelDummy);
-////                // Add constraint from dummy to target.
-////                unit = labelDummy.getProperty(InternalProperties.IN_LAYER_SUCCESSOR_CONSTRAINTS);
-////                unit.add(targetNode);
-////                // Add second edge from dummy to target to list of in-layer edges.
-////                inLayerEdges.add(Iterables.getOnlyElement(labelDummy.getOutgoingEdges()));
-////                // Add dummy to correct layer.
-////                labelDummy.setLayer(sourceNode.getLayer());
-////            }
-        }
+        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 2, "After");
         
         progressMonitor.done();
     }
@@ -149,6 +107,7 @@ public class InLayerEdgeProcessor implements ILayoutProcessor<LGraph> {
         dummyOutput.setNode(dummyNode);
         inLayerPorts.add(dummyOutput);
         
+        edge.setSource(sourcePort);
         edge.setTarget(dummyInput);
         
         // Create a dummy edge

@@ -16,6 +16,7 @@ import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePostNPProcess
 import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePreNPProcessor;
 import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgePreProcessor;
 import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgeProcessor;
+import org.eclipse.elk.alg.layered.intermediate.inlayer.InLayerEdgeRouter;
 import org.eclipse.elk.alg.layered.intermediate.wrapping.BreakingPointInserter;
 import org.eclipse.elk.alg.layered.intermediate.wrapping.BreakingPointProcessor;
 import org.eclipse.elk.alg.layered.intermediate.wrapping.BreakingPointRemover;
@@ -152,6 +153,8 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
     HYPERNODE_PROCESSOR,
     /** Routes edges incident to hierarchical ports orthogonally. */
     HIERARCHICAL_PORT_ORTHOGONAL_EDGE_ROUTER,
+    /** Routes in-layer edges */
+    IN_LAYER_EDGE_ROUTER,
     /** Takes a properly layered graph and removes the dummy nodes due to proper layering. */
     LONG_EDGE_JOINER,
     /** Add node position to the already routed self-loops. */
@@ -274,6 +277,9 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
             
         case IN_LAYER_EDGE_PROCESSOR:
             return new InLayerEdgeProcessor();
+            
+        case IN_LAYER_EDGE_ROUTER:
+            return new InLayerEdgeRouter();
 
         case INNERMOST_NODE_MARGIN_CALCULATOR:
             return new InnermostNodeMarginCalculator();
