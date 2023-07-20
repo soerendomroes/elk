@@ -124,6 +124,15 @@ public final class Spacings {
                 LayeredOptions.SPACING_EDGE_NODE, LayeredOptions.SPACING_EDGE_NODE_BETWEEN_LAYERS);
         nodeTypeSpacing(NodeType.IN_LAYER, NodeType.NORTH_SOUTH_PORT, 
                 LayeredOptions.SPACING_EDGE_NODE, LayeredOptions.SPACING_EDGE_NODE_BETWEEN_LAYERS);
+
+        // in-layer-label
+        nodeTypeSpacing(NodeType.IN_LAYER_LABEL, 
+                LayeredOptions.SPACING_LABEL_LABEL,
+                LayeredOptions.SPACING_LABEL_LABEL);
+        nodeTypeSpacing(NodeType.IN_LAYER_LABEL, NodeType.NORMAL, 
+                LayeredOptions.SPACING_LABEL_NODE, LayeredOptions.SPACING_LABEL_NODE);
+        nodeTypeSpacing(NodeType.IN_LAYER_LABEL, NodeType.NORTH_SOUTH_PORT,
+                LayeredOptions.SPACING_LABEL_NODE, LayeredOptions.SPACING_LABEL_NODE);
         
     }
 

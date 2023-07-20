@@ -54,13 +54,14 @@ public class InLayerEdgeRouter implements ILayoutProcessor<LGraph> {
             // First same y coordinate as dummy, then same x coordinate.
             LPort normal;
             LPort dummyPort;
-            boolean normalToDummy = lEdge.getSource().getNode().getType() == NodeType.IN_LAYER;
+            boolean normalToDummy = lEdge.getSource().getNode().getType() == NodeType.IN_LAYER
+                    || lEdge.getSource().getNode().getType() == NodeType.IN_LAYER_LABEL;
             if (normalToDummy) {
-                normal = lEdge.getSource();
-                dummyPort = lEdge.getTarget();
-            } else {
                 dummyPort = lEdge.getSource();
                 normal = lEdge.getTarget();
+            } else {
+                normal = lEdge.getSource();
+                dummyPort = lEdge.getTarget();
             }
             LNode normalNode = normal.getNode();
             LNode dummyNode = dummyPort.getNode();

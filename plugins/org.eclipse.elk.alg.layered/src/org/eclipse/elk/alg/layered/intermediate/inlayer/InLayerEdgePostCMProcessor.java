@@ -51,9 +51,8 @@ public class InLayerEdgePostCMProcessor implements ILayoutProcessor<LGraph> {
         }
 
         List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
-        boolean leftOrRight = graph.getProperty(LayeredOptions.DIRECTION).isHorizontal();
         // Use special method to assign in-layer edge ports to a side.
-        portSideAssigner.assignPortSides(inLayerEdges, leftOrRight);
+        portSideAssigner.assignPortSides(inLayerEdges);
         
         progressMonitor.done();
     }

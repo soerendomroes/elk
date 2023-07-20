@@ -10,9 +10,7 @@
 package org.eclipse.elk.alg.layered.intermediate.inlayer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.elk.alg.layered.DebugUtil;
 import org.eclipse.elk.alg.layered.graph.LEdge;
@@ -29,25 +27,32 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
  * If their ports have no further connections also remove them.
  * <dl><dl>
  *   <dt>Precondition:</dt>
- *     <dd>TODO</dd>
+ *     <dd>In-layer edges are not yet processed.</dd>
  *   <dt>Postcondition:</dt>
- *     <dd>TODO</dd>
+ *     <dd>The graph has a property with the list of in-layer edges and ports.</dd>
+ *     <dd>All nodes with in-layer edges have their in-layer ports disconnected.</dd>
+ *     <dd>All in-layer ports have their edges disconnected.</dd>
  *   <dt>Slots:</dt>
- *     <dd>Before phase 1 or before phase 4?.</dd>
+ *     <dd>Before phase 1.</dd>
  *   <dt>Same-slot dependencies:</dt>
  *     <dd>NONE</dd>
  * </dl>
  */
 public class InLayerEdgePreProcessor implements ILayoutProcessor<LGraph> {
-    
+    /**
+     * Constant to mark that in in-layer edges was not added to the graph.
+     */
     public final static int NOT_ADDED = 0;
+    /**
+     * Constant to mark that in in-layer edges was added to the graph.
+     */
     public final static int ADDED = 1;
     
 
     @Override
     public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
         progressMonitor.begin("In-Layer Edge Pre Processor", 1);
-        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 1, "Initial graph");
+        // Initialize in-layer properties.
         List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
         if (inLayerEdges == null) {
             inLayerEdges = new ArrayList<>();
@@ -58,6 +63,7 @@ public class InLayerEdgePreProcessor implements ILayoutProcessor<LGraph> {
             inLayerPorts = new ArrayList<>();
             graph.setProperty(InternalProperties.IN_LAYER_PORTS, inLayerPorts);
         }
+        // Initialize edge id.
         for (LNode node : graph.getLayerlessNodes()) {
             for (LPort port : node.getPorts()) {
                 for (LEdge edge : port.getConnectedEdges()) {
@@ -65,7 +71,7 @@ public class InLayerEdgePreProcessor implements ILayoutProcessor<LGraph> {
                 }
             }
         }
-        // All nodes are layerless before phase 1
+        // All nodes are layerless before phase 1, therefore, traverse the layerless nodes to find in-layer edges.
         for (LNode node : graph.getLayerlessNodes()) {
             for (LPort port : node.getPorts()) {
                 boolean normallyConnected = false;
@@ -80,6 +86,7 @@ public class InLayerEdgePreProcessor implements ILayoutProcessor<LGraph> {
                         normallyConnected = true;
                     }
                 }
+                // Port with in-layer edges that has no other connections should be removed from the graph.
                 if (!normallyConnected && port.getConnectedEdges().iterator().hasNext()) {
                     // Also remove the ports
                     inLayerPorts.add(port);
@@ -96,7 +103,6 @@ public class InLayerEdgePreProcessor implements ILayoutProcessor<LGraph> {
         for (LPort lPort : inLayerPorts) {
             lPort.getNode().getPorts().remove(lPort);
         }
-        DebugUtil.logLGraphNodesAndPorts(progressMonitor, graph, 2, "Removed all in-layer edges");
         
         progressMonitor.done();
     }

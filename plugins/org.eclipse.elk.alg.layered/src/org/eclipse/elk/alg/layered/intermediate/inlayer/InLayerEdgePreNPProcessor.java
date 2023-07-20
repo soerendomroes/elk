@@ -44,6 +44,7 @@ public class InLayerEdgePreNPProcessor implements ILayoutProcessor<LGraph> {
         List<LPort> inLayerPorts = graph.getProperty(InternalProperties.IN_LAYER_PORTS);
         for (LPort lPort : inLayerPorts) {
             lPort.getNode().getPorts().remove(lPort);
+            lPort.getNode().cachePortSides();
         }
         
         progressMonitor.done();

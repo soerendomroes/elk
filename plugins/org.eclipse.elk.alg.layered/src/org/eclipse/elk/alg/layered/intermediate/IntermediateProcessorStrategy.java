@@ -116,8 +116,6 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
     IN_LAYER_EDGE_POST_CM_PROCESSOR,
     /** Sets the positions of ports and labels, and sets the node sizes. */
     LABEL_AND_NODE_SIZE_PROCESSOR,
-    /** TODO correct position? Removes the in-layer edges again. */
-    IN_LAYER_EDGE_PRE_NP_PROCESSOR,
     /** Calculates the margins of nodes according to the sizes of ports and port labels. */
     INNERMOST_NODE_MARGIN_CALCULATOR,
     /** Calculate the bendpoints for the self-loop edges. */
@@ -136,6 +134,8 @@ public enum IntermediateProcessorStrategy implements ILayoutProcessorFactory<LGr
     HYPEREDGE_DUMMY_MERGER,
     /** Adjusts the width of hierarchical port dummy nodes. */
     HIERARCHICAL_PORT_DUMMY_SIZE_PROCESSOR,
+    /** TODO correct position? Removes the in-layer edges again. */
+    IN_LAYER_EDGE_PRE_NP_PROCESSOR,
 
     // Before Phase 5
 

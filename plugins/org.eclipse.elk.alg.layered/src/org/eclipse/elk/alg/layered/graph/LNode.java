@@ -49,8 +49,10 @@ public final class LNode extends LShape {
         LABEL,
         /** a dummy node representing a breaking point used to 'wrap' graphs. */
         BREAKING_POINT,
-        /** a dummy node to route an in-layer edge*/
-        IN_LAYER;
+        /** a dummy node to route an in-layer edge. */
+        IN_LAYER,
+        /** a label node to route an in-layer edge. */
+        IN_LAYER_LABEL;
         
         /**
          * Return the color used when writing debug output graphs. The colors are given as strings of
@@ -64,8 +66,9 @@ public final class LNode extends LShape {
             case LONG_EDGE: return "#eaed00";
             case NORTH_SOUTH_PORT: return "#0034de";
             case LABEL: return "#75c3c3";
-            case BREAKING_POINT: return "#eeeeff"; 
-            case IN_LAYER: return "#00ff00"; 
+            case BREAKING_POINT: return "#eeeeff";
+            case IN_LAYER: return "#00ff00";
+            case IN_LAYER_LABEL: return "#00ff00";
             default: return "#eeeeee";
             }
         }
