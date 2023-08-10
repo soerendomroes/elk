@@ -40,7 +40,7 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
 public class InLayerEdgeRouter implements ILayoutProcessor<LGraph> {
 
     @Override
-    public void process(LGraph graph, IElkProgressMonitor progressMonitor) {
+    public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
         List<LEdge> inLayerEdges = graph.getProperty(InternalProperties.IN_LAYER_EDGES);
         if (inLayerEdges != null) {
             for (LEdge lEdge : inLayerEdges) {

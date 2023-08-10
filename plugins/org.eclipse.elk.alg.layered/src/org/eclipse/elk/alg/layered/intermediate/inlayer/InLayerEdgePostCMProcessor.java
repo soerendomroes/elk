@@ -28,11 +28,13 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
  *   <dt>Precondition:</dt>
  *     <dd>TODO</dd>
  *   <dt>Postcondition:</dt>
- *     <dd>TODO</dd>
+ *     <dd>In-layer ports are readded to the graph for size estimation.</dd> 
+ *     <dd>All in-layer ports now have a port side.</dd>
  *   <dt>Slots:</dt>
  *     <dd>Before phase 4.</dd>
  *   <dt>Same-slot dependencies:</dt>
- *     <dd>Has be be before {@link LabelAndNodeSizeProcessor}
+ *     <dd>Has be be before {@link LabelAndNodeSizeProcessor} since it determines the size of a node wich depends on the
+ *        port side</dd>
  * </dl>
  */
 public class InLayerEdgePostCMProcessor implements ILayoutProcessor<LGraph> {
