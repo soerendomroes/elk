@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: RectPackingAlgorithm
+Bundle-SymbolicName: org.eclipse.elk.alg.fun;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Export-Package: org.eclipse.elk.alg.fun,
+ org.eclipse.elk.alg.fun.options,
+ org.eclipse.elk.alg.fun.util
+Automatic-Module-Name: org.eclipse.elk.alg.fun
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.elk.graph;bundle-version="0.5.0",
+ org.eclipse.elk.core;bundle-version="0.5.0"
+Bundle-ClassPath: lib/cplex.jar

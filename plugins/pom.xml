@@ -35,6 +35,7 @@
     <module>org.eclipse.elk.alg.libavoid</module>
     <module>org.eclipse.elk.alg.mrtree</module>
     <module>org.eclipse.elk.alg.rectpacking</module>
+    <module>org.eclipse.elk.alg.fun</module>
     <module>org.eclipse.elk.alg.spore</module>
     <module>org.eclipse.elk.alg.topdownpacking</module>
     <module>org.eclipse.elk.conn.gmf</module>
