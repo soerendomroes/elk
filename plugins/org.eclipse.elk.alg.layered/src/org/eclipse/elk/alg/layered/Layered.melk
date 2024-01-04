@@ -152,6 +152,7 @@ algorithm layered(LayeredLayoutProvider) {
     supports org.eclipse.elk.alg.layered.nodePlacement.strategy
     supports org.eclipse.elk.alg.layered.nodePlacement.bk.fixedAlignment
     supports feedbackEdges
+    supports org.eclipse.elk.alg.layered.nodePlacement.swimlane.lane
     supports org.eclipse.elk.alg.layered.nodePlacement.linearSegments.deflectionDampening
     supports org.eclipse.elk.alg.layered.edgeRouting.selfLoopDistribution
     supports org.eclipse.elk.alg.layered.edgeRouting.selfLoopOrdering
@@ -496,6 +497,16 @@ group nodePlacement {
         targets parents
         requires strategy == NodePlacementStrategy.NETWORK_SIMPLEX
         requires strategy == NodePlacementStrategy.BRANDES_KOEPF
+    }
+    
+    group swimlane {
+        option lane: Integer {
+            label "Swimlane Lane Index"
+            description "Specifies on what lane the node is placed."
+            default = 0
+            targets nodes
+            requires org.eclipse.elk.alg.layered.nodePlacement.strategy == NodePlacementStrategy.SWIMLANE
+        }
     }
 
     group bk {
