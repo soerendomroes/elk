@@ -59,13 +59,11 @@ algorithm layered(LayeredLayoutProvider) {
     supports org.eclipse.elk.spacing.portPort
     supports org.eclipse.elk.spacing.individual
     documentation "Most parts of the algorithm do not support this yet."
-    
     // layer-based spacings
     supports org.eclipse.elk.alg.layered.spacing.baseValue
     supports org.eclipse.elk.alg.layered.spacing.edgeEdgeBetweenLayers
     supports org.eclipse.elk.alg.layered.spacing.edgeNodeBetweenLayers
     supports org.eclipse.elk.alg.layered.spacing.nodeNodeBetweenLayers
-    
     // layer-based priorities
     supports org.eclipse.elk.priority = 0
     documentation "Used by the 'simple row graph placer' to decide which connected components to place first.
@@ -76,7 +74,6 @@ algorithm layered(LayeredLayoutProvider) {
     supports priority.shortness
     documentation "Currently only supported by the network simplex layerer."
     supports priority.straightness
-    
     // wrapping related
     supports wrapping.strategy
     supports wrapping.additionalEdgeSpacing
@@ -89,22 +86,18 @@ algorithm layered(LayeredLayoutProvider) {
     supports wrapping.multiEdge.improveCuts
     supports wrapping.multiEdge.distancePenalty
     supports wrapping.multiEdge.improveWrappedEdges
-    
     // flexible nodes during node placement
     supports nodePlacement.networkSimplex.nodeFlexibility
     supports nodePlacement.networkSimplex.nodeFlexibility.^default
-    
     // splines
     supports edgeRouting.splines.mode
     supports edgeRouting.splines.sloppy.layerSpacingFactor
-    
     // topdown layout
     supports org.eclipse.elk.topdownLayout
     supports org.eclipse.elk.topdown.scaleFactor
     supports org.eclipse.elk.topdown.hierarchicalNodeWidth
     supports org.eclipse.elk.topdown.hierarchicalNodeAspectRatio
     supports org.eclipse.elk.topdown.nodeType = TopdownNodeTypes.HIERARCHICAL_NODE
-    
     // other options
     supports org.eclipse.elk.padding = new ElkPadding(12)
     supports org.eclipse.elk.edgeRouting = EdgeRouting.ORTHOGONAL
@@ -152,6 +145,7 @@ algorithm layered(LayeredLayoutProvider) {
     supports org.eclipse.elk.alg.layered.nodePlacement.strategy
     supports org.eclipse.elk.alg.layered.nodePlacement.bk.fixedAlignment
     supports feedbackEdges
+    supports org.eclipse.elk.alg.layered.nodePlacement.swimlane.laneSpacing
     supports org.eclipse.elk.alg.layered.nodePlacement.swimlane.lane
     supports org.eclipse.elk.alg.layered.nodePlacement.linearSegments.deflectionDampening
     supports org.eclipse.elk.alg.layered.edgeRouting.selfLoopDistribution
@@ -349,7 +343,7 @@ group crossingMinimization {
         default = CrossingMinimizationStrategy.LAYER_SWEEP
         targets parents
     }
-    
+
     option forceNodeModelOrder: boolean {
         label "Force Node Model Order"
         description
@@ -385,7 +379,7 @@ group crossingMinimization {
 
         advanced option type: GreedySwitchType {
             label "Greedy Switch Crossing Minimization"
-            description 
+            description
                 "Greedy Switch strategy for crossing minimization. The greedy switch heuristic is executed 
                  after the regular crossing minimization as a post-processor. 
                  Note that if 'hierarchyHandling' is set to 'INCLUDE_CHILDREN', the 'greedySwitchHierarchical.type' 
@@ -396,9 +390,9 @@ group crossingMinimization {
         }
 
     }
-    
+
     group greedySwitchHierarchical {
-        
+
         advanced option type: GreedySwitchType {
             label "Greedy Switch Crossing Minimization (hierarchical)"
             description
@@ -410,9 +404,9 @@ group crossingMinimization {
             default = GreedySwitchType.OFF
             targets parents
             requires crossingMinimization.strategy == CrossingMinimizationStrategy.LAYER_SWEEP
-            requires org.eclipse.elk.hierarchyHandling == HierarchyHandling.INCLUDE_CHILDREN 
+            requires org.eclipse.elk.hierarchyHandling == HierarchyHandling.INCLUDE_CHILDREN
         }
-        
+
     }
 
     advanced option semiInteractive: boolean {
@@ -424,21 +418,21 @@ group crossingMinimization {
         default = false
         targets parents
         requires crossingMinimization.strategy == CrossingMinimizationStrategy.LAYER_SWEEP
-    }    
-    
+    }
+
     option inLayerPredOf: String {
         label "In Layer Predecessor of"
-        description 
+        description
             "Allows to set a constraint which specifies of which node 
              the current node is the predecessor.
              If set to 's' then the node is the predecessor of 's' and is in the same layer"
         default = null
         targets nodes
     }
-    
+
     advanced option inLayerSuccOf: String {
         label "In Layer Successor of"
-        description 
+        description
             "Allows to set a constraint which specifies of which node 
              the current node is the successor.
              If set to 's' then the node is the successor of 's' and is in the same layer"
@@ -498,15 +492,27 @@ group nodePlacement {
         requires strategy == NodePlacementStrategy.NETWORK_SIMPLEX
         requires strategy == NodePlacementStrategy.BRANDES_KOEPF
     }
-    
+
     group swimlane {
+
+        option laneSpacing: double {
+            label "Lane Spacing"
+            description
+                "Spacing between lanes."
+            default = 20.0
+            targets parents
+            requires org.eclipse.elk.alg.layered.nodePlacement.strategy == NodePlacementStrategy.SWIMLANE
+        }
+        
         option lane: Integer {
             label "Swimlane Lane Index"
-            description "Specifies on what lane the node is placed."
+            description
+                "Specifies on what lane the node is placed."
             default = 0
             targets nodes
             requires org.eclipse.elk.alg.layered.nodePlacement.strategy == NodePlacementStrategy.SWIMLANE
         }
+
     }
 
     group bk {
@@ -975,6 +981,7 @@ group edgeLabels {
  *    miscellaneous
  * ------------------------*/
 group considerModelOrder {
+
     option strategy: OrderingStrategy {
         label "Consider Model Order"
         description
@@ -984,6 +991,7 @@ group considerModelOrder {
         default = OrderingStrategy.NONE
         targets parents
     }
+
     option portModelOrder: boolean {
         label "Consider Port Order"
         description
@@ -992,6 +1000,7 @@ group considerModelOrder {
         default = false
         targets parents
     }
+
     option noModelOrder: boolean {
         label "No Model Order"
         description
@@ -999,6 +1008,7 @@ group considerModelOrder {
         default = false
         targets nodes
     }
+
     option components: ComponentOrderingStrategy {
         label "Consider Model Order for Components"
         description
@@ -1010,6 +1020,7 @@ group considerModelOrder {
         default = ComponentOrderingStrategy.NONE
         requires org.eclipse.elk.separateConnectedComponents
     }
+
     option longEdgeStrategy: LongEdgeOrderingStrategy {
         label "Long Edge Ordering Strategy"
         description
@@ -1019,6 +1030,7 @@ group considerModelOrder {
         default = LongEdgeOrderingStrategy.DUMMY_NODE_OVER
         targets parents
     }
+
     option crossingCounterNodeInfluence: double {
         label "Crossing Counter Node Order Influence"
         description
@@ -1031,6 +1043,7 @@ group considerModelOrder {
         targets parents
         requires org.eclipse.elk.alg.layered.considerModelOrder.strategy
     }
+
     option crossingCounterPortInfluence: double {
         label "Crossing Counter Port Order Influence"
         description
@@ -1043,6 +1056,7 @@ group considerModelOrder {
         targets parents
         requires org.eclipse.elk.alg.layered.considerModelOrder.strategy
     }
+
 }
 
 advanced option directionCongruency: DirectionCongruency {

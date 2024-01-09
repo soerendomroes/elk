@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,72 +73,86 @@ public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
      */
     @Override
     public void process(LGraph graph, IElkProgressMonitor monitor) {
-        monitor.begin("Swimlane node placement", 1);
+        monitor.begin("Treelike node placement", 1);
         monitor.logGraph(graph, null, null);
 
-        monitor.logGraph(JsonDebugUtil.createDebugGraph(graph), "swimlane graph [" + graph.id + "]",
+        monitor.logGraph(JsonDebugUtil.createDebugGraph(graph), "treelike graph [" + graph.id + "]",
                 LoggedGraph.Type.JSON);
 
         MIN_NODE_SPACING = graph.getProperty(LayeredOptions.SPACING_NODE_NODE);
         EDGE_NODE_SPACING = graph.getProperty(LayeredOptions.SPACING_EDGE_NODE);
         NODES = new HashMap<LNode, Node>();
-        
+
         final List<Layer> layers = graph.getLayers();
         MIN_POSITION = new double[layers.size()];
         Arrays.fill(MIN_POSITION, 0.0);
-        
+
         final List<Node> trees = new ArrayList<Node>();
 
         for (Layer layer : layers) {
+            int treeIndex = 0;
             for (LNode lNode : layer.getNodes()) {
                 final boolean isLongEdge = lNode.getType() == NodeType.LONG_EDGE;
-                if (!isLongEdge && !NODES.containsKey(lNode)) {
-                    Node node = new Node(lNode);
-                    trees.add(node);
-                    NODES.put(lNode, node);
-                    node.buildTree();
-                    node.setTreeHeigth();
+                if (!isLongEdge) {
+                    if (NODES.containsKey(lNode)) {
+                        treeIndex = -1;
+                    }
+                    else {
+                        Node node = new Node(lNode);
+                        NODES.put(lNode, node);
+                        node.buildTree();
+                        node.setTreeHeigth();
+                        if (treeIndex < 0) {
+                            trees.add(node);
+                        } else {
+                            trees.add(treeIndex, node);
+                            treeIndex++;
+                        }
+                    }
                 }
             }
         }
-        
-        Collections.reverse(trees);
-        for(Node tree : trees) {
+
+        for (Node tree : trees) {
             final double minPos = MIN_POSITION[0];
             final double maxPox = minPos + tree.treeHeigth;
             placeTree(tree, minPos, maxPox);
             Arrays.fill(MIN_POSITION, Arrays.stream(MIN_POSITION).max().getAsDouble() + MIN_NODE_SPACING);
         }
-        
+
         monitor.done();
     }
-    
+
     private void placeTree(final Node treeNode, final double minPosition, final double maxPosition) {
-        
+
         final int layerIndex = treeNode.getLNode().getLayer().getIndex();
         MIN_POSITION[layerIndex] = Math.max(MIN_POSITION[layerIndex], placeNode(treeNode, minPosition, maxPosition));
-        if(treeNode.getChilds().size() > 0) {
-            final double childSpace = treeNode.getTreeHeight() / treeNode.getChilds().size() - MIN_NODE_SPACING * (treeNode.getChilds().size() - 1);
-            double nextMin = minPosition;
+        if (treeNode.getChilds().size() > 0) {
+            final double spaceWithoutSubtree = maxPosition - minPosition - treeNode.treeHeigth;
+            final double treeHeightWithoutNodeSpacing =
+                    treeNode.getTreeHeight() - MIN_NODE_SPACING * (treeNode.getChilds().size() - 1);
+            final double childSpace = treeHeightWithoutNodeSpacing / treeNode.getChilds().size();
+            double nextMin = minPosition + spaceWithoutSubtree * 0.5;
             double nextMax = nextMin + childSpace;
-            for(int i = 0; i < treeNode.getChilds().size(); i++) {
+            for (int i = 0; i < treeNode.getChilds().size(); i++) {
                 final Node subtree = treeNode.getChilds().get(i);
-                double subtreeHeight = subtree.getTreeHeight();
-                placeTree(subtree, nextMin + subtreeHeight * 0.5, nextMax - subtreeHeight * 0.5);
+                placeTree(subtree, nextMin, nextMax);
                 nextMin = nextMax + MIN_NODE_SPACING;
                 nextMax = nextMin + childSpace;
             }
-//          for(Node longEdge : treeNode.getLongEdgeChilds()) placeTree(longEdge);
+            // for(Node longEdge : treeNode.getLongEdgeChilds()) placeTree(longEdge);
         }
     }
-    
+
     public double placeNode(final Node node, final double minPosition, final double maxPosition) {
-        
         KVector nodePosition = node.getLNode().getPosition();
-        nodePosition.y = minPosition + (maxPosition + node.nodeHeight) * 0.5;
-        return nodePosition.y;
+        final double spaceWithoutSubtree = maxPosition - minPosition - node.treeHeigth;
+        double min = minPosition + spaceWithoutSubtree * 0.5;
+        double max = maxPosition - spaceWithoutSubtree * 0.5;
+        nodePosition.y = (min + max) * 0.5 - (node.nodeHeight) * 0.5;
+        return nodePosition.y + node.nodeHeight;
     }
-    
+
     private class Node {
         private LNode node;
         private List<Node> childs = new ArrayList<Node>();
@@ -161,8 +176,8 @@ public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
                 LNode targetNode = outgoingedge.getTarget().getNode();
                 if (!NODES.containsKey(targetNode)) {
                     Node child = new Node(targetNode);
-//                    if (child.isLongEdge) longEdgeChilds.add(child);
-//                    else nonLongEdgeChilds.add(child);
+                    // if (child.isLongEdge) longEdgeChilds.add(child);
+                    // else nonLongEdgeChilds.add(child);
                     childs.add(child);
                     NODES.put(targetNode, child);
                     child.buildTree();
@@ -195,6 +210,7 @@ public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
                 max = max * childs.size() + (childs.size() - 1) * MIN_NODE_SPACING;
             return Math.max(min, max);
         }
+
     }
 
 }
