@@ -19,6 +19,7 @@ import org.eclipse.elk.alg.layered.options.LayerConstraint;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
 import org.eclipse.elk.alg.layered.options.LayeringStrategy;
 import org.eclipse.elk.alg.layered.options.OrderingStrategy;
+import org.eclipse.elk.alg.layered.p3order.BarycenterHeuristicStrategy;
 import org.eclipse.elk.core.UnsupportedGraphException;
 import org.eclipse.elk.core.math.KVector;
 import org.eclipse.elk.core.options.CoreOptions;
@@ -32,17 +33,15 @@ import org.eclipse.elk.graph.ElkPort;
 import org.eclipse.elk.graph.properties.IProperty;
 
 /**
- * Graph visitor which visits only the root node and recursively steps through the graph
- * to set interactive options and pseudo coordinates for the layered algorithm.
- * Interactive layout works via two consecutive layout runs.
- * The first one is a "normal" run. The second one will is configured using this graph visitor.
- * The graph visitor recursively sets the interactive strategies for all phases and assigns pseudo positions to all
- * node based on their last position and the desired layer and position in the layer expressed by the
- * {@code LayerChoiceConstraint} and {@code PositionChoiceConstraint}.
- * The pseudo position have to represent layers and the ordering in the layer.
- * <br>
- * This class is used by adding it as an additional graph visitor to configure a layout run
- * in the {@link DiagramLayoutEngine}.
+ * Graph visitor which visits only the root node and recursively steps through the graph to set interactive options and
+ * pseudo coordinates for the layered algorithm. Interactive layout works via two consecutive layout runs. The first one
+ * is a "normal" run. The second one will is configured using this graph visitor. The graph visitor recursively sets the
+ * interactive strategies for all phases and assigns pseudo positions to all node based on their last position and the
+ * desired layer and position in the layer expressed by the {@code LayerChoiceConstraint} and
+ * {@code PositionChoiceConstraint}. The pseudo position have to represent layers and the ordering in the layer. <br>
+ * This class is used by adding it as an additional graph visitor to configure a layout run in the
+ * {@link DiagramLayoutEngine}.
+ * 
  * <pre>
  * DiagramLayoutEngine.Parameters params = new DiagramLayoutEngine.Parameters();
  * params.addLayoutRun(InteractiveLayeredGraphVisitor);
@@ -55,26 +54,24 @@ import org.eclipse.elk.graph.properties.IProperty;
 public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
 
     /**
-     * Since nodes should not overlap and their width and height are only the width and height of the previous
-     * layout run and therefore not reliable, we have to add additional spacing between them.
-     * Therefore, nodes are placed with the following spacing, which is hopefully enough to make up for size
-     * changes caused by interactive layout.
-     * Of course one could construct a model for which this spacing is not enough, but we choose to disregard this.
-     * In all non constructed normal cases this spacing should be sufficient to ensure that nodes do not overlap.
+     * Since nodes should not overlap and their width and height are only the width and height of the previous layout
+     * run and therefore not reliable, we have to add additional spacing between them. Therefore, nodes are placed with
+     * the following spacing, which is hopefully enough to make up for size changes caused by interactive layout. Of
+     * course one could construct a model for which this spacing is not enough, but we choose to disregard this. In all
+     * non constructed normal cases this spacing should be sufficient to ensure that nodes do not overlap.
      */
     public static final int PSEUDO_POSITION_SPACING = Integer.MAX_VALUE;
-    
+
     /**
-     * Constants used as the index of the last layer.
-     * This is used since a {@code layerConstraint} property might be set that assigns a node to the {@code LAST} layer.
-     * Since a {@code layerConstraint} should still be respected it is translated into a {@code layerChoiceConstraint}
-     * using this constant as the value for the last layer.
+     * Constants used as the index of the last layer. This is used since a {@code layerConstraint} property might be set
+     * that assigns a node to the {@code LAST} layer. Since a {@code layerConstraint} should still be respected it is
+     * translated into a {@code layerChoiceConstraint} using this constant as the value for the last layer.
      */
     public static final int LAST_LAYER_INDEX = Integer.MAX_VALUE;
 
     /**
-     * Visits all nodes and sets interactive options for the {@code layered} algorithm.
-     * This assumes that the {@code layered} algorithm is the default algorithm.
+     * Visits all nodes and sets interactive options for the {@code layered} algorithm. This assumes that the
+     * {@code layered} algorithm is the default algorithm.
      */
     @Override
     public void visit(final ElkGraphElement element) {
@@ -88,7 +85,8 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
     /**
      * Sets pseudo positions and interactive strategies for the given graph.
      * 
-     * @param root Root of the graph
+     * @param root
+     *            Root of the graph
      */
     private void setInteractiveOptionsAndPseudoPositions(final ElkNode root) {
         if (!root.getChildren().isEmpty()) {
@@ -123,7 +121,8 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
     /**
      * Sets the coordinates of the nodes in the graph {@code root} according to the set constraints.
      * 
-     * @param root The root of the graph that should be layouted.
+     * @param root
+     *            The root of the graph that should be layouted.
      */
     private void setCoordinates(final ElkNode root) {
         List<List<ElkNode>> layers = calcLayerNodes(root.getChildren());
@@ -142,7 +141,8 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
     /**
      * Calculates the layers the {@code nodes} belong to.
      * 
-     * @param nodes The nodes of the graph for which the layers should be calculated.
+     * @param nodes
+     *            The nodes of the graph for which the layers should be calculated.
      */
     private List<List<ElkNode>> calcLayerNodes(final List<ElkNode> nodes) {
         ArrayList<ElkNode> nodesWithoutC = new ArrayList<ElkNode>();
@@ -167,9 +167,9 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
 
         // Handle nodes with relative constraint and and layer constraint
         updateListsForLayerAssignment(nodesWithRCAndLC, nodes, nodesWithLayerConstraint, nodesWithRC, nodesWithoutC);
-        
+
         nodesWithRC = sortRCNodes(nodesWithRC, nodes, nodesWithoutC);
-        
+
         // Calculate layers for nodes without constraints based on their layerID,
         // which is set by the previous layout run.
         List<List<ElkNode>> layerNodes = initialLayers(nodesWithoutC);
@@ -184,37 +184,35 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
     }
 
     /**
-     * Sets layer constraints for nodes that are referred by the nodes in {@code nodesWithRCAndLC} 
-     * and adjusts the lists.
+     * Sets layer constraints for nodes that are referred by the nodes in {@code nodesWithRCAndLC} and adjusts the
+     * lists.
      * 
      * @param nodesWithRCAndLC
-     *          nodes that have relative and layer constraints
+     *            nodes that have relative and layer constraints
      * @param nodes
-     *          all nodes of the graph
-     * @param nodesWithRC 
-     *          nodes that have only relative constraints
-     * @param nodesWithLayerConstraint 
-     *          nodes that have only layer constraints
-     * @param nodesWithoutC 
-     *          nodes without any constraint
+     *            all nodes of the graph
+     * @param nodesWithRC
+     *            nodes that have only relative constraints
+     * @param nodesWithLayerConstraint
+     *            nodes that have only layer constraints
+     * @param nodesWithoutC
+     *            nodes without any constraint
      */
-    private void updateListsForLayerAssignment(final List<ElkNode> nodesWithRCAndLC, final List<ElkNode> nodes, 
-            final ArrayList<ElkNode> nodesWithLayerConstraint, final List<ElkNode> nodesWithRC, 
-            final ArrayList<ElkNode> nodesWithoutC) {        
+    private void updateListsForLayerAssignment(final List<ElkNode> nodesWithRCAndLC, final List<ElkNode> nodes,
+            final ArrayList<ElkNode> nodesWithLayerConstraint, final List<ElkNode> nodesWithRC,
+            final ArrayList<ElkNode> nodesWithoutC) {
         for (int i = 0; i < nodesWithRCAndLC.size(); i++) {
             ElkNode node = nodesWithRCAndLC.get(i);
             nodesWithLayerConstraint.add(node);
             List<ElkNode> targets = new ArrayList<ElkNode>();
             // get target nodes
             if (node.hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF)) {
-                targets.add(getElkNode(nodes, 
-                        node.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF)));
-            } 
-            if (node.hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF)) {
-                targets.add(getElkNode(nodes, 
-                        node.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF)));
+                targets.add(getElkNode(nodes, node.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF)));
             }
-            
+            if (node.hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF)) {
+                targets.add(getElkNode(nodes, node.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF)));
+            }
+
             for (ElkNode target : targets) {
                 // set layer constraint of target node
                 if (!target.hasProperty(LayeredOptions.LAYERING_LAYER_CHOICE_CONSTRAINT)) {
@@ -237,13 +235,13 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
      * Assign the nodes with relative constraints to layers.
      * 
      * @param nodesWithRC
-     *          Nodes with relative constraints.
+     *            Nodes with relative constraints.
      * @param layering
-     *          List that contains the layers with their corresponding nodes.
+     *            List that contains the layers with their corresponding nodes.
      * @param allNodes
-     *          All nodes of the graph.
+     *            All nodes of the graph.
      */
-    private void assignLayersToNodesWithRC(final List<ElkNode> nodesWithRC, final List<List<ElkNode>> layering, 
+    private void assignLayersToNodesWithRC(final List<ElkNode> nodesWithRC, final List<List<ElkNode>> layering,
             final List<ElkNode> allNodes, final int diff) {
         for (int i = 0; i < nodesWithRC.size(); i++) {
             ElkNode node = nodesWithRC.get(i);
@@ -253,25 +251,25 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
             String predName = node.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF);
             if (succName != null) {
                 succNode = getElkNode(allNodes, succName);
-            } 
+            }
             if (predName != null) {
                 predNode = getElkNode(allNodes, predName);
             }
-            
+
             IProperty<Integer> layProp = LayeredOptions.LAYERING_LAYER_CHOICE_CONSTRAINT;
-            
+
             if (succNode != null && predNode != null) {
-                // if both rel cons are set, it may be that the layer ids of 
+                // if both rel cons are set, it may be that the layer ids of
                 // some nodes of the chain must be uptdated too
                 List<ElkNode> chain = getChainByAllNodes(node, allNodes);
-                int succVal = succNode.hasProperty(layProp) ? succNode.getProperty(layProp) 
+                int succVal = succNode.hasProperty(layProp) ? succNode.getProperty(layProp)
                         : succNode.getProperty(LayeredOptions.LAYERING_LAYER_ID);
-                int predVal = predNode.hasProperty(layProp) ? predNode.getProperty(layProp) 
+                int predVal = predNode.hasProperty(layProp) ? predNode.getProperty(layProp)
                         : predNode.getProperty(LayeredOptions.LAYERING_LAYER_ID);
                 int val = succVal > predVal ? succVal : predVal;
                 // update layer ids
                 for (ElkNode n : chain) {
-                    int oldVal = n.getProperty(LayeredOptions.LAYERING_LAYER_ID); 
+                    int oldVal = n.getProperty(LayeredOptions.LAYERING_LAYER_ID);
                     if (oldVal != val) {
                         n.setProperty(LayeredOptions.LAYERING_LAYER_ID, val);
                         shiftOtherNodes(n, val, layering, true);
@@ -284,15 +282,15 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                 // determine layer of referenced node
                 int succVal = -1;
                 if (succNode != null) {
-                    succVal = succNode.hasProperty(layProp) ? succNode.getProperty(layProp) 
+                    succVal = succNode.hasProperty(layProp) ? succNode.getProperty(layProp)
                             : succNode.getProperty(LayeredOptions.LAYERING_LAYER_ID);
                 }
                 int predVal = -1;
                 if (predNode != null) {
-                    predVal = predNode.hasProperty(layProp) ? predNode.getProperty(layProp) 
+                    predVal = predNode.hasProperty(layProp) ? predNode.getProperty(layProp)
                             : predNode.getProperty(LayeredOptions.LAYERING_LAYER_ID);
                 }
-                
+
                 // update layer id of the current node
                 int val = succVal > predVal ? succVal : predVal;
                 node.setProperty(LayeredOptions.LAYERING_LAYER_ID, val - diff);
@@ -526,7 +524,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
         List<ElkNode> nodesWithPC = new ArrayList<ElkNode>();
         List<ElkNode> nodesWithOneRC = new ArrayList<ElkNode>();
         List<ElkNode> nodesWithBothRC = new ArrayList<ElkNode>();
-        
+
         for (ElkNode node : nodesOfLayer) {
             allNodes.add(node);
             if (node.hasProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_CHOICE_CONSTRAINT)
@@ -545,13 +543,13 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                 nodesWithoutC.add(node);
             }
         }
-        
+
         // Sort nodes with constraint by their position id.
         nodesWithPC.sort((ElkNode a, ElkNode b) -> {
             return a.getProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_ID)
                     - b.getProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_ID);
         });
-        
+
         // each node should only have one relative constraint
         for (int n = 0; n < nodesWithBothRC.size(); n++) {
             // pred cons is translated to succ cons for the following node
@@ -575,7 +573,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                 }
             }
         }
-        
+
         // handle nodes with relative and position constraint
         // all nodes the are connected to the ones with the pos cons through relative constraints get also a pc
         handleNodesWithPCAndRC(allNodes, nodesWithoutC, nodesWithOneRC, nodesWithPC, nodesWithPCAndRC);
@@ -583,11 +581,11 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
         // Determine the order of the nodes.
         nodesWithOneRC = sortRCNodes(nodesWithOneRC, allNodes, nodesWithoutC);
         sortNodesInLayer(nodesWithPC, nodesWithoutC, direction);
-        
+
         // Add nodes with relative constraint
         for (ElkNode node : nodesWithOneRC) {
             ElkNode[] targets = new ElkNode[2];
-            
+
             if (node.hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF)) {
                 // pred is defined
                 IProperty<String> nodeProp = LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF;
@@ -597,7 +595,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                 IProperty<String> nodeProp = LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF;
                 targets[1] = getElkNode(allNodes, node.getProperty(nodeProp));
             }
-            
+
             for (int t = 0; t < targets.length; t++) {
                 if (targets[t] != null) {
                     if (!targets[t].hasProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_CHOICE_CONSTRAINT)) {
@@ -605,11 +603,11 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                         int index = t == 0 ? nodesWithoutC.indexOf(targets[t]) : nodesWithoutC.indexOf(targets[t]) + 1;
                         nodesWithoutC.add(index, node);
                     } else {
-                        // set pos cons on node because target has pos cons 
+                        // set pos cons on node because target has pos cons
                         int val =
                                 targets[t].getProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_CHOICE_CONSTRAINT);
                         int value = t == 0 ? val - 1 : val + 1;
-                        IProperty<String> nodeProp = t == 0 ? LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF 
+                        IProperty<String> nodeProp = t == 0 ? LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF
                                 : LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF;
                         node.setProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_CHOICE_CONSTRAINT, value);
                         node.setProperty(nodeProp, null);
@@ -618,13 +616,13 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                 }
             }
         }
-        
+
         // Sort nodes with constraint by their position constraint.
         nodesWithPC.sort((ElkNode a, ElkNode b) -> {
             return a.getProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_CHOICE_CONSTRAINT)
                     - b.getProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_CHOICE_CONSTRAINT);
         });
-            
+
         // Add the nodes with position constraint at the desired position in their layer.
         for (ElkNode node : nodesWithPC) {
             int pos = node.getProperty(LayeredOptions.CROSSING_MINIMIZATION_POSITION_CHOICE_CONSTRAINT);
@@ -662,24 +660,25 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
 
     /**
      * Handles nodes with pos and rel cons by adding pos cons to all nodes that are connected to them by rel cons.
+     * 
      * @param allNodes
-     *          all nodes of the graph
+     *            all nodes of the graph
      * @param nodes
-     *          nodes without any constraint
+     *            nodes without any constraint
      * @param nodesWithRC
-     *          nodes with only relative constraints
+     *            nodes with only relative constraints
      * @param nodesWithPositionConstraint
-     *          nodes with only position constraints
+     *            nodes with only position constraints
      * @param nodesWithPCAndRC
-     *          nodes with pos and rel constraints
+     *            nodes with pos and rel constraints
      */
-    private void handleNodesWithPCAndRC(final List<ElkNode> allNodes, final List<ElkNode> nodes, 
-            final List<ElkNode> nodesWithRC, final List<ElkNode> nodesWithPositionConstraint, 
+    private void handleNodesWithPCAndRC(final List<ElkNode> allNodes, final List<ElkNode> nodes,
+            final List<ElkNode> nodesWithRC, final List<ElkNode> nodesWithPositionConstraint,
             final List<ElkNode> nodesWithPCAndRC) {
         for (int i = 0; i < nodesWithPCAndRC.size(); i++) {
             ElkNode node = nodesWithPCAndRC.get(i);
             nodesWithPositionConstraint.add(node);
-            
+
             IProperty<String> nodeProp = null;
             List<ElkNode> targets = new ArrayList<>();
             List<Integer> vals = new ArrayList<>();
@@ -690,7 +689,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                 targets.add(getElkNode(allNodes, node.getProperty(nodeProp)));
                 vals.add(val + 1);
                 node.setProperty(nodeProp, null);
-            } 
+            }
             if (node.hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF)) {
                 // succ is defined
                 nodeProp = LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF;
@@ -698,7 +697,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                 vals.add(val - 1);
                 node.setProperty(nodeProp, null);
             }
-            
+
             // targets should be in the correct lists
             for (int t = 0; t < targets.size(); t++) {
                 ElkNode target = targets.get(t);
@@ -717,17 +716,19 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
     }
 
     /**
-     * Swaps nodes such that a node that should be placed at {@code pos} does not interrupt nodes that
-     * are connected with a relative constraint.
+     * Swaps nodes such that a node that should be placed at {@code pos} does not interrupt nodes that are connected
+     * with a relative constraint.
      * 
-     * @param nodes Nodes in the current layer.
-     * @param position Position a node should be placed at in the current layer.
+     * @param nodes
+     *            Nodes in the current layer.
+     * @param position
+     *            Position a node should be placed at in the current layer.
      */
     private void swapNodes(final List<ElkNode> nodes, final int position) {
         // Get surrounding nodes for node put at the given position.
         ElkNode pred = nodes.get(position - 1);
         ElkNode succ = nodes.get(position);
-        
+
         // Get all nodes that are connected by relative constraints to the predecessor.
         List<ElkNode> chain = getChainByLayerNodes(pred, nodes);
         if (chain.contains(succ)) {
@@ -737,7 +738,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
             int count = chain.indexOf(succ);
             // End of relative constraints chain
             int end = position + (chain.size() - count);
-            
+
             // Determine nodes to swap
             List<ElkNode> swapNodes = new ArrayList<>();
             for (int i = 0; i < count; i++) {
@@ -756,8 +757,8 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                     end += chain.size();
                 }
             }
-            
-            // add swapNodes 
+
+            // add swapNodes
             nodes.addAll(position - count, swapNodes);
         }
     }
@@ -766,14 +767,14 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
      * sorts {@code nodesWithRC} such that referred nodes that have also relative constraints come first.
      * 
      * @param nodesWithRC
-     *          nodes with relative constraints
-     * @param allNodes 
-     *          all nodes of the graph
-     * @param nodesWithoutC 
-     *          nodes without any constraints
+     *            nodes with relative constraints
+     * @param allNodes
+     *            all nodes of the graph
+     * @param nodesWithoutC
+     *            nodes without any constraints
      * @return sorted nodes that have relative constraints
      */
-    private List<ElkNode> sortRCNodes(final List<ElkNode> nodesWithRC, final List<ElkNode> allNodes, 
+    private List<ElkNode> sortRCNodes(final List<ElkNode> nodesWithRC, final List<ElkNode> allNodes,
             final List<ElkNode> nodesWithoutC) {
         List<ElkNode> nodes = new ArrayList<>();
         while (!nodesWithRC.isEmpty()) {
@@ -782,7 +783,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                 ElkNode cur = nodesWithRC.get(i);
                 if (cur.hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF)) {
                     // predecessor is defined
-                    ElkNode target = getElkNode(allNodes, 
+                    ElkNode target = getElkNode(allNodes,
                             cur.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF));
                     if (!nodesWithRC.contains(target)) {
                         nodes.add(cur);
@@ -792,7 +793,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                     }
                 } else {
                     // successor is defined
-                    ElkNode target = getElkNode(allNodes, 
+                    ElkNode target = getElkNode(allNodes,
                             cur.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF));
                     if (!nodesWithRC.contains(target)) {
                         nodes.add(cur);
@@ -802,7 +803,7 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
                     }
                 }
             }
-            
+
             // if relative constraints create a circle, remove one of the constraints
             if (circle) {
                 ElkNode cur = nodesWithRC.get(0);
@@ -864,15 +865,18 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
         parent.setProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY, CycleBreakingStrategy.INTERACTIVE);
         // Disable model order for the final run, since it destroys the ordering created by the constraints.
         parent.setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY, OrderingStrategy.NONE);
-        parent.setProperty(LayeredOptions.CROSSING_MINIMIZATION_FORCE_NODE_MODEL_ORDER, false);
+        parent.setProperty(LayeredOptions.CROSSING_MINIMIZATION_BARYCENTER_HEURISTIC_STRATEGY,
+                BarycenterHeuristicStrategy.NONE);
         parent.setProperty(LayeredOptions.CROSSING_MINIMIZATION_STRATEGY, CrossingMinimizationStrategy.LAYER_SWEEP);
     }
-    
+
     /**
      * Gets the ElkNode with {@code id} as identifier.
      * 
-     * @param nodes All nodes of the graph
-     * @param id Id of the ElkNode that is searched
+     * @param nodes
+     *            All nodes of the graph
+     * @param id
+     *            Id of the ElkNode that is searched
      * @return the ElkNode with the corresponding {@code id} or null if it could not be found.
      */
     private ElkNode getElkNode(final List<ElkNode> nodes, final String id) {
@@ -885,52 +889,55 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
     }
 
     /**
-     * Determines the nodes that are connected to {@code node} by relative constraints.
-     * The returned list of nodes is sorted based on the position of the nodes.
+     * Determines the nodes that are connected to {@code node} by relative constraints. The returned list of nodes is
+     * sorted based on the position of the nodes.
      * 
-     * @param node One node of the chain
-     * @param layerNodes Nodes that are in the same layer as {@code node}
+     * @param node
+     *            One node of the chain
+     * @param layerNodes
+     *            Nodes that are in the same layer as {@code node}
      */
     private List<ElkNode> getChainByLayerNodes(final ElkNode node, final List<ElkNode> layerNodes) {
         int pos = layerNodes.indexOf(node);
         List<ElkNode> chainNodes = new ArrayList<ElkNode>();
         chainNodes.add(node);
-        
+
         // from node to the start
         for (int i = pos - 1; i >= 0; i--) {
             if (layerNodes.get(i).hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF)
-                || layerNodes.get(i + 1).hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF)) {
-                    chainNodes.add(0, layerNodes.get(i));
+                    || layerNodes.get(i + 1).hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF)) {
+                chainNodes.add(0, layerNodes.get(i));
             } else {
                 break;
             }
         }
-        
+
         // count from node to the end
         for (int i = pos + 1; i < layerNodes.size(); i++) {
             if (layerNodes.get(i).hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_SUCC_OF)
-                || layerNodes.get(i - 1).hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF)) {
-                    chainNodes.add(layerNodes.get(i));
+                    || layerNodes.get(i - 1).hasProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF)) {
+                chainNodes.add(layerNodes.get(i));
             } else {
                 break;
             }
         }
-        
+
         return chainNodes;
     }
-    
+
     /**
      * Determines nodes that are connected to {@code node} by relative constraints.
+     * 
      * @param node
-     *          A node of the graph
+     *            A node of the graph
      * @param allNodes
-     *          All nodes of the graph
+     *            All nodes of the graph
      * @return The nodes that are connected to {@code node} (unsorted).
      */
     private List<ElkNode> getChainByAllNodes(final ElkNode node, final List<ElkNode> allNodes) {
         List<ElkNode> chain = new ArrayList<>();
         chain.add(node);
-        
+
         ElkNode succNode = null;
         ElkNode predNode = null;
         String succName = node.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF);
@@ -945,8 +952,8 @@ public class InteractiveLayeredGraphVisitor implements IGraphElementVisitor {
             chain.add(predNode);
             predName = predNode.getProperty(LayeredOptions.CROSSING_MINIMIZATION_IN_LAYER_PRED_OF);
         }
-        
+
         return chain;
     }
-    
+
 }

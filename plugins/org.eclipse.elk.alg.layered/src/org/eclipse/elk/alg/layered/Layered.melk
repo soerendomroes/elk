@@ -19,6 +19,7 @@ import org.eclipse.elk.core.options.HierarchyHandling
 import org.eclipse.elk.core.options.PortAlignment
 import org.eclipse.elk.core.util.ExclusiveBounds
 import org.eclipse.elk.core.options.TopdownNodeTypes
+import org.eclipse.elk.alg.layered.p3order.BarycenterHeuristicStrategy
 
 /**
  * Declarations for the ELK Layered layout algorithm.
@@ -134,7 +135,7 @@ algorithm layered(LayeredLayoutProvider) {
     supports org.eclipse.elk.alg.layered.layering.layerConstraint
     supports org.eclipse.elk.alg.layered.cycleBreaking.strategy
     supports org.eclipse.elk.alg.layered.crossingMinimization.strategy
-    supports org.eclipse.elk.alg.layered.crossingMinimization.forceNodeModelOrder
+    supports org.eclipse.elk.alg.layered.crossingMinimization.barycenterHeuristicStrategy
     supports org.eclipse.elk.alg.layered.crossingMinimization.greedySwitch.activationThreshold
     supports org.eclipse.elk.alg.layered.crossingMinimization.greedySwitch.type
     supports org.eclipse.elk.alg.layered.crossingMinimization.greedySwitchHierarchical.type
@@ -343,17 +344,24 @@ group crossingMinimization {
         default = CrossingMinimizationStrategy.LAYER_SWEEP
         targets parents
     }
-
-    option forceNodeModelOrder: boolean {
-        label "Force Node Model Order"
-        description
-            "The node order given by the model does not change to produce a better layout. E.g. if node A
-             is before node B in the model this is not changed during crossing minimization. This assumes that the
-             node model order is already respected before crossing minimization. This can be achieved by setting
-             considerModelOrder.strategy to NODES_AND_EDGES."
-        default = false
+    
+    option barycenterHeuristicStrategy: BarycenterHeuristicStrategy {
+        label "Barycenter Heuristic Option"
+        description "Use specialized implementations of the Barycenter heuristic."
+        default = BarycenterHeuristicStrategy.NONE
         targets parents
     }
+
+//    option forceNodeModelOrder: boolean {
+//        label "Force Node Model Order"
+//        description
+//            "The node order given by the model does not change to produce a better layout. E.g. if node A
+//             is before node B in the model this is not changed during crossing minimization. This assumes that the
+//             node model order is already respected before crossing minimization. This can be achieved by setting
+//             considerModelOrder.strategy to NODES_AND_EDGES."
+//        default = false
+//        targets parents
+//    }
 
     advanced option hierarchicalSweepiness: double {
         label "Hierarchical Sweepiness"

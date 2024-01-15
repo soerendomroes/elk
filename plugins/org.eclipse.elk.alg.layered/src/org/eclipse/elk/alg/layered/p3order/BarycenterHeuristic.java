@@ -25,9 +25,9 @@ import org.eclipse.elk.alg.layered.options.PortType;
 import com.google.common.collect.Lists;
 
 /**
- * Determines the node order of a given free layer. Uses heuristic methods to find an ordering that
- * minimizes edge crossings between the given free layer and a neighboring layer with fixed node
- * order. The barycenter heuristic is used here.
+ * Determines the node order of a given free layer. Uses heuristic methods to find an ordering that minimizes edge
+ * crossings between the given free layer and a neighboring layer with fixed node order. The barycenter heuristic is
+ * used here.
  * 
  * @author msp
  * @author cds
@@ -43,7 +43,7 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
     protected ForsterConstraintResolver constraintResolver;
     /** the barycenter values of every node in the graph, indexed by layer.id and node.id. */
     protected BarycenterState[][] barycenterState;
-    /** The Barycenter PortDistributor is used to ask for the port ranks.*/
+    /** The Barycenter PortDistributor is used to ask for the port ranks. */
     protected final AbstractBarycenterPortDistributor portDistributor;
 
     /**
@@ -66,11 +66,10 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
     }
 
     /**
-     * Don't use!
-     * Only public to be accessible by a test.
+     * Don't use! Only public to be accessible by a test.
      */
-    public void minimizeCrossings(final List<LNode> layer, final boolean preOrdered,
-            final boolean randomize, final boolean forward) {
+    public void minimizeCrossings(final List<LNode> layer, final boolean preOrdered, final boolean randomize,
+            final boolean forward) {
 
         if (randomize) {
             // Randomize barycenters (we don't need to update the edge count in this case;
@@ -84,7 +83,8 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
 
         if (layer.size() > 1) {
             // Sort the vertices according to their barycenters
-            if (layer.get(0).getGraph().getProperty(LayeredOptions.CROSSING_MINIMIZATION_FORCE_NODE_MODEL_ORDER)) {
+            if (layer.get(0).getGraph().getProperty(
+                    LayeredOptions.CROSSING_MINIMIZATION_BARYCENTER_HEURISTIC_STRATEGY) == BarycenterHeuristicStrategy.MODEL_ORDER) {
                 ModelOrderBarycenterHeuristic.insertionSort(layer, barycenterStateComparator,
                         (ModelOrderBarycenterHeuristic) this);
             } else {
@@ -134,8 +134,7 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
                     // and the next defined value in the list
                     double nextValue = lastValue + 1;
 
-                    ListIterator<LNode> nextNodeIterator =
-                            nodes.listIterator(nodesIterator.nextIndex());
+                    ListIterator<LNode> nextNodeIterator = nodes.listIterator(nodesIterator.nextIndex());
                     while (nextNodeIterator.hasNext()) {
                         Double x = stateOf(nextNodeIterator.next()).barycenter;
                         if (x != null) {
@@ -172,7 +171,7 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
             }
         }
     }
-    
+
     /**
      * Calculate the barycenters of the given node groups.
      * 
@@ -197,9 +196,9 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
     private static final float RANDOM_AMOUNT = 0.07f;
 
     /**
-     * Calculate the barycenter of the given single-node node group. This method is able to handle
-     * in-layer edges, but it may give incorrect results if the in-layer edges form a cycle.
-     * However, such cases do not occur in the present implementation.
+     * Calculate the barycenter of the given single-node node group. This method is able to handle in-layer edges, but
+     * it may give incorrect results if the in-layer edges form a cycle. However, such cases do not occur in the present
+     * implementation.
      * 
      * @param node
      *            a node group consisting of a single node
@@ -207,8 +206,8 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
      *            {@code true} if the current sweep moves forward
      * @param portPos
      *            position array
-     * @return a pair containing the summed port positions of the connected ports as the first, and
-     *         the number of connected edges as the second entry.
+     * @return a pair containing the summed port positions of the connected ports as the first, and the number of
+     *         connected edges as the second entry.
      */
     private void calculateBarycenter(final LNode node, final boolean forward) {
 
@@ -224,8 +223,7 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
         stateOf(node).barycenter = null;
 
         for (LPort freePort : node.getPorts()) {
-            Iterable<LPort> portIterable =
-                    forward ? freePort.getPredecessorPorts() : freePort.getSuccessorPorts();
+            Iterable<LPort> portIterable = forward ? freePort.getPredecessorPorts() : freePort.getSuccessorPorts();
             for (LPort fixedPort : portIterable) {
                 // If the node the fixed port belongs to is part of the free layer (thus, if
                 // we have an in-layer edge), use that node's barycenter calculation instead
@@ -249,8 +247,7 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
         }
 
         // Iterate over the node's barycenter associates
-        List<LNode> barycenterAssociates =
-                node.getProperty(InternalProperties.BARYCENTER_ASSOCIATES);
+        List<LNode> barycenterAssociates = node.getProperty(InternalProperties.BARYCENTER_ASSOCIATES);
         if (barycenterAssociates != null) {
             for (LNode associate : barycenterAssociates) {
                 // Make sure the associate is in the same layer as this node
@@ -275,7 +272,7 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
     protected BarycenterState stateOf(final LNode node) {
         return barycenterState[node.getLayer().id][node.id];
     }
-    
+
     /**
      * Represents the current barycenter state of a node.
      */
@@ -284,8 +281,10 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
         // SUPPRESS CHECKSTYLE NEXT 20 VisibilityModifier
         /** The node this state holds data for. */
         public LNode node;
-        /** The sum of the node weights. Each node weight is the sum of the weights of the ports the
-         *  node's ports are connected to. */
+        /**
+         * The sum of the node weights. Each node weight is the sum of the weights of the ports the node's ports are
+         * connected to.
+         */
         public double summedWeight;
         /** The number of ports relevant to the barycenter calculation. */
         public int degree;
@@ -309,27 +308,26 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
         }
 
     }
-    
+
     /**
      * Compares two {@link LNode}s based on their barycenter values.
      */
-    protected Comparator<LNode> barycenterStateComparator = 
-        (n1, n2) -> {
-            BarycenterState s1 = stateOf(n1);
-            BarycenterState s2 = stateOf(n2);
-                if (s1.barycenter != null && s2.barycenter != null) {
-                    return s1.barycenter.compareTo(s2.barycenter);
-                } else if (s1.barycenter != null) {
-                    return -1;
-                } else if (s2.barycenter != null) {
-                    return 1;
-                }
-                return 0;
-        };
+    protected Comparator<LNode> barycenterStateComparator = (n1, n2) -> {
+        BarycenterState s1 = stateOf(n1);
+        BarycenterState s2 = stateOf(n2);
+        if (s1.barycenter != null && s2.barycenter != null) {
+            return s1.barycenter.compareTo(s2.barycenter);
+        } else if (s1.barycenter != null) {
+            return -1;
+        } else if (s2.barycenter != null) {
+            return 1;
+        }
+        return 0;
+    };
 
     @Override
-    public boolean minimizeCrossings(final LNode[][] order, final int freeLayerIndex,
-            final boolean forwardSweep, final boolean isFirstSweep) {
+    public boolean minimizeCrossings(final LNode[][] order, final int freeLayerIndex, final boolean forwardSweep,
+            final boolean isFirstSweep) {
         if (!isFirstLayer(order, freeLayerIndex, forwardSweep)) {
             LNode[] fixedLayer = order[freeLayerIndex - changeIndex(forwardSweep)];
             portDistributor.calculatePortRanks(fixedLayer, portTypeFor(forwardSweep));
@@ -343,7 +341,7 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
         // apply the new ordering
         int index = 0;
         for (LNode nodeGroup : nodes) {
-                order[freeLayerIndex][index++] = nodeGroup;
+            order[freeLayerIndex][index++] = nodeGroup;
         }
 
         return false; // Does not always improve.
@@ -352,12 +350,11 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
     @Override
     public boolean setFirstLayerOrder(final LNode[][] order, final boolean isForwardSweep) {
         int startIndex = startIndex(isForwardSweep, order.length);
-        List<LNode> nodes = Lists.newArrayList(
-                order[startIndex]);
+        List<LNode> nodes = Lists.newArrayList(order[startIndex]);
         minimizeCrossings(nodes, false, true, isForwardSweep);
         int index = 0;
         for (LNode nodeGroup : nodes) {
-                order[startIndex][index++] = nodeGroup;
+            order[startIndex][index++] = nodeGroup;
         }
 
         return false; // Does not always improve
@@ -379,8 +376,7 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
         return dir ? 0 : Math.max(0, length - 1);
     }
 
-    private boolean isFirstLayer(final LNode[][] nodeOrder, final int currentIndex,
-            final boolean forwardSweep) {
+    private boolean isFirstLayer(final LNode[][] nodeOrder, final int currentIndex, final boolean forwardSweep) {
         return currentIndex == startIndex(forwardSweep, nodeOrder.length);
     }
 

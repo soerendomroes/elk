@@ -31,10 +31,6 @@ import org.eclipse.elk.core.math.KVector;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.core.util.LoggedGraph;
 
-/**
- * @author stu205834
- *
- */
 public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
 
     double SPACEING_BETWEEN_LANES = 0.0;

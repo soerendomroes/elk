@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Kiel University and others.
+ * Copyright (c) 2024 stu205834 and others.
  * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -16,15 +16,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LNode;
-import org.eclipse.elk.alg.layered.options.InternalProperties;
+import org.eclipse.elk.alg.layered.graph.LNode.NodeType;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
 
-/**
- * Minimizes crossing with the barycenter method. However, the node order given by the order in the model does not
- * change. I.e. only the dummy nodes are sorted in the already sorted real nodes.
- */
-public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
+public class SwimlaneBarycenterHeuristic extends BarycenterHeuristic {
 
     /**
      * Each node has an entry of nodes for which it is bigger.
@@ -36,73 +33,81 @@ public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
     private HashMap<LNode, HashSet<LNode>> smallerThan = new HashMap<>();
 
     /**
-     * Constructs a model order barycenter heuristic for crossing minimization. After sorting
-     * {@link #clearTransitiveOrdering()} should be called.
-     * 
      * @param constraintResolver
-     *            the constraint resolver
      * @param random
-     *            the random number generator
      * @param portDistributor
-     *            calculates the port ranks for the barycenter heuristic.
      * @param graph
-     *            current node order
      */
-    public ModelOrderBarycenterHeuristic(final ForsterConstraintResolver constraintResolver, final Random random,
-            final AbstractBarycenterPortDistributor portDistributor, final LNode[][] graph) {
+    public SwimlaneBarycenterHeuristic(ForsterConstraintResolver constraintResolver, Random random,
+            AbstractBarycenterPortDistributor portDistributor, LNode[][] graph) {
         super(constraintResolver, random, portDistributor, graph);
         barycenterStateComparator = (n1, n2) -> {
-            int transitiveComparison = compareBasedOnTansitiveDependencies(n1, n2);
+            final int transitiveComparison = compareBasedOnTansitiveDependencies(n1, n2);
             if (transitiveComparison != 0) {
                 return transitiveComparison;
             }
-            if (n1.hasProperty(InternalProperties.MODEL_ORDER) && n2.hasProperty(InternalProperties.MODEL_ORDER)) {
-                int value = Integer.compare(n1.getProperty(InternalProperties.MODEL_ORDER),
-                        n2.getProperty(InternalProperties.MODEL_ORDER));
-                if (value < 0) {
-                    updateBiggerAndSmallerAssociations(n1, n2);
-                } else if (value > 0) {
-                    updateBiggerAndSmallerAssociations(n2, n1);
-                }
-                return value;
-            }
-            return compareBasedOnBarycenter(n1, n2);
+            final int firstNodeLane = getLaneProperty(n1);
+            final int secondNodeLane = getLaneProperty(n2);
+
+            final int value = Integer.compare(firstNodeLane, secondNodeLane);
+
+            if (value == 0)
+                return compareBasedOnBarycenter(n1, n2);
+
+            if (value < 0)
+                updateBiggerAndSmallerAssociations(n1, n2);
+            else
+                updateBiggerAndSmallerAssociations(n2, n1);
+
+            return value;
         };
     }
-
-    /**
-     * Don't use! Only public to be accessible by a test.
-     */
-    @Override
-    public void minimizeCrossings(final List<LNode> layer, final boolean preOrdered, final boolean randomize,
-            final boolean forward) {
-
-        if (randomize) {
-            // Randomize barycenters (we don't need to update the edge count in this case;
-            // there are no edges of interest since we're only concerned with one layer)
-            randomizeBarycenters(layer);
-        } else {
-            // Calculate barycenters and assign barycenters to barycenterless node groups
-            calculateBarycenters(layer, forward);
-            fillInUnknownBarycenters(layer, preOrdered);
+    
+    private int getLaneProperty (final LNode node) {
+        switch(node.getType()) {
+        case NORMAL:
+            node.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+        case LONG_EDGE:
+            return getLaneIndexForLongEdgeNode(node);
+        default:
+            return getSourceNodeLaneIndex(node);
         }
+    }
+    
+    private int getSourceNodeLaneIndex(LNode edgeLabelNode) {
+        return getActualSourceNode(edgeLabelNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+    }
+    
+    private int getLaneIndexForLongEdgeNode(LNode longEdgeNode) {
+        final int sourceLane = getActualSourceNode(longEdgeNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+        final int targetLane = getActualTargetNode(longEdgeNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
 
-        if (layer.size() > 1) {
-            // Sort the vertices according to their barycenters
-            if (layer.get(0).getGraph().getProperty(
-                    LayeredOptions.CROSSING_MINIMIZATION_BARYCENTER_HEURISTIC_STRATEGY) == BarycenterHeuristicStrategy.MODEL_ORDER) {
-                ModelOrderBarycenterHeuristic.insertionSort(layer, barycenterStateComparator,
-                        (ModelOrderBarycenterHeuristic) this);
-            } else {
-                Collections.sort(layer, barycenterStateComparator);
-            }
+        if (sourceLane < targetLane)
+            return targetLane;
+        else
+            return sourceLane;
+    }
 
-            // Resolve ordering constraints
-            if (layer.get(0).getGraph().getProperty(
-                    LayeredOptions.CROSSING_MINIMIZATION_BARYCENTER_HEURISTIC_STRATEGY) != BarycenterHeuristicStrategy.MODEL_ORDER) {
-                constraintResolver.processConstraints(layer);
-            }
+    private LNode getActualTargetNode(LNode node) {
+        for (LEdge edge : node.getOutgoingEdges()) {
+            final LNode target = edge.getTarget().getNode();
+            if (target.getType() != NodeType.LONG_EDGE && target.getType() != NodeType.LABEL)
+                return target;
+            else
+                return getActualTargetNode(target);
         }
+        return null;
+    }
+
+    private LNode getActualSourceNode(LNode node) {
+        for (LEdge edge : node.getIncomingEdges()) {
+            final LNode source = edge.getSource().getNode();
+            if (source.getType() != NodeType.LONG_EDGE && source.getType() != NodeType.LABEL)
+                return source;
+            else
+                return getActualSourceNode(source);
+        }
+        return null;
     }
 
     /**
@@ -139,46 +144,16 @@ public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
     }
 
     /**
-     * Order nodes by their barycenter and update their transitive dependencies.
-     * 
-     * @param n1
-     *            The first node
-     * @param n2
-     *            The second node
-     * @return -1, 0, 1, see {@link Comparator} for details.
-     */
-    private int compareBasedOnBarycenter(final LNode n1, final LNode n2) {
-        BarycenterState s1 = stateOf(n1);
-        BarycenterState s2 = stateOf(n2);
-        if (s1.barycenter != null && s2.barycenter != null) {
-            int value = s1.barycenter.compareTo(s2.barycenter);
-            if (value < 0) {
-                updateBiggerAndSmallerAssociations(n1, n2);
-            } else if (value > 0) {
-                updateBiggerAndSmallerAssociations(n2, n1);
-            }
-            return value;
-        } else if (s1.barycenter != null) {
-            updateBiggerAndSmallerAssociations(n1, n2);
-            return -1;
-        } else if (s2.barycenter != null) {
-            updateBiggerAndSmallerAssociations(n2, n1);
-            return 1;
-        }
-        return 0;
-    }
-
-    /**
      * Taken from {@code ModelOrderNodeComparator}. Safes transitive ordering dependencies of nodes for later use.
      * 
      * @param bigger
      * @param smaller
      */
     private void updateBiggerAndSmallerAssociations(final LNode bigger, final LNode smaller) {
-        HashSet<LNode> biggerNodeBiggerThan = biggerThan.get(bigger);
-        HashSet<LNode> smallerNodeBiggerThan = biggerThan.get(smaller);
-        HashSet<LNode> biggerNodeSmallerThan = smallerThan.get(bigger);
-        HashSet<LNode> smallerNodeSmallerThan = smallerThan.get(smaller);
+        final HashSet<LNode> biggerNodeBiggerThan = biggerThan.get(bigger);
+        final HashSet<LNode> smallerNodeBiggerThan = biggerThan.get(smaller);
+        final HashSet<LNode> biggerNodeSmallerThan = smallerThan.get(bigger);
+        final HashSet<LNode> smallerNodeSmallerThan = smallerThan.get(smaller);
         biggerNodeBiggerThan.add(smaller);
         smallerNodeSmallerThan.add(bigger);
         for (LNode verySmall : smallerNodeBiggerThan) {
@@ -194,6 +169,36 @@ public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
         }
     }
 
+    /**
+     * Order nodes by their barycenter and update their transitive dependencies.
+     * 
+     * @param n1
+     *            The first node
+     * @param n2
+     *            The second node
+     * @return -1, 0, 1, see {@link Comparator} for details.
+     */
+    private int compareBasedOnBarycenter(final LNode n1, final LNode n2) {
+        final BarycenterState s1 = stateOf(n1);
+        final BarycenterState s2 = stateOf(n2);
+        if (s1.barycenter != null && s2.barycenter != null) {
+            final int value = s1.barycenter.compareTo(s2.barycenter);
+            if (value < 0) {
+                updateBiggerAndSmallerAssociations(n1, n2);
+            } else if (value > 0) {
+                updateBiggerAndSmallerAssociations(n2, n1);
+            }
+            return value;
+        } else if (s1.barycenter != null) {
+            updateBiggerAndSmallerAssociations(n1, n2);
+            return -1;
+        } else if (s2.barycenter != null) {
+            updateBiggerAndSmallerAssociations(n2, n1);
+            return 1;
+        }
+        return 0;
+    }
+    
     /**
      * Sorts the layer by the given comparator with insertion sort to ensure that transitive ordering constraints are
      * respected. The usual quick sorting algorithm used by java does not do well here since the partial ordering
@@ -211,7 +216,7 @@ public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
      *            The instance of this class to reset the transitive ordering associations.
      */
     public static void insertionSort(final List<LNode> layer, final Comparator<LNode> comparator,
-            final ModelOrderBarycenterHeuristic barycenterHeuristic) {
+            final SwimlaneBarycenterHeuristic barycenterHeuristic) {
         LNode temp;
         for (int i = 1; i < layer.size(); i++) {
             temp = layer.get(i);
@@ -224,7 +229,7 @@ public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
         }
         barycenterHeuristic.clearTransitiveOrdering();
     }
-
+    
     /**
      * Clears the transitive ordering.
      */
@@ -232,5 +237,30 @@ public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
         this.biggerThan = new HashMap<>();
         this.smallerThan = new HashMap<>();
     }
+    
+    /**
+     * Don't use! Only public to be accessible by a test.
+     */
+    @Override
+    public void minimizeCrossings(final List<LNode> layer, final boolean preOrdered, final boolean randomize,
+            final boolean forward) {
 
+        if (randomize) {
+            // Randomize barycenters (we don't need to update the edge count in this case;
+            // there are no edges of interest since we're only concerned with one layer)
+            randomizeBarycenters(layer);
+        } else {
+            // Calculate barycenters and assign barycenters to barycenterless node groups
+            calculateBarycenters(layer, forward);
+            fillInUnknownBarycenters(layer, preOrdered);
+        }
+
+        if (layer.size() > 1) {
+            // Sort the vertices according to their barycenters
+            SwimlaneBarycenterHeuristic.insertionSort(layer, barycenterStateComparator,
+                    (SwimlaneBarycenterHeuristic) this);
+            Collections.sort(layer, barycenterStateComparator);
+            constraintResolver.processConstraints(layer);
+        }
+    }
 }

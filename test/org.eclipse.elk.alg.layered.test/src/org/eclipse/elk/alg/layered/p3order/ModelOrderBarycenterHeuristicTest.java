@@ -62,8 +62,8 @@ public class ModelOrderBarycenterHeuristicTest {
                 CrossingMinimizationStrategy.LAYER_SWEEP);
         config.configure(ElkNode.class).setProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY,
                 OrderingStrategy.NODES_AND_EDGES);
-        config.configure(ElkNode.class).setProperty(LayeredOptions.CROSSING_MINIMIZATION_FORCE_NODE_MODEL_ORDER,
-                true);
+        config.configure(ElkNode.class).setProperty(LayeredOptions.CROSSING_MINIMIZATION_BARYCENTER_HEURISTIC_STRATEGY,
+                BarycenterHeuristicStrategy.MODEL_ORDER);
 
         config.configure(ElkNode.class).setProperty(LayeredOptions.CROSSING_MINIMIZATION_GREEDY_SWITCH_TYPE,
                 GreedySwitchType.OFF);

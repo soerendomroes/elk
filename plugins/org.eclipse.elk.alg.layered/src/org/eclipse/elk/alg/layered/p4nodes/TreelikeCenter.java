@@ -11,9 +11,7 @@ package org.eclipse.elk.alg.layered.p4nodes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,10 +32,6 @@ import org.eclipse.elk.core.math.KVector;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
 import org.eclipse.elk.core.util.LoggedGraph;
 
-/**
- * @author stu205834
- *
- */
 public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
 
     double BETWEEN_LANE_EDGE_SPACEING = 0.0;
