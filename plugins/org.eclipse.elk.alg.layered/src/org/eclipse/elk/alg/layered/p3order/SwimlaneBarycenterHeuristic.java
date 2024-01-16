@@ -66,7 +66,7 @@ public class SwimlaneBarycenterHeuristic extends BarycenterHeuristic {
     private int getLaneProperty (final LNode node) {
         switch(node.getType()) {
         case NORMAL:
-            node.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+            return node.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
         case LONG_EDGE:
             return getLaneIndexForLongEdgeNode(node);
         default:
