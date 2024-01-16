@@ -152,11 +152,11 @@ public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
         private List<Node> childs = new ArrayList<Node>();
         private double treeHeigth;
         private double nodeHeight;
-        private boolean isLongEdge;
+//        private boolean isLongEdge;
 
         public Node(LNode node) {
             this.node = node;
-            this.isLongEdge = node.getType() == NodeType.LONG_EDGE;
+//            this.isLongEdge = node.getType() == NodeType.LONG_EDGE;
             this.nodeHeight = node.getMargin().top + node.getSize().y + node.getMargin().bottom;
             this.treeHeigth = this.nodeHeight;
         }
