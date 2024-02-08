@@ -81,7 +81,7 @@ public abstract class AbstractBarycenterHeuristicPreOrdered extends BarycenterHe
      *            The second node
      * @return Returns -1 if n1 < n2, 0 if no ordering could be found, and 1 if n1 > n2
      */
-    private int compareBasedOnTansitiveDependencies(final LNode n1, final LNode n2) {
+    protected int compareBasedOnTansitiveDependencies(final LNode n1, final LNode n2) {
         if (!biggerThan.containsKey(n1)) {
             biggerThan.put(n1, new HashSet<>());
         } else if (biggerThan.get(n1).contains(n2)) {
@@ -114,7 +114,7 @@ public abstract class AbstractBarycenterHeuristicPreOrdered extends BarycenterHe
      *            The second node
      * @return -1, 0, 1, see {@link Comparator} for details.
      */
-    private int compareBasedOnBarycenter(final LNode n1, final LNode n2) {
+    protected int compareBasedOnBarycenter(final LNode n1, final LNode n2) {
         BarycenterState s1 = stateOf(n1);
         BarycenterState s2 = stateOf(n2);
         if (s1.barycenter != null && s2.barycenter != null) {
@@ -141,7 +141,7 @@ public abstract class AbstractBarycenterHeuristicPreOrdered extends BarycenterHe
      * @param bigger
      * @param smaller
      */
-    private void updateBiggerAndSmallerAssociations(final LNode bigger, final LNode smaller) {
+    protected void updateBiggerAndSmallerAssociations(final LNode bigger, final LNode smaller) {
         HashSet<LNode> biggerNodeBiggerThan = biggerThan.get(bigger);
         HashSet<LNode> smallerNodeBiggerThan = biggerThan.get(smaller);
         HashSet<LNode> biggerNodeSmallerThan = smallerThan.get(bigger);

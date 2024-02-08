@@ -81,6 +81,8 @@ public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
         MIN_POSITION = new double[layers.size()];
         Arrays.fill(MIN_POSITION, 0.0);
 
+        
+        
         final List<Node> trees = new ArrayList<Node>();
 
         for (Layer layer : layers) {
@@ -90,8 +92,7 @@ public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
                 if (!isLongEdge) {
                     if (NODES.containsKey(lNode)) {
                         treeIndex = -1;
-                    }
-                    else {
+                    } else {
                         Node node = new Node(lNode);
                         NODES.put(lNode, node);
                         node.buildTree();
@@ -106,7 +107,10 @@ public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
                 }
             }
         }
-
+        
+        final boolean useSubtreeSeparation =
+                graph.getProperty(LayeredOptions.NODE_PLACEMENT_TREELIKE_CENTER_SUBTREE_SEPARATION);
+        
         for (Node tree : trees) {
             final double minPos = MIN_POSITION[0];
             final double maxPox = minPos + tree.treeHeigth;
@@ -152,11 +156,11 @@ public class TreelikeCenter implements ILayoutPhase<LayeredPhases, LGraph> {
         private List<Node> childs = new ArrayList<Node>();
         private double treeHeigth;
         private double nodeHeight;
-//        private boolean isLongEdge;
+        // private boolean isLongEdge;
 
         public Node(LNode node) {
             this.node = node;
-//            this.isLongEdge = node.getType() == NodeType.LONG_EDGE;
+            // this.isLongEdge = node.getType() == NodeType.LONG_EDGE;
             this.nodeHeight = node.getMargin().top + node.getSize().y + node.getMargin().bottom;
             this.treeHeigth = this.nodeHeight;
         }

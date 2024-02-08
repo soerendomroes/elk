@@ -36,6 +36,22 @@ public class ModelOrderBarycenterHeuristic extends AbstractBarycenterHeuristicPr
     public ModelOrderBarycenterHeuristic(final ForsterConstraintResolver constraintResolver, final Random random,
             final AbstractBarycenterPortDistributor portDistributor, final LNode[][] graph) {
         super(constraintResolver, random, portDistributor, graph);
+        barycenterStateComparator = (n1, n2) -> {
+            int transitiveComparison = compareBasedOnTansitiveDependencies(n1, n2);
+            if (transitiveComparison != 0) {
+                return transitiveComparison;
+            }
+            if (areNodesOrdered(n1, n2)) {
+                int value = compareNodeOrder(n1, n2);
+                if (value < 0) {
+                    updateBiggerAndSmallerAssociations(n1, n2);
+                } else if (value > 0) {
+                    updateBiggerAndSmallerAssociations(n2, n1);
+                }
+                return value;
+            }
+            return compareBasedOnBarycenter(n1, n2);
+        };
     }
     
     /* (non-Javadoc)

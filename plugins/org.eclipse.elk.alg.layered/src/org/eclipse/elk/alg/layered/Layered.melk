@@ -148,6 +148,7 @@ algorithm layered(LayeredLayoutProvider) {
     supports feedbackEdges
     supports org.eclipse.elk.alg.layered.nodePlacement.swimlane.laneSpacing
     supports org.eclipse.elk.alg.layered.nodePlacement.swimlane.lane
+    supports org.eclipse.elk.alg.layered.nodePlacement.treelikeCenter.subtreeSeparation
     supports org.eclipse.elk.alg.layered.nodePlacement.linearSegments.deflectionDampening
     supports org.eclipse.elk.alg.layered.edgeRouting.selfLoopDistribution
     supports org.eclipse.elk.alg.layered.edgeRouting.selfLoopOrdering
@@ -344,24 +345,14 @@ group crossingMinimization {
         default = CrossingMinimizationStrategy.LAYER_SWEEP
         targets parents
     }
-    
+
     option barycenterHeuristicStrategy: BarycenterHeuristicStrategy {
         label "Barycenter Heuristic Option"
-        description "Use specialized implementations of the Barycenter heuristic."
+        description
+            "Use specialized implementations of the Barycenter heuristic."
         default = BarycenterHeuristicStrategy.NONE
         targets parents
     }
-
-//    option forceNodeModelOrder: boolean {
-//        label "Force Node Model Order"
-//        description
-//            "The node order given by the model does not change to produce a better layout. E.g. if node A
-//             is before node B in the model this is not changed during crossing minimization. This assumes that the
-//             node model order is already respected before crossing minimization. This can be achieved by setting
-//             considerModelOrder.strategy to NODES_AND_EDGES."
-//        default = false
-//        targets parents
-//    }
 
     advanced option hierarchicalSweepiness: double {
         label "Hierarchical Sweepiness"
@@ -511,7 +502,7 @@ group nodePlacement {
             targets parents
             requires org.eclipse.elk.alg.layered.nodePlacement.strategy == NodePlacementStrategy.SWIMLANE
         }
-        
+
         option lane: Integer {
             label "Swimlane Lane Index"
             description
@@ -519,6 +510,19 @@ group nodePlacement {
             default = 0
             targets nodes
             requires org.eclipse.elk.alg.layered.nodePlacement.strategy == NodePlacementStrategy.SWIMLANE
+        }
+
+    }
+
+    group treelikeCenter {
+
+        option subtreeSeparation: boolean {
+            label "Subtree Separation"
+            description
+                "Each subtree get the same space"
+            default = false
+            targets parents
+            requires  org.eclipse.elk.alg.layered.nodePlacement.strategy == NodePlacementStrategy.TREELIKE_CENTER
         }
 
     }

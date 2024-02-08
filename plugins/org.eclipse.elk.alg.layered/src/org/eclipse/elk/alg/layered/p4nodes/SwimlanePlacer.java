@@ -20,6 +20,7 @@ import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
 import org.eclipse.elk.alg.layered.graph.LNode.NodeType;
+import org.eclipse.elk.alg.layered.graph.LPort;
 import org.eclipse.elk.alg.layered.graph.Layer;
 import org.eclipse.elk.alg.layered.intermediate.IntermediateProcessorStrategy;
 import org.eclipse.elk.alg.layered.options.GraphProperties;
@@ -76,9 +77,9 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
 
         final List<Layer> layers = graph.getLayers();
         final Map<Integer, Map<Integer, List<LNode>>> lanes = new HashMap<Integer, Map<Integer, List<LNode>>>();
-
-        int maxLaneIndex = 0;
+        
         int maxLayerIndex = 0;
+        int maxLaneIndex = 0;
 
         for (Layer layer : layers) {
             final int layerIndex = layer.getIndex();
@@ -116,7 +117,7 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
             if (inLaneLayers != null) {
                 double laneSize = 0.0;
                 for (int layerIndex = 0; layerIndex <= maxLayerIndex; layerIndex++)
-                    laneSize = Math.max(laneSize, getNodeHeight(inLaneLayers.get(layerIndex)));
+                    laneSize = Math.max(laneSize, getHeightForNodes(inLaneLayers.get(layerIndex)));
                 double maxLaneSizeAfterLongEdgePlacement = laneOffset + laneSize;
                 for (int layerIndex = 0; layerIndex <= maxLayerIndex; layerIndex++) {
                     final List<LNode> nodes = inLaneLayers.get(layerIndex);
@@ -129,23 +130,50 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
                 laneOffset = maxLaneSizeAfterLongEdgePlacement + SPACEING_BETWEEN_LANES;
             }
         }
+        
         monitor.done();
     }
-
+    
     private double nodePlacement(final List<LNode> nodes, final double offset, final double laneSize) {
         if (nodes == null || nodes.isEmpty())
             return 0.0;
 
-        final double spaceNeeded = getNodeHeight(nodes);
+        final double spaceNeeded = getHeightForNodes(nodes);
         double nodeOffset = offset + (laneSize - spaceNeeded) * 0.5;
         nodeOffset = setNodePosition(nodes.get(0), nodeOffset);
         NodeType firstNodeType = nodes.get(0).getType();
+        if (nodes.size() == 1 && firstNodeType == NodeType.LONG_EDGE) {
+            return singleLongeEdgePlacement(nodes.get(0), nodeOffset);
+        }
         for (int i = 1; i < nodes.size(); i++) {
             NodeType secondNodeType = nodes.get(i).getType();
             nodeOffset = setNodePosition(nodes.get(i), nodeOffset + getSpacing(firstNodeType, secondNodeType));
             firstNodeType = secondNodeType;
         }
+       
         return nodeOffset;
+    }
+    
+    private double singleLongeEdgePlacement(final LNode longEdgeNode, final double offset) {
+        final KVector position = longEdgeNode.getPosition();
+        final int laneIndex = longEdgeNode.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+        
+        for (LEdge incommingEdge : longEdgeNode.getIncomingEdges()) {
+            final LNode sourceNode = incommingEdge.getSource().getNode();
+            final int sourceLaneIndex = sourceNode.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE); 
+            if (sourceLaneIndex == laneIndex) {
+                NodeType sourceType = sourceNode.getType();
+                
+                if (sourceType == NodeType.NORMAL) {
+                    LPort sourcePort = incommingEdge.getSource();
+                    position.y = sourceNode.getPosition().y + sourcePort.getPosition().y;
+                } else {
+                    position.y = sourceNode.getPosition().y;
+                }
+                return position.y + getNodeHeight(longEdgeNode);
+            }
+        }
+        return offset;
     }
     
     private double getSpacing(final NodeType firstType, final NodeType secondType) {
@@ -207,7 +235,7 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
             return node.getMargin().top + node.getSize().y + node.getMargin().bottom;
     }
 
-    private double getNodeHeight(List<LNode> nodes) {
+    private double getHeightForNodes(List<LNode> nodes) {
         if (nodes == null || nodes.isEmpty())
             return 0.0;
         double size = getNodeHeight(nodes.get(0));
