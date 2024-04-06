@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.elk.alg.layered.JsonDebugUtil;
 import org.eclipse.elk.alg.layered.LayeredPhases;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
@@ -30,14 +29,18 @@ import org.eclipse.elk.core.alg.ILayoutPhase;
 import org.eclipse.elk.core.alg.LayoutProcessorConfiguration;
 import org.eclipse.elk.core.math.KVector;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
-import org.eclipse.elk.core.util.LoggedGraph;
 
 public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
-
-    double SPACEING_BETWEEN_LANES = 0.0;
-    double SPACING_NODE_NODE = 0.0;
-    double SPACING_EDGE_NODE = 0.0;
-    double SPACING_EDGE_EDGE = 0.0;
+    
+    /** spacing defined in the graph **/
+    private double spacingEdgeEdge, spacingEdgeNode, spacingNodeNode, spacingLaneLane = 0.0;
+    
+    /** a map of lanes containing a map to the layers **/
+    Map<Integer, Map<Integer, List<LNode>>> lanes;
+    /** highest layer index in the graph **/
+    int maxLayerIndex = 0;
+    /** highest lane index in the graph **/
+    int maxLaneIndex = 0;
 
     /** additional processor dependencies for graphs with hierarchical ports. */
     private static final LayoutProcessorConfiguration<LayeredPhases, LGraph> HIERARCHY_PROCESSING_ADDITIONS =
@@ -65,33 +68,49 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
     @Override
     public void process(LGraph graph, IElkProgressMonitor monitor) {
         monitor.begin("Swimlane node placement", 1);
-        monitor.logGraph(graph, null, null);
-
-        monitor.logGraph(JsonDebugUtil.createDebugGraph(graph), "swimlane graph [" + graph.id + "]",
-                LoggedGraph.Type.JSON);
-
-        SPACING_NODE_NODE = graph.getProperty(LayeredOptions.SPACING_NODE_NODE);
-        SPACING_EDGE_EDGE = graph.getProperty(LayeredOptions.SPACING_EDGE_EDGE);
-        SPACING_EDGE_NODE = graph.getProperty(LayeredOptions.SPACING_EDGE_NODE);
-        SPACEING_BETWEEN_LANES = graph.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE_SPACING);
-
-        final List<Layer> layers = graph.getLayers();
-        final Map<Integer, Map<Integer, List<LNode>>> lanes = new HashMap<Integer, Map<Integer, List<LNode>>>();
         
-        int maxLayerIndex = 0;
-        int maxLaneIndex = 0;
+        spacingEdgeEdge = graph.getProperty(LayeredOptions.SPACING_EDGE_EDGE);
+        spacingEdgeNode = graph.getProperty(LayeredOptions.SPACING_EDGE_NODE);
+        spacingNodeNode = graph.getProperty(LayeredOptions.SPACING_NODE_NODE);
+        spacingLaneLane = graph.getProperty(
+                LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE_SPACING);
+
+        buildLanes(graph.getLayers());
+        
+        nodePlacement();
+        
+        monitor.done();
+    }
+    
+    /**
+     * Splits the given layers by lane index and stores the highest values 
+     * of layer and lane index for easier access while placing the nodes.
+     * 
+     * @param layers
+     *      list of {@link Layers} ordered by hierarchy, containing nodes.
+     */
+    private void buildLanes(final List<Layer> layers) {
+        // initilize instance variables needed for node placement
+        lanes = new HashMap<Integer, Map<Integer, List<LNode>>>();
+        maxLayerIndex = 0;
+        maxLaneIndex = 0;
 
         for (Layer layer : layers) {
             final int layerIndex = layer.getIndex();
             maxLayerIndex = Math.max(maxLayerIndex, layerIndex);
+            
             for (LNode node : layer.getNodes()) {
+                // implicitly created nodes must receive a lane index
                 if (node.getType() == NodeType.LONG_EDGE)
-                    node.setProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE, getLaneIndexForLongEdgeNode(node));
-                if (node.getType() == NodeType.LABEL) {
-                    node.setProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE, getLaneIndexForEdgeLabelNode(node));
+                    setLaneIndex(node, getLaneIndexForLongEdgeNode(node));
+                else if (node.getType() == NodeType.LABEL) {
+                    setLaneIndex(node, getLaneIndexForEdgeLabelNode(node));
                 }
-                final int laneIndex = node.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+                
+                final int laneIndex = getLaneIndex(node);
                 maxLaneIndex = Math.max(maxLaneIndex, laneIndex);
+                
+                // putting the node into the lanes mapping
                 if (lanes.get(laneIndex) != null) {
                     final Map<Integer, List<LNode>> lane = lanes.get(laneIndex);
                     if (lane.get(layerIndex) != null) {
@@ -110,81 +129,145 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
                 }
             }
         }
-
+    }
+    
+    /** 
+     * Iterates through the lane mapping and places each node lane by lane and layer by layer.
+     */
+    private void nodePlacement() {
+        // smallest possible position for a vertex in a lane
         double laneOffset = 0.0;
+        
         for (int laneIndex = 0; laneIndex <= maxLaneIndex; laneIndex++) {
+            // get all layers within a lane
             final Map<Integer, List<LNode>> inLaneLayers = lanes.get(laneIndex);
             if (inLaneLayers != null) {
+                // calculate the layer size within the lane and the maximum 
+                // of it for center alignment within the lane
+                final double[] laneLayerSize = new double[maxLayerIndex + 1];
                 double laneSize = 0.0;
-                for (int layerIndex = 0; layerIndex <= maxLayerIndex; layerIndex++)
-                    laneSize = Math.max(laneSize, getHeightForNodes(inLaneLayers.get(layerIndex)));
-                double maxLaneSizeAfterLongEdgePlacement = laneOffset + laneSize;
+                for (int layerIndex = 0; layerIndex <= maxLayerIndex; layerIndex++) {
+                    laneLayerSize[layerIndex] = getHeightForNodes(inLaneLayers.get(layerIndex));
+                    laneSize = Math.max(laneSize, laneLayerSize[layerIndex]);
+                }
+            
+                // place each layer centered within the lane
                 for (int layerIndex = 0; layerIndex <= maxLayerIndex; layerIndex++) {
                     final List<LNode> nodes = inLaneLayers.get(layerIndex);
                     if (nodes != null) {
-                        final double laneSizeAfterLongEdgePlacement = nodePlacement(nodes, laneOffset, laneSize);
-                        maxLaneSizeAfterLongEdgePlacement =
-                                Math.max(maxLaneSizeAfterLongEdgePlacement, laneSizeAfterLongEdgePlacement);
+                        laneLayerPlacement(nodes, laneOffset, laneSize, laneLayerSize[layerIndex]);
                     }
                 }
-                laneOffset = maxLaneSizeAfterLongEdgePlacement + SPACEING_BETWEEN_LANES;
+                
+                // set the offset for the next lane 
+                laneOffset += laneSize + spacingLaneLane;
             }
         }
-        
-        monitor.done();
     }
     
-    private double nodePlacement(final List<LNode> nodes, final double offset, final double laneSize) {
+    /**
+     * Positions the given nodes centered within the lane, starting at the 
+     * specified offset.
+     * 
+     * @param nodes
+     *          list of nodes getting placed
+     * @param offset
+     *          smallest possible global y-position
+     * @param laneSize
+     *          maximum space available for node placement
+     * @param laneLayerSize
+     *          actual space needed for the given nodes        
+     */
+    private void laneLayerPlacement(final List<LNode> nodes, final double offset, 
+            final double laneSize, final double laneLayerSize) {
         if (nodes == null || nodes.isEmpty())
-            return 0.0;
-
-        final double spaceNeeded = getHeightForNodes(nodes);
-        double nodeOffset = offset + (laneSize - spaceNeeded) * 0.5;
-        nodeOffset = setNodePosition(nodes.get(0), nodeOffset);
+            return;
+        
+        // actual position of the node to place next
+        double nodeOffset = offset + (laneSize - laneLayerSize) * 0.5;
         NodeType firstNodeType = nodes.get(0).getType();
+        
+        // align single longe edge node with source node for a straight edge
         if (nodes.size() == 1 && firstNodeType == NodeType.LONG_EDGE) {
-            return singleLongeEdgePlacement(nodes.get(0), nodeOffset);
+            singleLongeEdgePlacement(nodes.get(0), nodeOffset);
+            return;
         }
+        
+        nodeOffset = setNodePosition(nodes.get(0), nodeOffset);
         for (int i = 1; i < nodes.size(); i++) {
+            // determine spacing between nodes
             NodeType secondNodeType = nodes.get(i).getType();
-            nodeOffset = setNodePosition(nodes.get(i), nodeOffset + getSpacing(firstNodeType, secondNodeType));
+            nodeOffset += getSpacing(firstNodeType, secondNodeType);
+            
+            nodeOffset = setNodePosition(nodes.get(i), nodeOffset);
             firstNodeType = secondNodeType;
         }
        
-        return nodeOffset;
+        return;
     }
     
-    private double singleLongeEdgePlacement(final LNode longEdgeNode, final double offset) {
+    /**
+     * When the source node resides on the same lane and possesses multiple 
+     * outgoing ports, the single long edge node placed on the lane layer 
+     * becomes misaligned, positioned in the center instead of aligning with 
+     * the source node's outgoing port. This method addresses this issue 
+     * by ensuring the long edge node aligns correctly with the source node's 
+     * outgoing port.
+     * 
+     * @param longEdgeNode
+     * @param offset
+     */
+    private void singleLongeEdgePlacement(final LNode longEdgeNode, final double offset) {
         final KVector position = longEdgeNode.getPosition();
-        final int laneIndex = longEdgeNode.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+        final int laneIndex = getLaneIndex(longEdgeNode);
         
         for (LEdge incommingEdge : longEdgeNode.getIncomingEdges()) {
             final LNode sourceNode = incommingEdge.getSource().getNode();
-            final int sourceLaneIndex = sourceNode.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE); 
+            final int sourceLaneIndex = getLaneIndex(sourceNode); 
             if (sourceLaneIndex == laneIndex) {
                 NodeType sourceType = sourceNode.getType();
                 
                 if (sourceType == NodeType.NORMAL) {
+                    // align with the origin port
                     LPort sourcePort = incommingEdge.getSource();
                     position.y = sourceNode.getPosition().y + sourcePort.getPosition().y;
                 } else {
+                    // align with the previous node
                     position.y = sourceNode.getPosition().y;
                 }
-                return position.y + getNodeHeight(longEdgeNode);
+                return;
             }
         }
-        return offset;
+        
+        // source node is not on the same lane => center in lane
+        position.y = offset;
+        return;
     }
     
+    /**
+     * Returns the spacing between node types defined for the graph.
+     * 
+     * @param firstType
+     * @param secondType
+     * @return spacing between given node types
+     */
     private double getSpacing(final NodeType firstType, final NodeType secondType) {
         if(firstType == NodeType.LONG_EDGE && secondType == NodeType.LONG_EDGE)
-            return SPACING_EDGE_EDGE;
+            return spacingEdgeEdge;
         else if(firstType != NodeType.LONG_EDGE && secondType != NodeType.LONG_EDGE)
-            return SPACING_NODE_NODE;
+            return spacingNodeNode;
         else
-            return SPACING_EDGE_NODE;
+            return spacingEdgeNode;
     }
 
+    /**
+     * Sets the y-coordinate of the node at the given position and returns the
+     * next empty y-coordinate.
+     * 
+     * @param node
+     * @param newPosition
+     * @return next free space
+     */
     private double setNodePosition(final LNode node, final double newPosition) {
         final double nodeHeigt = getNodeHeight(node);
         KVector position = node.getPosition();
@@ -192,49 +275,86 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
         return newPosition + nodeHeigt;
     }
     
+    /**
+     * Returns the lane index of the source node.
+     * 
+     * @param edgeLabelNode
+     * @return lane index
+     */
     private int getLaneIndexForEdgeLabelNode(LNode edgeLabelNode) {
-        return getActualSourceNode(edgeLabelNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+        return getLaneIndex(getActualSourceNode(edgeLabelNode));
     }
     
+    /**
+     * Returns the lane index of the actual source node if the source lane index
+     * is smaller than the target lane index and the target lane index otherwise. 
+     * 
+     * @param longEdgeNode
+     * @return lane index for long edge node
+     */
     private int getLaneIndexForLongEdgeNode(LNode longEdgeNode) {
-        int sourceLane = getActualSourceNode(longEdgeNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
-        int targetLane = getActualTargetNode(longEdgeNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+        int sourceLane = getLaneIndex(getActualSourceNode(longEdgeNode));
+        int targetLane = getLaneIndex(getActualTargetNode(longEdgeNode));
 
         if (sourceLane < targetLane)
             return targetLane;
         else
             return sourceLane;
     }
-
+    
+    /**
+     * Recursively search through target nodes until a normal node is found.
+     * 
+     * @param node
+     * @return the first normal node
+     */
     private LNode getActualTargetNode(LNode node) {
         for (LEdge edge : node.getOutgoingEdges()) {
             final LNode target = edge.getTarget().getNode();
             if (target.getType() != NodeType.LONG_EDGE && target.getType() != NodeType.LABEL)
+                // actual target found
                 return target;
             else
+                // look at the next node
                 return getActualTargetNode(target);
         }
         return null;
     }
-
+    
+    /**
+     * Recursively search through source nodes until a normal node is found.
+     * 
+     * @param node
+     * @return the first normal node
+     */
     private LNode getActualSourceNode(LNode node) {
         for (LEdge edge : node.getIncomingEdges()) {
             final LNode source = edge.getSource().getNode();
             if (source.getType() != NodeType.LONG_EDGE && source.getType() != NodeType.LABEL)
+                // actual source found
                 return source;
             else
+                // look at the next node
                 return getActualSourceNode(source);
         }
         return null;
     }
-
+    
+    
     private double getNodeHeight(LNode node) {
-        if (node.getType() != NodeType.LONG_EDGE)
-            return node.getMargin().top + node.getSize().y + node.getMargin().bottom + 1.0;
-        else
-            return node.getMargin().top + node.getSize().y + node.getMargin().bottom;
+        if (node.getType() == NodeType.LONG_EDGE)
+            return 0;
+        
+        return node.getMargin().top + node.getSize().y + node.getMargin().bottom;            
     }
-
+    
+    /**
+     * Adds up all node heights and spacings between each node.
+     * 
+     * @param nodes
+     *          list of nodes
+     * @return total space occupied by given nodes
+     */
     private double getHeightForNodes(List<LNode> nodes) {
         if (nodes == null || nodes.isEmpty())
             return 0.0;
@@ -246,5 +366,13 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
             firstNodeType = secondNodeType;
         }
         return size;
+    }
+    
+    private int getLaneIndex(final LNode node) {
+        return node.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
+    }
+    
+    private void setLaneIndex(final LNode node, final int laneIndex) {
+        node.setProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE, laneIndex);
     }
 }
