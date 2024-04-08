@@ -25,6 +25,7 @@ import org.eclipse.elk.alg.layered.intermediate.IntermediateProcessorStrategy;
 import org.eclipse.elk.alg.layered.options.GraphProperties;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
+import org.eclipse.elk.alg.layered.utils.SwimlaneIndexUtil;
 import org.eclipse.elk.core.alg.ILayoutPhase;
 import org.eclipse.elk.core.alg.LayoutProcessorConfiguration;
 import org.eclipse.elk.core.math.KVector;
@@ -100,14 +101,8 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
             maxLayerIndex = Math.max(maxLayerIndex, layerIndex);
             
             for (LNode node : layer.getNodes()) {
-                // implicitly created nodes must receive a lane index
-                if (node.getType() == NodeType.LONG_EDGE)
-                    setLaneIndex(node, getLaneIndexForLongEdgeNode(node));
-                else if (node.getType() == NodeType.LABEL) {
-                    setLaneIndex(node, getLaneIndexForEdgeLabelNode(node));
-                }
-                
-                final int laneIndex = getLaneIndex(node);
+                // implicitly created nodes have no lane index
+                final int laneIndex = SwimlaneIndexUtil.setAndGetLaneIndex(node);
                 maxLaneIndex = Math.max(maxLaneIndex, laneIndex);
                 
                 // putting the node into the lanes mapping
@@ -219,11 +214,11 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
      */
     private void singleLongeEdgePlacement(final LNode longEdgeNode, final double offset) {
         final KVector position = longEdgeNode.getPosition();
-        final int laneIndex = getLaneIndex(longEdgeNode);
+        final int laneIndex = SwimlaneIndexUtil.getLane(longEdgeNode);
         
         for (LEdge incommingEdge : longEdgeNode.getIncomingEdges()) {
             final LNode sourceNode = incommingEdge.getSource().getNode();
-            final int sourceLaneIndex = getLaneIndex(sourceNode); 
+            final int sourceLaneIndex = SwimlaneIndexUtil.getLane(sourceNode); 
             if (sourceLaneIndex == laneIndex) {
                 NodeType sourceType = sourceNode.getType();
                 
@@ -273,73 +268,7 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
         KVector position = node.getPosition();
         position.y = newPosition;
         return newPosition + nodeHeigt;
-    }
-    
-    /**
-     * Returns the lane index of the source node.
-     * 
-     * @param edgeLabelNode
-     * @return lane index
-     */
-    private int getLaneIndexForEdgeLabelNode(LNode edgeLabelNode) {
-        return getLaneIndex(getActualSourceNode(edgeLabelNode));
-    }
-    
-    /**
-     * Returns the lane index of the actual source node if the source lane index
-     * is smaller than the target lane index and the target lane index otherwise. 
-     * 
-     * @param longEdgeNode
-     * @return lane index for long edge node
-     */
-    private int getLaneIndexForLongEdgeNode(LNode longEdgeNode) {
-        int sourceLane = getLaneIndex(getActualSourceNode(longEdgeNode));
-        int targetLane = getLaneIndex(getActualTargetNode(longEdgeNode));
-
-        if (sourceLane < targetLane)
-            return targetLane;
-        else
-            return sourceLane;
-    }
-    
-    /**
-     * Recursively search through target nodes until a normal node is found.
-     * 
-     * @param node
-     * @return the first normal node
-     */
-    private LNode getActualTargetNode(LNode node) {
-        for (LEdge edge : node.getOutgoingEdges()) {
-            final LNode target = edge.getTarget().getNode();
-            if (target.getType() != NodeType.LONG_EDGE && target.getType() != NodeType.LABEL)
-                // actual target found
-                return target;
-            else
-                // look at the next node
-                return getActualTargetNode(target);
-        }
-        return null;
-    }
-    
-    /**
-     * Recursively search through source nodes until a normal node is found.
-     * 
-     * @param node
-     * @return the first normal node
-     */
-    private LNode getActualSourceNode(LNode node) {
-        for (LEdge edge : node.getIncomingEdges()) {
-            final LNode source = edge.getSource().getNode();
-            if (source.getType() != NodeType.LONG_EDGE && source.getType() != NodeType.LABEL)
-                // actual source found
-                return source;
-            else
-                // look at the next node
-                return getActualSourceNode(source);
-        }
-        return null;
-    }
-    
+    }   
     
     private double getNodeHeight(LNode node) {
         if (node.getType() == NodeType.LONG_EDGE)
@@ -366,13 +295,5 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
             firstNodeType = secondNodeType;
         }
         return size;
-    }
-    
-    private int getLaneIndex(final LNode node) {
-        return node.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
-    }
-    
-    private void setLaneIndex(final LNode node, final int laneIndex) {
-        node.setProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE, laneIndex);
     }
 }

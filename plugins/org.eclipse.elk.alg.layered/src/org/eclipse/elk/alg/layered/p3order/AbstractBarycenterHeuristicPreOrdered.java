@@ -68,8 +68,25 @@ public abstract class AbstractBarycenterHeuristicPreOrdered extends BarycenterHe
         };
     }
     
+    /**
+     * Decides whether a fixed model order exists for the given nodes
+     * 
+     * @param node1
+     * @param node2
+     * @return true, if nodes are in fixed order
+     */
     protected abstract boolean areNodesOrdered(final LNode node1, final LNode node2);
     
+    /**
+     * Returns an integer describing the order of the given nodes.
+     * 
+     * @param node1
+     * @param node2
+     * @return
+     *        0 if no order <br>
+     *      < 0 if node 1 is first <br>
+     *      > 0 if node 2 is first
+     */
     protected abstract int compareNodeOrder(final LNode node1, final LNode node2);
     
     /**

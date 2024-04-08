@@ -11,10 +11,10 @@ package org.eclipse.elk.alg.layered.p3order;
 
 import java.util.Random;
 
-import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LNode;
-import org.eclipse.elk.alg.layered.graph.LNode.NodeType;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
+import org.eclipse.elk.alg.layered.utils.SwimlaneIndexUtil;
+import org.eclipse.elk.graph.properties.IProperty;
 
 public class SwimlaneBarycenterHeuristic extends AbstractBarycenterHeuristicPreOrdered {
     
@@ -34,6 +34,11 @@ public class SwimlaneBarycenterHeuristic extends AbstractBarycenterHeuristicPreO
      */
     @Override
     protected boolean areNodesOrdered(LNode node1, LNode node2) {
+        IProperty<Integer> laneIndex = LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE;
+        if (node1.hasProperty(laneIndex) && node2.hasProperty(laneIndex)) {
+            return node1.getProperty(laneIndex) != node1.getProperty(laneIndex);
+        }
+        // at least one node is not a normal node and will get a lane index later
         return true;
     }
 
@@ -42,58 +47,9 @@ public class SwimlaneBarycenterHeuristic extends AbstractBarycenterHeuristicPreO
      */
     @Override
     protected int compareNodeOrder(LNode node1, LNode node2) {
-        final int firstNodeLane = getLaneProperty(node1);
-        final int secondNodeLane = getLaneProperty(node2);
+        final int firstNodeLane = SwimlaneIndexUtil.getLane(node1);
+        final int secondNodeLane = SwimlaneIndexUtil.getLane(node2);
 
         return Integer.compare(firstNodeLane, secondNodeLane);
     }
-    
-    private int getLaneProperty (final LNode node) {
-        switch(node.getType()) {
-        case NORMAL:
-            return node.getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
-        case LONG_EDGE:
-            return getLaneIndexForLongEdgeNode(node);
-        default:
-            return getSourceNodeLaneIndex(node);
-        }
-    }
-    
-    private int getSourceNodeLaneIndex(LNode edgeLabelNode) {
-        return getActualSourceNode(edgeLabelNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
-    }
-    
-    private int getLaneIndexForLongEdgeNode(LNode longEdgeNode) {
-        final int sourceLane = getActualSourceNode(longEdgeNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
-        final int targetLane = getActualTargetNode(longEdgeNode).getProperty(LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE);
-
-        if (sourceLane < targetLane)
-            return targetLane;
-        else
-            return sourceLane;
-    }
-
-    private LNode getActualTargetNode(LNode node) {
-        for (LEdge edge : node.getOutgoingEdges()) {
-            final LNode target = edge.getTarget().getNode();
-            if (target.getType() != NodeType.LONG_EDGE && target.getType() != NodeType.LABEL)
-                return target;
-            else
-                return getActualTargetNode(target);
-        }
-        return null;
-    }
-
-    private LNode getActualSourceNode(LNode node) {
-        for (LEdge edge : node.getIncomingEdges()) {
-            final LNode source = edge.getSource().getNode();
-            if (source.getType() != NodeType.LONG_EDGE && source.getType() != NodeType.LABEL)
-                return source;
-            else
-                return getActualSourceNode(source);
-        }
-        return null;
-    }
-
-
 }
