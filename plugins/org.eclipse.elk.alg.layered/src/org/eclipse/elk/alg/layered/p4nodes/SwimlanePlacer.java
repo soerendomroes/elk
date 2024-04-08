@@ -25,6 +25,7 @@ import org.eclipse.elk.alg.layered.intermediate.IntermediateProcessorStrategy;
 import org.eclipse.elk.alg.layered.options.GraphProperties;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
+import org.eclipse.elk.alg.layered.options.Spacings;
 import org.eclipse.elk.alg.layered.utils.SwimlaneIndexUtil;
 import org.eclipse.elk.core.alg.ILayoutPhase;
 import org.eclipse.elk.core.alg.LayoutProcessorConfiguration;
@@ -33,15 +34,17 @@ import org.eclipse.elk.core.util.IElkProgressMonitor;
 
 public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
     
-    /** spacing defined in the graph **/
-    private double spacingEdgeEdge, spacingEdgeNode, spacingNodeNode, spacingLaneLane = 0.0;
-    
     /** a map of lanes containing a map to the layers **/
-    Map<Integer, Map<Integer, List<LNode>>> lanes;
+    private Map<Integer, Map<Integer, List<LNode>>> lanes;
     /** highest layer index in the graph **/
-    int maxLayerIndex = 0;
+    private int maxLayerIndex = 0;
     /** highest lane index in the graph **/
-    int maxLaneIndex = 0;
+    private int maxLaneIndex = 0;
+    
+    /** gets spacing defined in the graph **/
+    private Spacings spacingUtility;
+    /** spacing between lanes **/
+    private double spacingLaneLane = 0.0;
 
     /** additional processor dependencies for graphs with hierarchical ports. */
     private static final LayoutProcessorConfiguration<LayeredPhases, LGraph> HIERARCHY_PROCESSING_ADDITIONS =
@@ -70,9 +73,7 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
     public void process(LGraph graph, IElkProgressMonitor monitor) {
         monitor.begin("Swimlane node placement", 1);
         
-        spacingEdgeEdge = graph.getProperty(LayeredOptions.SPACING_EDGE_EDGE);
-        spacingEdgeNode = graph.getProperty(LayeredOptions.SPACING_EDGE_NODE);
-        spacingNodeNode = graph.getProperty(LayeredOptions.SPACING_NODE_NODE);
+        spacingUtility = new Spacings(graph);
         spacingLaneLane = graph.getProperty(
                 LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE_SPACING);
 
@@ -91,7 +92,7 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
      *      list of {@link Layers} ordered by hierarchy, containing nodes.
      */
     private void buildLanes(final List<Layer> layers) {
-        // initilize instance variables needed for node placement
+        // Initialize instance variables needed for node placement
         lanes = new HashMap<Integer, Map<Integer, List<LNode>>>();
         maxLayerIndex = 0;
         maxLaneIndex = 0;
@@ -192,7 +193,7 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
         for (int i = 1; i < nodes.size(); i++) {
             // determine spacing between nodes
             NodeType secondNodeType = nodes.get(i).getType();
-            nodeOffset += getSpacing(firstNodeType, secondNodeType);
+            nodeOffset += spacingUtility.getVerticalSpacing(firstNodeType, secondNodeType);
             
             nodeOffset = setNodePosition(nodes.get(i), nodeOffset);
             firstNodeType = secondNodeType;
@@ -238,22 +239,6 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
         position.y = offset;
         return;
     }
-    
-    /**
-     * Returns the spacing between node types defined for the graph.
-     * 
-     * @param firstType
-     * @param secondType
-     * @return spacing between given node types
-     */
-    private double getSpacing(final NodeType firstType, final NodeType secondType) {
-        if(firstType == NodeType.LONG_EDGE && secondType == NodeType.LONG_EDGE)
-            return spacingEdgeEdge;
-        else if(firstType != NodeType.LONG_EDGE && secondType != NodeType.LONG_EDGE)
-            return spacingNodeNode;
-        else
-            return spacingEdgeNode;
-    }
 
     /**
      * Sets the y-coordinate of the node at the given position and returns the
@@ -290,8 +275,9 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
         double size = getNodeHeight(nodes.get(0));
         NodeType firstNodeType = nodes.get(0).getType();
         for (int i = 1; i < nodes.size(); i++) {
-            NodeType secondNodeType = nodes.get(i).getType();
-            size += getNodeHeight(nodes.get(i)) + getSpacing(firstNodeType, secondNodeType);
+            final NodeType secondNodeType = nodes.get(i).getType();
+            final double spacing = spacingUtility.getVerticalSpacing(firstNodeType, secondNodeType);
+            size += getNodeHeight(nodes.get(i)) + spacing;
             firstNodeType = secondNodeType;
         }
         return size;
