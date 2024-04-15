@@ -12,9 +12,7 @@ package org.eclipse.elk.alg.layered.p3order;
 import java.util.Random;
 
 import org.eclipse.elk.alg.layered.graph.LNode;
-import org.eclipse.elk.alg.layered.options.LayeredOptions;
 import org.eclipse.elk.alg.layered.utils.SwimlaneIndexUtil;
-import org.eclipse.elk.graph.properties.IProperty;
 
 public class SwimlaneBarycenterHeuristic extends AbstractBarycenterHeuristicPreOrdered {
     
@@ -34,12 +32,7 @@ public class SwimlaneBarycenterHeuristic extends AbstractBarycenterHeuristicPreO
      */
     @Override
     protected boolean areNodesOrdered(LNode node1, LNode node2) {
-        IProperty<Integer> laneIndex = LayeredOptions.NODE_PLACEMENT_SWIMLANE_LANE;
-        if (node1.hasProperty(laneIndex) && node2.hasProperty(laneIndex)) {
-            return node1.getProperty(laneIndex) != node1.getProperty(laneIndex);
-        }
-        // at least one node is not a normal node and will get a lane index later
-        return true;
+        return SwimlaneIndexUtil.getLane(node1) != SwimlaneIndexUtil.getLane(node2);
     }
 
     /* (non-Javadoc)

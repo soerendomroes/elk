@@ -174,13 +174,13 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
      * @param laneLayerSize
      *          actual space needed for the given nodes        
      */
-    private void laneLayerPlacement(final List<LNode> nodes, final double offset, 
+    private void laneLayerPlacement(final List<LNode> nodes, final double laneOffset, 
             final double laneSize, final double laneLayerSize) {
         if (nodes == null || nodes.isEmpty())
             return;
         
         // actual position of the node to place next
-        double nodeOffset = offset + (laneSize - laneLayerSize) * 0.5;
+        double nodeOffset = laneOffset + (laneSize - laneLayerSize) * 0.5;
         NodeType firstNodeType = nodes.get(0).getType();
         
         // align single longe edge node with source node for a straight edge
@@ -269,7 +269,7 @@ public class SwimlanePlacer implements ILayoutPhase<LayeredPhases, LGraph> {
      *          list of nodes
      * @return total space occupied by given nodes
      */
-    private double getHeightForNodes(List<LNode> nodes) {
+    private double getHeightForNodes(final List<LNode> nodes) {
         if (nodes == null || nodes.isEmpty())
             return 0.0;
         double size = getNodeHeight(nodes.get(0));
