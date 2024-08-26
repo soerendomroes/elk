@@ -54,6 +54,16 @@ public class SortByInputModelProcessor implements ILayoutProcessor<LGraph> {
     public void process(final LGraph graph, final IElkProgressMonitor progressMonitor) {
         progressMonitor.begin("Sort By Input Model "
                 + graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY), 1);
+        // Reset the ids of the whole graph
+        for (Layer layer : graph) {
+            for (LNode node : layer.getNodes()) {
+                node.id = 0;
+                for (LPort port : node.getPorts()) {
+                    port.id = 0;
+                }
+            }
+        }
+
         int layerIndex = 0;
         for (Layer layer : graph) {
             // The layer.id is necessary to check whether nodes really connect to the previous layer.
@@ -66,6 +76,12 @@ public class SortByInputModelProcessor implements ILayoutProcessor<LGraph> {
                     graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY),
                     graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_LONG_EDGE_STRATEGY), true);
             SortByInputModelProcessor.insertionSort(layer.getNodes(), comparator);
+            // Assign node ids that are most likely correct not considering dummy feedback nodes.
+            int nodeId = 0;
+            for (LNode node : layer.getNodes()) {
+                node.id = nodeId;
+                nodeId++;
+            }
             for (LNode node : layer.getNodes()) {
                 if (node.getProperty(LayeredOptions.PORT_CONSTRAINTS) != PortConstraints.FIXED_ORDER
                         && node.getProperty(LayeredOptions.PORT_CONSTRAINTS) != PortConstraints.FIXED_POS) {
@@ -80,6 +96,12 @@ public class SortByInputModelProcessor implements ILayoutProcessor<LGraph> {
                                     longEdgeTargetNodePreprocessing(node),
                                     graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_PORT_MODEL_ORDER)));
                     progressMonitor.log("Node " + node + " ports: " + node.getPorts());
+                    // Assign port ids to make quicker decisions when considering the next layer.
+                    int portId = 0;
+                    for (LPort port : node.getPorts()) {
+                        port.id = portId;
+                        portId++;
+                    }
                 }
             }
             // Sort nodes after port sorting to also sort dummy feedback nodes from the current layer correctly.
@@ -87,6 +109,12 @@ public class SortByInputModelProcessor implements ILayoutProcessor<LGraph> {
                     graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY),
                     graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_LONG_EDGE_STRATEGY), false);
             SortByInputModelProcessor.insertionSort(layer.getNodes(), comparator);
+            // After a layer is finished finally assign node ids that reflect the ordering.
+            nodeId = 0;
+            for (LNode node : layer.getNodes()) {
+                node.id = nodeId;
+                nodeId++;
+            }
                     
             progressMonitor.log("Layer " + layerIndex + ": " + layer);
             layerIndex++;

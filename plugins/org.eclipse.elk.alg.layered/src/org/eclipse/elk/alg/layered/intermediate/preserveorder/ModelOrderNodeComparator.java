@@ -150,15 +150,25 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
                     // We are not allowed to look at the model order of the edges but we have to look at the actual
                     // port ordering since the edge order might be broken here.
                     // If we have long edges the edge model order might not respect the ordering.
-                    for (LPort port : p1Node.getPorts()) {
-                        if (port.equals(p1SourcePort)) {
-                            // Case the port is the one connecting to n1, therefore, n1 has a smaller model order
-                            updateBiggerAndSmallerAssociations(n2, n1);
-                            return -1;
-                        } else if (port.equals(p2SourcePort)) {
-                            // Case the port is the one connecting to n2, therefore, n1 has a bigger model order
+                    if (p1SourcePort.id != p2SourcePort.id) {
+                        if (p1SourcePort.id > p2SourcePort.id) {
                             updateBiggerAndSmallerAssociations(n1, n2);
                             return 1;
+                        } else {
+                            updateBiggerAndSmallerAssociations(n2, n1);
+                            return -1;
+                        }
+                    } else {
+                        for (LPort port : p1Node.getPorts()) {
+                            if (port.equals(p1SourcePort)) {
+                                // Case the port is the one connecting to n1, therefore, n1 has a smaller model order
+                                updateBiggerAndSmallerAssociations(n2, n1);
+                                return -1;
+                            } else if (port.equals(p2SourcePort)) {
+                                // Case the port is the one connecting to n2, therefore, n1 has a bigger model order
+                                updateBiggerAndSmallerAssociations(n1, n2);
+                                return 1;
+                            }
                         }
                     }
                     assert (false);
@@ -179,16 +189,27 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
                 // If the nodes do not connect to the same node, the nodes are ordered by the nodes they connect to.
                 // One can disregard the model order here 
                 // since the ordering in the previous layer does already reflect it.
-                for (LNode previousNode : previousLayer) {
-                    if (previousNode.equals(p1Node)) {
-                        updateBiggerAndSmallerAssociations(n2, n1);
-                        return -1;
-                    } else if (previousNode.equals(p2Node)) {
+                if (p1Node.id != p2Node.id) {
+                    if (p1Node.id > p2Node.id) {
                         updateBiggerAndSmallerAssociations(n1, n2);
                         return 1;
+                    } else {
+                        updateBiggerAndSmallerAssociations(n2, n1);
+                        return -1;
                     }
+                } else {                    
+                    for (LNode previousNode : previousLayer) {
+                        if (previousNode.equals(p1Node)) {
+                            updateBiggerAndSmallerAssociations(n2, n1);
+                            return -1;
+                        } else if (previousNode.equals(p2Node)) {
+                            updateBiggerAndSmallerAssociations(n1, n2);
+                            return 1;
+                        }
+                    }
+                    // Again, I assume that such a node must exist, and I should never get here.
                 }
-                // Again, I assume that such a node must exist, and I should never get here.
+                
             }
             
             // One node has no source port
@@ -434,13 +455,23 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
                     // In this case, the order of the ports can just be used.
                     // Since the order of WEST ports is reversed and the order for feedback edges connecting to WEST
                     // ports is reversed, I may just do nothing here.
-                    for (LPort port : n1ReferenceNode.getPorts()) {
-                        if (n1dummyNodeSourcePort.equals(port)) {
-                            updateBiggerAndSmallerAssociations(n2, n1);
-                            return -1;
-                        } else if (n2dummyNodeSourcePort.equals(port)) {
+                    if (n1dummyNodeSourcePort.id != n2dummyNodeSourcePort.id) {
+                        if (n1dummyNodeSourcePort.id > n2dummyNodeSourcePort.id) {
                             updateBiggerAndSmallerAssociations(n1, n2);
                             return 1;
+                        } else {
+                            updateBiggerAndSmallerAssociations(n2, n1);
+                            return -1;
+                        }
+                    } else {
+                        for (LPort port : n1ReferenceNode.getPorts()) {
+                            if (n1dummyNodeSourcePort.equals(port)) {
+                                updateBiggerAndSmallerAssociations(n2, n1);
+                                return -1;
+                            } else if (n2dummyNodeSourcePort.equals(port)) {
+                                updateBiggerAndSmallerAssociations(n1, n2);
+                                return 1;
+                            }
                         }
                     }
                 }

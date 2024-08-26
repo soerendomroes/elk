@@ -144,6 +144,16 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
             if (p1Node.equals(p2Node)) {
                 // If both connect to the same node, check their occurrence order since these ports have to be handled
                 // first and should hence be sorted.
+                // The two ports cannot be feedback ports and have to be in a different layer, otherwise, they would
+                // not originate from the same node and go to the same node.
+                if (p1SourcePort.id > p2SourcePort.id) {
+                    updateBiggerAndSmallerAssociations(p1, p2, reverseOrder);
+                    return reverseOrder;
+                } else if (p1SourcePort.id < p2SourcePort.id) {
+                    updateBiggerAndSmallerAssociations(p2, p1, reverseOrder);
+                    return -reverseOrder;
+                }
+                // Currently I assume, if the ids are the same, they are not set. However, this cannot happen.
                 for (LPort port : p1Node.getPorts()) {
                     if (p1SourcePort.equals(port)) {
                         updateBiggerAndSmallerAssociations(p2, p1, reverseOrder);
@@ -154,7 +164,7 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
                     }
                 }
             }
-            // If both ports connect to long edges in the same layer, reverse the order.
+            // If both ports connect to long edges in the same layer.
             if (p1SourcePort.getNode().getType() == NodeType.LONG_EDGE
                 && p2SourcePort.getNode().getType() == NodeType.LONG_EDGE
                 && p1Node.getLayer().id == p2Node.getLayer().id && p1Node.getLayer().id == p1.getNode().getLayer().id) {
@@ -165,8 +175,7 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
                 // ___1___|
                 //
                 Layer previousLayer = p1Node.getLayer();
-                // if it is a SOUTH or EAST port reverse the order.
-                // checkReferenceLayer already updates the transitive ordering association.
+                // if it is a SOUTH or EAST port reverse the order this is already done so no need to do it here too..
                 int inPreviousLayer =  checkReferenceLayer(previousLayer, p1Node, p2Node, p1, p2);
                 if (inPreviousLayer != 0) {
                     if (p1.getSide() == PortSide.EAST && p2.getSide() == PortSide.EAST) {
@@ -219,9 +228,10 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
                     || p1.getSide() == PortSide.SOUTH && p2.getSide() == PortSide.SOUTH) {
                 // Some ports are ordered in the way around.
                 // Previously this did not matter, since the north south processor did override the ordering.
-                  LPort temp = p1;
-                  p1 = p2;
-                  p2 = temp;
+//                  LPort temp = p1;
+//                  p1 = p2;
+//                  p2 = temp;
+                reverseOrder = -reverseOrder; // Exchanging is bad I guess.
             }
             LNode p1TargetNode = p1.getProperty(InternalProperties.LONG_EDGE_TARGET_NODE);
             LNode p2TargetNode = p2.getProperty(InternalProperties.LONG_EDGE_TARGET_NODE);
@@ -277,7 +287,7 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
                     return -reverseOrder;
                 }
             }
-            // Use precomputed ordering value if possible to utilize order inheritence of edges connected to a node.
+            // Use precomputed ordering value if possible to utilize order inheritance of edges connected to a node.
             // This allows to bundle edges leading to the same node, disregarding their model order.
             if (targetNodeModelOrder != null) {
                 if (targetNodeModelOrder.containsKey(p1TargetNode)) {
@@ -378,6 +388,14 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
      * @return A comparator value showing which port should be first.
      */
     private int checkReferenceLayer(Iterable<LNode> layer, LNode p1Node, LNode p2Node, LPort p1, LPort p2) {
+        // These nodes should already have ids set, try using them first.
+        if (p1Node.id > p2Node.id) {
+            return 1;
+        } else if (p1Node.id < p2Node.id) {
+            return -1;
+        }
+        // This is the case if both ids are not yet set or not set correctly. Here I have to search the layer to find
+        // the correct order.
         for (LNode node : layer) {
             if (node.equals(p1Node)) {
                 // If the first node is found first, it has to be above the second one and does hence have a smaller
