@@ -1,22 +1,19 @@
-/*
- * KIELER - Kiel Integrated Environment for Layout Eclipse RichClient
+/*******************************************************************************
+ * Copyright (c) 2024 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
  *
- * http://rtsys.informatik.uni-kiel.de/kieler
- * 
- * Copyright ${year} by
- * + Kiel University
- *   + Department of Computer Science
- *     + Real-Time and Embedded Systems Group
- * 
- * This code is provided under the terms of the Eclipse Public License (EPL).
- */
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package org.eclipse.elk.alg.indentedtree.options;
 
 import org.eclipse.elk.graph.properties.IProperty;
 import org.eclipse.elk.graph.properties.Property;
 
 /**
- * 
+ * Internal Property definitions for the Indented Tree Layout Algorithm
  */
 public final class InternalProperties {
 

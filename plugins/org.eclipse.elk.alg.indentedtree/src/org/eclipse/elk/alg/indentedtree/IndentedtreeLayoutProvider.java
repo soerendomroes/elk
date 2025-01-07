@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2024 Kiel University and others.
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package org.eclipse.elk.alg.indentedtree;
 
 import java.util.ArrayList;
@@ -19,7 +28,6 @@ import org.eclipse.elk.alg.indentedtree.options.InternalProperties;
  * A layout algorithm for creating a filesystem-like layout. This assumes that the graph is a tree
  * and that no ports exist
  * 
- * @author tobias
  */
 public class IndentedtreeLayoutProvider extends AbstractLayoutProvider {
 
