@@ -18,12 +18,11 @@ import java.util.Random;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LNode;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
-import org.eclipse.elk.alg.layered.p3order.options.MedianHeuristicProperties;
-
 import com.google.common.collect.Lists;
 
 /**
- * @author tobias
+ * A Heuristic for minimizing crossings using weights and propagated medians. After assigning random weights to the
+ * first layer, subsequent layers are ordered according to their nodes' adjacent nodes' median weights.
  * 
  */
 public class MedianHeuristic implements ICrossingMinimizationHeuristic {
@@ -61,7 +60,7 @@ public class MedianHeuristic implements ICrossingMinimizationHeuristic {
         List<LNode> firstLayer = Lists.newArrayList(order[firstIndex]);
         // set random weights for nodes in firstLayer
         for (LNode node : firstLayer) {
-            node.setProperty(MedianHeuristicProperties.WEIGHT, random.nextDouble());
+            node.setProperty(InternalProperties.WEIGHT, random.nextDouble());
         }
         // sort firstLayer by their (randomized) weights
         // Collections.sort() is order-preserving (stable)
@@ -71,7 +70,7 @@ public class MedianHeuristic implements ICrossingMinimizationHeuristic {
         for (LNode node : firstLayer) {
             order[firstIndex][index++] = node;
             // overwrite the weight with an integer from 1 to n
-            node.setProperty(MedianHeuristicProperties.WEIGHT, (double) index);
+            node.setProperty(InternalProperties.WEIGHT, (double) index);
             // should the node's id be set as well?
         }
 
@@ -152,8 +151,7 @@ public class MedianHeuristic implements ICrossingMinimizationHeuristic {
                 // nodes will not keep switching places if they have the same weight
                 Collections.sort(connectedNodes, weightComparator);
                 // calculate weight from the median of connected nodes' weights
-                double newWeight =
-                        connectedNodes.get(connectedNodes.size() / 2).getProperty(MedianHeuristicProperties.WEIGHT);
+                double newWeight = connectedNodes.get(connectedNodes.size() / 2).getProperty(InternalProperties.WEIGHT);
                 node.setProperty(InternalProperties.WEIGHT, newWeight);
                 // update minWeight and maxWeight
                 minWeight = Math.min(minWeight, newWeight);
@@ -182,6 +180,14 @@ public class MedianHeuristic implements ICrossingMinimizationHeuristic {
      * Compares two {@link LNode}s based on their weights. Assume that both nodes have weights set.
      */
     protected Comparator<LNode> weightComparator = (n1, n2) -> {
+        // even if weights are not set, return an appropriate value
+        // if neither weight is set, the return value does not matter (here: return 1)
+        if (!n1.hasProperty(InternalProperties.WEIGHT)) {
+            return 1;
+        }
+        if (!n2.hasProperty(InternalProperties.WEIGHT)) {
+            return -1;
+        }
         Double w1 = n1.getProperty(InternalProperties.WEIGHT);
         Double w2 = n2.getProperty(InternalProperties.WEIGHT);
         if (w1 != null && w2 != null) {
