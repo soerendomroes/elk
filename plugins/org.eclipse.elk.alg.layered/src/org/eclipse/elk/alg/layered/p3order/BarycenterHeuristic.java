@@ -207,12 +207,10 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
      *            a node group consisting of a single node
      * @param forward
      *            {@code true} if the current sweep moves forward
-     * @param portPos
-     *            position array
      * @return a pair containing the summed port positions of the connected ports as the first, and
      *         the number of connected edges as the second entry.
      */
-    private void calculateBarycenter(final LNode node, final boolean forward) {// javadoc for this method outdated
+    private void calculateBarycenter(final LNode node, final boolean forward) {
 
         // Check if the node group's barycenter was already computed
         if (stateOf(node).visited) {
