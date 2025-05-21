@@ -47,6 +47,25 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
     protected final AbstractBarycenterPortDistributor portDistributor;
 
     /**
+     * Constructs a Barycenter heuristic for crossing minimization.
+     * 
+     * @param constraintResolver
+     *            the constraint resolver
+     * @param random
+     *            the random number generator
+     * @param portDistributor
+     *            calculates the port ranks for the barycenter heuristic.
+     * @param graph
+     *            current node order
+     */
+    public BarycenterHeuristic(final ForsterConstraintResolver constraintResolver, final Random random,
+            final AbstractBarycenterPortDistributor portDistributor, final LNode[][] graph) {
+        this.constraintResolver = constraintResolver;
+        this.random = random;
+        this.portDistributor = portDistributor;
+    }
+
+    /**
      * Don't use!
      * Only public to be accessible by a test.
      */
@@ -174,25 +193,6 @@ public class BarycenterHeuristic implements ICrossingMinimizationHeuristic {
             // Calculate the node groups's new barycenter (may be null)
             calculateBarycenter(node, forward);
         }
-    }
-
-    /**
-     * Constructs a Barycenter heuristic for crossing minimization.
-     * 
-     * @param constraintResolver
-     *            the constraint resolver
-     * @param random
-     *            the random number generator
-     * @param portDistributor
-     *            calculates the port ranks for the barycenter heuristic.
-     * @param graph
-     *            current node order
-     */
-    public BarycenterHeuristic(final ForsterConstraintResolver constraintResolver, final Random random,
-            final AbstractBarycenterPortDistributor portDistributor, final LNode[][] graph) {
-        this.constraintResolver = constraintResolver;
-        this.random = random;
-        this.portDistributor = portDistributor;
     }
 
     /** the amount of random value to add to each calculated barycenter. */
