@@ -9,12 +9,8 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.p1cycles;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LNode;
-import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
 
 /**
@@ -32,12 +28,12 @@ public class SCCNodeTypeCycleBreaker extends SCCModelOrderCycleBreaker {
               continue;
           }
           LNode min = null;
-          int maxGroupModelOrder = 13; // FIXME hardcoded
+          int maxGroupModelOrder = 100; // This is a hardcoded value.
           int modelOrderMin = Integer.MAX_VALUE;
           int modelOrderMax = Integer.MIN_VALUE;
           int groupModelOrderMin = Integer.MAX_VALUE;
           int groupModelOrderMax = Integer.MIN_VALUE;
-
+          // FIXME explain what is happening here.
           LNode max = null;
           for (LNode n : stronglyConnectedComponents.get(i)) {
               if (min == null || max == null) {

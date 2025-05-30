@@ -18,6 +18,7 @@ import com.google.common.collect.Iterables;
  * Based on the SCCModelOrderCycleBreaker. This finds the nodes with minimum and maximum model order and reverses the 
  * incoming nodes of the minimum, if its the in-degree is greater than the out-degree of the maximum node. Else it 
  * reverses the out-going edges of the maximum node.
+ * FIXME explain everything
  *
  */
 public class SCConnectivity extends SCCModelOrderCycleBreaker {
@@ -30,7 +31,7 @@ public class SCConnectivity extends SCCModelOrderCycleBreaker {
           }
           LNode min = null;
           LNode max = null;
-          int maxGroupModelOrder = 30; // This makes calculating the ordering values easier. FIXME
+          int maxGroupModelOrder = 100; // This makes calculating the ordering values easier. FIXME
           int modelOrderMin = Integer.MAX_VALUE;
           int modelOrderMax = Integer.MIN_VALUE;
           int groupModelOrderMin = Integer.MAX_VALUE;

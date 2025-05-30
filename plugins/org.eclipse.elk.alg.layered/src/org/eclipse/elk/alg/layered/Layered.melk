@@ -212,6 +212,10 @@ algorithm layered(LayeredLayoutProvider) {
     supports considerModelOrder.groupModelOrder.cycleBreakingId
     supports considerModelOrder.groupModelOrder.crossingMinimizationId
     supports considerModelOrder.groupModelOrder.componentGroupId
+    supports considerModelOrder.groupModelOrder.cbGroupOrderStrategy
+    supports considerModelOrder.groupModelOrder.cbEnforcedGroupOrders
+    supports considerModelOrder.groupModelOrder.cmGroupOrderStrategy
+    supports considerModelOrder.groupModelOrder.cmEnforcedGroupOrders
     
     supports generatePositionAndLayerIds
 }
@@ -1108,6 +1112,40 @@ group considerModelOrder {
                  sorted before other groups."
             default = -1
             targets nodes, edges, ports
+        }
+        option cbGroupOrderStrategy: GroupOrderStrategy {
+            label "Cycle Breaking Group Ordering Strategy"
+            description "Determines how to count ordering violations during cycle breaking. NONE: They do not
+                         count. ENFORCED: A group with a higher model order is before a node with a smaller.
+                         MODEL_ORDER: The model order counts instead of the model order group id ordering."
+            default = GroupOrderStrategy.NONE
+            targets parents
+        }
+        option cbEnforcedGroupOrders: List<Integer> {
+            label "Cycle Breaking Enforced Group Orders"
+            description "Holds all group ids which are enforcing their order during cycle breaking strategies.
+                         E.g. if only groups 2 and -1 (default) enforce their ordering. Other groups e.g. the group of
+                         timer nodes can be ordered arbitrarily if it helps and the mentioned groups may not change
+                         their order."
+            targets parents
+            default = #[1, 2, 3, 4, 5]
+        }
+        option cmGroupOrderStrategy: GroupOrderStrategy {
+            label "Crossing Minimization Group Ordering Strategy"
+            description "Determines how to count ordering violations during crossing minimization. NONE: They do not
+                         count. ENFORCED: A group with a higher model order is before a node with a smaller.
+                         MODEL_ORDER: The model order counts instead of the model order group id ordering."
+            default = GroupOrderStrategy.NONE
+            targets parents
+        }
+        option cmEnforcedGroupOrders: List<Integer> {
+            label "Crossing Minimization Enforced Group Orders"
+            description "Holds all group ids which are enforcing their order during crossing minimization strategies.
+                         E.g. if only groups 2 and -1 (default) enforce their ordering. Other groups e.g. the group of
+                         timer nodes can be ordered arbitrarily if it helps and the mentioned groups may not change
+                         their order."
+            targets parents
+            default = #[1, 2, 3, 4, 5]
         }
     }
 }

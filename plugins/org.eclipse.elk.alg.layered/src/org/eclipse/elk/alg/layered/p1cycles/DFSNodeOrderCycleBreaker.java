@@ -11,13 +11,11 @@ package org.eclipse.elk.alg.layered.p1cycles;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.StreamSupport;
 
 import org.eclipse.elk.alg.layered.LayeredPhases;
 import org.eclipse.elk.alg.layered.graph.LEdge;
@@ -38,6 +36,8 @@ import com.google.common.collect.Iterables;
  * <li>Emden R. Gansner, Eleftherios Koutsofios, Stephen C. North, Kiem-Phong Vo, A technique for drawing directed
  * graphs. <i>Software Engineering</i> 19(3), pp. 214-230, 1993.</li>
  * </ul>
+ * While the {@link org.eclipse.elk.alg.layered.p1cycles.DepthFirstCycleBreaker} uses the edge order as the visiting order
+ * this cycle breaker uses the node (model order) for this.
  * 
  * <p>
  * This cycle breaker does not support the {@link LayeredOptions#PRIORITY_DIRECTION} option that can be set on edges.
@@ -74,7 +74,6 @@ public class DFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
     private boolean[] active;
     /** The list of edges to be reversed at the end of our little algorithmic adventure. */
     private List<LEdge> edgesToBeReversed;
-    private int debug_info_SameConnectons = 0;
 
     @Override
     public LayoutProcessorConfiguration<LayeredPhases, LGraph> getLayoutProcessorConfiguration(final LGraph graph) {
@@ -146,28 +145,22 @@ public class DFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
 
         HashMap<Integer, HashSet<LEdge>> modelOrderMap = new HashMap<Integer, HashSet<LEdge>>();
 
+        // Construct tree set to efficiently find next node to look at by finding all connected nodes and sorting them.
         n.getOutgoingEdges().forEach(e -> {
             if (e.getTarget().getNode().getProperty(InternalProperties.MODEL_ORDER) == null) {
-                modelOrderMap.put(Integer.MAX_VALUE - modelOrderMap.size(), new HashSet<LEdge>() {
-                    {
-                        add(e);
-                    }
-                });
+                modelOrderMap.put(Integer.MAX_VALUE - modelOrderMap.size(), new HashSet<LEdge>(Arrays.asList(e)));
             } else {
                 int targetModelOrder = e.getTarget().getNode().getProperty(InternalProperties.MODEL_ORDER);
                 if (modelOrderMap.containsKey(targetModelOrder)) {
                     modelOrderMap.get(targetModelOrder).add(e);
                 } else {
-                    modelOrderMap.put(targetModelOrder, new HashSet<LEdge>() {
-                        {
-                            add(e);
-                        }
-                    });
+                    modelOrderMap.put(targetModelOrder, new HashSet<LEdge>(Arrays.asList(e)));
                 }
             }
         });
+        // The model order serves as the key by which all elements are sorted. FIXME what about group model order?
+        // Construct this by <number of nodes> * groupId + MO if ENFORCED, otherwise using model order is ok.
         SortedSet<Integer> modelOrderSet = new TreeSet<>(modelOrderMap.keySet());
-        // for (LEdge out : n.getOutgoingEdges()) {
         for (int key : modelOrderSet) {
             LEdge out = modelOrderMap.get(key).iterator().next();
             // Ignore self loops

@@ -42,6 +42,7 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
     protected List<Set<LNode>> stronglyConnectedComponents = new LinkedList<Set<LNode>>();
     private Stack<LNode> stack = new Stack<LNode>();
     protected List<LEdge> revEdges = Lists.newArrayList();
+    protected LGraph graph;
 
     /** intermediate processing configuration. */
     private static final LayoutProcessorConfiguration<LayeredPhases, LGraph> INTERMEDIATE_PROCESSING_CONFIGURATION =
@@ -50,7 +51,6 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
 
     @Override
     public LayoutProcessorConfiguration<LayeredPhases, LGraph> getLayoutProcessorConfiguration(final LGraph graph) {
-        // TODO Auto-generated method stub
         return INTERMEDIATE_PROCESSING_CONFIGURATION;
     }
 
@@ -58,6 +58,8 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
     @Override
     public void process(final LGraph layeredGraph, final IElkProgressMonitor monitor) {
         monitor.begin("Model order cycle breaking", 1);
+        
+        this.graph = layeredGraph;
 
         // Reset FIRST_SEPARATE and LAST_SEPARATE counters.
         firstSeparateModelOrder = 0;
@@ -112,11 +114,12 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
             int maxModelOrder = Integer.MIN_VALUE;
             for (LNode n : stronglyConnectedComponents.get(i)) {
                 List<Integer> groupmask = new LinkedList<Integer>();
-//                FIXME this may not always work and should not be hard coded.
-//                int groupID = n.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_I_D);
-//                if (!groupmask.contains(groupID)) {
-//                    continue;
-//                }
+                // FIXME check this and make tests
+                groupmask = this.graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_ENFORCED_GROUP_ORDERS);
+                int groupID = n.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID);
+                if (!groupmask.contains(groupID)) {
+                    continue;
+                }
                 if (max == null) {
                     max = n;
                     maxModelOrder = computeConstraintModelOrder(n, offset);

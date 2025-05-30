@@ -30,6 +30,7 @@ import org.eclipse.elk.graph.properties.AdvancedPropertyValue;
  * 
  * @author msp
  * @author cds
+ * FIXME explain all the strategies again in detail
  */
 public enum CycleBreakingStrategy implements ILayoutPhaseFactory<LayeredPhases, LGraph> {
 
@@ -39,6 +40,7 @@ public enum CycleBreakingStrategy implements ILayoutPhaseFactory<LayeredPhases, 
     GREEDY,
     /**
      * Applies a depth-first traversal to find and reverse edges to make the graph acyclic.
+     * This uses the edge order as the iteration order.
      */
     DEPTH_FIRST,
     /**
@@ -61,27 +63,32 @@ public enum CycleBreakingStrategy implements ILayoutPhaseFactory<LayeredPhases, 
     GREEDY_MODEL_ORDER,
 
     /**
-     *  Uses the Strongly Connected Component approach and selects the minima/maxima based on in-/outdegree.
+     *  Uses Tarjan's algorithm to calculate the strongly connected components. Then it determines the order in these 
+     *  components, i.e. the cycles using the in-/out-degree of the nodes. E.g. first Tarjan, then greedy.
+     *  FIXME is this really true
      */
     SCC_CONNECTIVITY,
 
     /**
-     *  Uses the Strongly Connected Component approach and selects the minima/maxima based on a defined order.
+     *  Uses the Strongly Connected Component approach and selects the minima/maxima based on the model order.
+     *  FIXME, what does this really do?
      */
     SCC_NODE_TYPE,
 
     /**
      *  Strictly enforces a order between different nodes, uses the model order for same types.
+     *  FIXME I think this could be done by adding the groupmo strategy to another strategy.
      */
     STRICT_GROUP_ORDER,
-
     /**
-     *  DF-Cycle Breaker but use the node order instead of the edge order for discovery order.
+     * Applies a depth-first traversal to find and reverse edges to make the graph acyclic.
+     * This uses the node order as the iteration order.
      */
     DFS_NODE_ORDER,
 
     /**
-     *  BF-Cycle Breaker but use the node order instead of the edge order for discovery order.
+     * Applies a breadth-first traversal to find and reverse edges to make the graph acyclic.
+     * This uses the node order as the iteration order.
      */
     BFS_NODE_ORDER;
     

@@ -413,6 +413,16 @@ public final class InternalProperties {
      * Set for nodes and edges to preserve the order in the model file.
      */
     public static final IProperty<Integer> MODEL_ORDER = new Property<>("modelOrder");
+    
+    /**
+     * Set on parents to save the maximum model order set on nodes.
+     */
+    public static final IProperty<Integer> MAX_MODEL_ORDER_NODES = new Property<>("modelOrder.maximum");
+    
+    /**
+     * Set on parents to save the number of model order groups that exist. FIXME
+     */
+    public static final IProperty<Integer> MODEL_ORDER_GROUPS = new Property<>("modelOrderGroups.maximum");
 
     /**
      * Set on ports to save their (long edge) target node.
@@ -455,29 +465,29 @@ public final class InternalProperties {
     
 
     /**
-     * TODO
+     * FIXME
      */
-    public static final IProperty<Integer> TARJAN_LOWLINK = new Property<>("tarjan.lowlink",Integer.MAX_VALUE);
+    public static final IProperty<Integer> TARJAN_LOWLINK = new Property<>("tarjan.lowlink", Integer.MAX_VALUE);
 
     /**
-     * 
+     * FIXME
      */
-    public static final IProperty<Integer> TARJAN_ID = new Property<>("tarjan.id",-1);
+    public static final IProperty<Integer> TARJAN_ID = new Property<>("tarjan.id", -1);
 
     /**
-     * 
+     * FIXME
      */
-    public static final IProperty<Boolean> TARJAN_ON_STACK = new Property<>("tarjan.onstack",false);
+    public static final IProperty<Boolean> TARJAN_ON_STACK = new Property<>("tarjan.onstack", false);
 
     /**
-     * 
+     * FIXME
      */
-    public static final IProperty<Boolean> IS_FIXED = new Property<>("isFixed",false);
+    public static final IProperty<Boolean> IS_FIXED = new Property<>("isFixed", false);
 
     /**
-     * 
+     * Set during tarjan's algorithm. Indicates that a node is part of a cycle.
      */
-    public static final IProperty<Boolean> IS_PART_OF_CYCLE = new Property<>("partOfCycle",false);
+    public static final IProperty<Boolean> IS_PART_OF_CYCLE = new Property<>("partOfCycle", false);
     
     /**
      * Hidden default constructor.

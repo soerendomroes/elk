@@ -10,6 +10,7 @@
 package org.eclipse.elk.alg.layered.p1cycles;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,7 +21,6 @@ import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import org.eclipse.elk.alg.layered.DebugUtil;
 import org.eclipse.elk.alg.layered.LayeredPhases;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
@@ -36,7 +36,26 @@ import com.google.common.collect.Iterables;
 
 /**
  * Uses the Breadth-First-Search to traverse the graph and reverses edges if the node is already explored.
- * This implementation uses Tarjan's Algorithm to reduce unnecessary reversals.
+ * This implementation uses Tarjan's algorithm<ul>
+ * <li>Tarjan ,R.E. Depth first search and linear graph algorithms,
+ * <i>SIAM J. Comptg. </i> 1, pp. 146-160., 1972.</li>
+ * </ul> to reduce unnecessary reversals.
+ * 
+ * <p>This cycle breaker does not support the {@link LayeredOptions#PRIORITY_DIRECTION} option 
+ * that can be set on edges. Neither does it support layer constraints out of the box. 
+ * If layer constraints should be observed,
+ * {@link org.eclipse.elk.alg.layered.intermediate.EdgeAndLayerConstraintEdgeReverser} and
+ * {@link org.eclipse.elk.alg.layered.intermediate.LayerConstraintProcessor} should
+ * be used.</p>
+ * 
+ * <dl>
+ *   <dt>Precondition:</dt><dd>an unlayered graph</dd>
+ *   <dt>Postcondition:</dt><dd>the graph has no cycles</dd>
+ * </dl>
+ * 
+ * @see org.eclipse.elk.alg.layered.intermediate.EdgeAndLayerConstraintEdgeReverser FIXME, check this
+ * @see org.eclipse.elk.alg.layered.intermediate.LayerConstraintProcessor
+ * FIXME, needs more comments to understand this.
  *
  */
 public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGraph> {
@@ -91,7 +110,7 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
         stack = new Stack<LNode>();
         nodeToSCCID = new HashMap<>();
 
-        TARJAN(graph);
+        tarjan(graph);
         if (stronglyConnectedComponents.size() == 0) {
             // Cleanup
             this.sources = null;
@@ -121,10 +140,6 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
             //sequential bfs
             bfsQueue.add(source);
             bfsLoop();
-
-
-            //Simultaneous starting bfs
-            //bfs(source);
         }
 
         bfsLoop();
@@ -179,7 +194,7 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
         //Create a map of edges and the model order of the node they lead to
         n.getOutgoingEdges().forEach(e -> {
             if (e.getTarget().getNode().getProperty(InternalProperties.MODEL_ORDER) == null) {
-                modelOrderMap.put(Integer.MAX_VALUE - modelOrderMap.size(),new HashSet<LEdge>(){{add(e);}});
+                modelOrderMap.put(Integer.MAX_VALUE - modelOrderMap.size(), new HashSet<LEdge>(Arrays.asList(e)));
             }
             else {
                 int targetModelOrder = e.getTarget().getNode().getProperty(InternalProperties.MODEL_ORDER);
@@ -187,7 +202,7 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
                     modelOrderMap.get(targetModelOrder).add(e);
                 }
                 else {
-                    modelOrderMap.put(targetModelOrder, new HashSet<LEdge>(){{add(e);}});
+                    modelOrderMap.put(targetModelOrder, new HashSet<LEdge>(Arrays.asList(e)));
                 }
             }
         });
@@ -195,15 +210,14 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
 
         for (int key: modelOrderSet) {
             LEdge out = modelOrderMap.get(key).iterator().next();
-         // for (LEdge out : n.getOutgoingEdges()) {
             // Get the SCC of the source, or -1 if not part of a SCC
-            int source_SCC = nodeToSCCID.get(n) != null ?  nodeToSCCID.get(n) : -1;
+            int source_SCC = nodeToSCCID.get(n) != null ?  nodeToSCCID.get(n) : -1; // FIXME why not needed?
             if(out.isSelfLoop()) {
                 continue;
             }
             LNode target = out.getTarget().getNode();
             // Get the SCC of the target, or -2 (force difference between source and target) if not part of a SCC
-            int target_SCC = nodeToSCCID.get(target) != null ? nodeToSCCID.get(target) : -2;
+            int target_SCC = nodeToSCCID.get(target) != null ? nodeToSCCID.get(target) : -2;  // FIXME why not needed?
             if (this.visited[target.id] && !sources.contains(n) && !sinks.contains(target)
                     //&& source_SCC == target_SCC
                     ) {
@@ -214,7 +228,7 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
         }
     }
 
-    private void TARJAN(final LGraph graph) {
+    private void tarjan(final LGraph graph) {
         index = 0;
         stack = new Stack<LNode>();
         for (LNode node : graph.getLayerlessNodes()) {

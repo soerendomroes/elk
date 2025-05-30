@@ -9,26 +9,12 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.p1cycles;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Stack;
 
-import org.eclipse.elk.alg.layered.LayeredPhases;
 import org.eclipse.elk.alg.layered.graph.LEdge;
-import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
-import org.eclipse.elk.alg.layered.intermediate.IntermediateProcessorStrategy;
-import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
-import org.eclipse.elk.core.alg.ILayoutPhase;
-import org.eclipse.elk.core.alg.LayoutProcessorConfiguration;
-import org.eclipse.elk.core.util.IElkProgressMonitor;
-
-import com.google.common.collect.Lists;
 
 /**
  * This Cycle Breaking Strategy extends the SCCModelOrderCycleBreaker, however instead of reversing all outgoing edges
@@ -48,8 +34,7 @@ public class SCCLowestModelOrderCycleBreaker extends SCCModelOrderCycleBreaker {
           int modelOrderMin = Integer.MAX_VALUE;
           for (LNode n : stronglyConnectedComponents.get(i)) {
               List<Integer> layermask = new LinkedList<Integer>();
-              layermask.add(1);
-              layermask.add(4);
+              layermask = this.graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_ENFORCED_GROUP_ORDERS);
               int groupID = n.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID);
               if (!layermask.contains(groupID)) {
                   continue;

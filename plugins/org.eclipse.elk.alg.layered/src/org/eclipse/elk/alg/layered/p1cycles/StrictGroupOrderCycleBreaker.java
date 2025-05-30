@@ -15,11 +15,9 @@ import org.eclipse.elk.alg.layered.LayeredPhases;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
-import org.eclipse.elk.alg.layered.graph.LPort;
 import org.eclipse.elk.alg.layered.intermediate.IntermediateProcessorStrategy;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
-import org.eclipse.elk.alg.layered.options.PortType;
 import org.eclipse.elk.core.alg.ILayoutPhase;
 import org.eclipse.elk.core.alg.LayoutProcessorConfiguration;
 import org.eclipse.elk.core.util.IElkProgressMonitor;
@@ -32,6 +30,7 @@ import com.google.common.collect.Lists;
  * nodes it uses the normal Model Order Cycle breaker approach. 
  * NOTICE: For languages that alternate frequently between different nodes (e.g. LinguaFranca) this approach degrades
  * into simply using the GroupID without the influence of Model Order.
+ * FIXME I have to investigate whether this is a good idea or whether other cycle breakers could do this with the appropriate options
  *
  */
 public class StrictGroupOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGraph> {
@@ -114,6 +113,7 @@ public class StrictGroupOrderCycleBreaker implements ILayoutPhase<LayeredPhases,
      * @param node The LNode
      * @param offset The offset between FIRST, FIRST_SEPARATE, NORMAL, LAST_SEPARATE, and LAST nodes for unique order
      * @return A unique model order
+     * FIXME this method seems to be everywhere, can I just add this somewhere common or is it always a little different?
      */
     private int computeConstraintModelOrder(final LNode node, final int offset) {
         int modelOrder = 0;
