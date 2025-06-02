@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Kiel University and others.
+ * Copyright (c) 2021, 2025 Kiel University and others.
  * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -17,6 +17,7 @@ import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
 import org.eclipse.elk.alg.layered.graph.LPort;
 import org.eclipse.elk.alg.layered.intermediate.IntermediateProcessorStrategy;
+import org.eclipse.elk.alg.layered.options.GroupOrderStrategy;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
 import org.eclipse.elk.alg.layered.options.PortType;
@@ -70,14 +71,20 @@ public final class ModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases,
         // Such that the highest model order has to be used as an offset
         int offset = Math.max(layeredGraph.getLayerlessNodes().size(), layeredGraph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES));
         int bigOffset = offset * layeredGraph.getProperty(InternalProperties.CB_NUM_MODEL_ORDER_GROUPS);
+        boolean enforceGroupModelOrder = layeredGraph.getProperty(
+                LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
         
         for (LNode source : layeredGraph.getLayerlessNodes()) {
-            int modelOrderSource = computeConstraintGroupModelOrder(source, bigOffset, offset);
+            int modelOrderSource = enforceGroupModelOrder
+                    ? computeConstraintGroupModelOrder(source, bigOffset, offset)
+                    : computeConstraintModelOrder(source, offset);
             
             for (LPort port : source.getPorts(PortType.OUTPUT)) {
                 for (LEdge edge : port.getOutgoingEdges()) {
                 LNode target = edge.getTarget().getNode();
-                    int modelOrderTarget = computeConstraintGroupModelOrder(target, bigOffset, offset);
+                    int modelOrderTarget = enforceGroupModelOrder
+                            ? computeConstraintGroupModelOrder(target, bigOffset, offset)
+                            : computeConstraintModelOrder(target, offset);
                     if (modelOrderTarget < modelOrderSource) {
                         revEdges.add(edge);
                     }

@@ -33,9 +33,16 @@ import com.google.common.collect.Lists;
  * This Cycle Breaking Strategy relies on Tarjan's algorithm to find strongly connected components.
  * It than selects the node with the maximum model order in the strongly connected components and reverses its out-going
  * edges to nodes in the strongly connected component.
+ * 
+ * <dl>
+ *   <dt>Precondition:</dt>
+ *      <dd>no self loops</dd>
+ *   <dt>Postcondition:</dt>
+ *      <dd>the graph has no cycles</dd>
+ * </dl>
  *
  */
-public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGraph> {
+public abstract class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGraph> {
 
     /**
      * Counter for first separate nodes.

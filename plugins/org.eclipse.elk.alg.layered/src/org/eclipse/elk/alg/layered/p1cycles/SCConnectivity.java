@@ -21,72 +21,74 @@ import com.google.common.collect.Iterables;
  * incoming nodes of the minimum, if its the in-degree is greater than the out-degree of the maximum node. Else it 
  * reverses the out-going edges of the maximum node.
  * If group model order should be enforced, this uses the group model order as a primary criterion.
- * FIXME explain everything
+ * 
+ * <dl>
+ *   <dt>Precondition:</dt>
+ *      <dd>no self loops</dd>
+ *   <dt>Postcondition:</dt>
+ *      <dd>the graph has no cycles</dd>
+ * </dl>
  *
  */
 public class SCConnectivity extends SCCModelOrderCycleBreaker {
 
     @Override
     public void findNodes(int offset, int bigOffset) {
-      for (int i = 0; i < stronglyConnectedComponents.size(); i++) {
-          // Nothing needs to be done if only one strongly connected component exists.
-          if (stronglyConnectedComponents.get(i).size() <= 1) {
-              continue;
-          }
-          LNode min = null;
-          LNode max = null;
-          int modelOrderMin = Integer.MAX_VALUE;
-          int modelOrderMax = Integer.MIN_VALUE;
-          // Check whether model order or the group model order is the primary criterion.
-          // If it is group model order, we need to handle this differently.
-          boolean enforceGroupModelOrder = this.graph.getProperty(
-                  LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
-          // Iterate over all strongly connected components to find the maximum/minimum node to reverse edges.
-          for (LNode n : stronglyConnectedComponents.get(i)) {
-              // First calculate initial values FIXME why???
-              if (min == null || max == null) {
-                  min = n;
-                  modelOrderMin = enforceGroupModelOrder
-                          ? computeConstraintGroupModelOrder(n, bigOffset, offset)
-                          : computeConstraintModelOrder(n, offset);
-                  max = n;
-                  modelOrderMax = modelOrderMin;
-                  continue;
-              }
-              // For all not first nodes find the group model order and model order with constraints and update the
-              // minimum and maximum node.
-              int modelOrderCurrent = enforceGroupModelOrder
-                      ? computeConstraintGroupModelOrder(n, bigOffset, offset)
-                      : computeConstraintModelOrder(n, offset);                
-              if (modelOrderMin > modelOrderCurrent) {
-                  min = n;
-                  modelOrderMin = modelOrderCurrent;
-              }
-              if (modelOrderMax < modelOrderCurrent) {
-                  max = n;
-                  modelOrderMax = modelOrderCurrent;
-              }
-          }
-          // If a minimum and maximum node are found, there must be a node for which we reverse the edges.
-          if (min != null && max != null) {
-              // If the minimum node has more incoming edges than the maximum node has outgoing edges,
-              // reverse all edges to the minimum node and remove it from the strongly connected component.
-              // If it is the other wayaround, reverse all outgoing edges of the maximum node.
-              if (Iterables.size(min.getIncomingEdges()) > 
-                      Iterables.size(max.getOutgoingEdges())) {
-                  for (LEdge edge : min.getIncomingEdges()) {
-                      if (stronglyConnectedComponents.get(i).contains(edge.getSource().getNode())) {
-                          revEdges.add(edge);
-                      }
-                 }
-              } else {
-                  for (LEdge edge : max.getOutgoingEdges()) {
-                      if (stronglyConnectedComponents.get(i).contains(edge.getTarget().getNode())) {
-                          revEdges.add(edge);
-                      }
-                  }
-              }
-          }
-      }
+        for (int i = 0; i < stronglyConnectedComponents.size(); i++) {
+            // Nothing needs to be done if only one strongly connected component exists.
+            if (stronglyConnectedComponents.get(i).size() <= 1) {
+                continue;
+            }
+            LNode min = null;
+            LNode max = null;
+            int modelOrderMin = Integer.MAX_VALUE;
+            int modelOrderMax = Integer.MIN_VALUE;
+            // Check whether model order or the group model order is the primary criterion.
+            // If it is group model order, we need to handle this differently.
+            boolean enforceGroupModelOrder = this.graph.getProperty(
+                    LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
+            // Iterate over all strongly connected components to find the maximum/minimum node to reverse edges.
+            for (LNode n : stronglyConnectedComponents.get(i)) {
+                // First calculate initial values
+                if (min == null || max == null) {
+                    min = n;
+                    modelOrderMin = enforceGroupModelOrder
+                            ? computeConstraintGroupModelOrder(n, bigOffset, offset)
+                            : computeConstraintModelOrder(n, offset);
+                    max = n;
+                    modelOrderMax = modelOrderMin;
+                } else {
+
+                    // For all not first nodes find the group model order and model order with constraints and update the
+                    // minimum and maximum node.
+                    int modelOrderCurrent = enforceGroupModelOrder ? computeConstraintGroupModelOrder(n, bigOffset, offset)
+                            : computeConstraintModelOrder(n, offset);
+                    if (modelOrderMin > modelOrderCurrent) {
+                        min = n;
+                        modelOrderMin = modelOrderCurrent;
+                    }
+                    if (modelOrderMax < modelOrderCurrent) {
+                        max = n;
+                        modelOrderMax = modelOrderCurrent;
+                    }
+                }
+            }
+            // If the minimum node has more incoming edges than the maximum node has outgoing edges,
+            // reverse all edges to the minimum node and remove it from the strongly connected component.
+            // If it is the other wayaround, reverse all outgoing edges of the maximum node.
+            if (Iterables.size(min.getIncomingEdges()) > Iterables.size(max.getOutgoingEdges())) {
+                for (LEdge edge : min.getIncomingEdges()) {
+                    if (stronglyConnectedComponents.get(i).contains(edge.getSource().getNode())) {
+                        revEdges.add(edge);
+                    }
+                }
+            } else {
+                for (LEdge edge : max.getOutgoingEdges()) {
+                    if (stronglyConnectedComponents.get(i).contains(edge.getTarget().getNode())) {
+                        revEdges.add(edge);
+                    }
+                }
+            }
+        }
     }
 }

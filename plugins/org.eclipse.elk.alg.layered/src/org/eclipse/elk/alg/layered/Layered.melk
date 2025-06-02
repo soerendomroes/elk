@@ -216,6 +216,8 @@ algorithm layered(LayeredLayoutProvider) {
     supports considerModelOrder.groupModelOrder.cbEnforcedGroupOrders
     supports considerModelOrder.groupModelOrder.cmGroupOrderStrategy
     supports considerModelOrder.groupModelOrder.cmEnforcedGroupOrders
+    supports considerModelOrder.groupModelOrder.cbPreferredSourceId
+    supports considerModelOrder.groupModelOrder.cbPreferredTargetId
     
     supports generatePositionAndLayerIds
 }
@@ -1123,6 +1125,18 @@ group considerModelOrder {
                          MODEL_ORDER: The model order counts instead of the model order group id ordering."
             default = GroupOrderStrategy.NONE
             targets parents
+        }
+        option cbPreferredSourceId: int {
+            label "Cycle Breaking Preferred Source Id"
+            description "The model order group id for which should be preferred as a source if possible."
+            targets parents
+            requires cycleBreaking.strategy == CycleBreakingStrategy.SCC_NODE_TYPE
+        }
+        option cbPreferredTargetId: int {
+            label "Cycle Breaking Preferred Target Id"
+            description "The model order group id for which should be preferred as a target if possible."
+            targets parents
+            requires cycleBreaking.strategy == CycleBreakingStrategy.SCC_NODE_TYPE
         }
         option cbEnforcedGroupOrders: List<Integer> {
             label "Cycle Breaking Enforced Group Orders"

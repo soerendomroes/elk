@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2017 Kiel University and others.
+ * Copyright (c) 2010, 2025 Kiel University and others.
  * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -20,7 +20,6 @@ import org.eclipse.elk.alg.layered.p1cycles.InteractiveCycleBreaker;
 import org.eclipse.elk.alg.layered.p1cycles.ModelOrderCycleBreaker;
 import org.eclipse.elk.alg.layered.p1cycles.SCCNodeTypeCycleBreaker;
 import org.eclipse.elk.alg.layered.p1cycles.SCConnectivity;
-import org.eclipse.elk.alg.layered.p1cycles.StrictGroupOrderCycleBreaker;
 import org.eclipse.elk.core.alg.ILayoutPhase;
 import org.eclipse.elk.core.alg.ILayoutPhaseFactory;
 import org.eclipse.elk.graph.properties.AdvancedPropertyValue;
@@ -116,9 +115,6 @@ public enum CycleBreakingStrategy implements ILayoutPhaseFactory<LayeredPhases, 
 
         case SCC_NODE_TYPE:
             return new SCCNodeTypeCycleBreaker();
-
-        case STRICT_GROUP_ORDER:
-            return new StrictGroupOrderCycleBreaker();
 
         case DFS_NODE_ORDER:
             return new DFSNodeOrderCycleBreaker();
