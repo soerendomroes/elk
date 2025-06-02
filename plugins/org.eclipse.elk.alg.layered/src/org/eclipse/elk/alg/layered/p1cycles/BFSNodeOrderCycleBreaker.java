@@ -16,9 +16,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.Stack;
 import java.util.TreeSet;
 
 import org.eclipse.elk.alg.layered.LayeredPhases;
@@ -36,10 +33,6 @@ import com.google.common.collect.Iterables;
 
 /**
  * Uses the Breadth-First-Search to traverse the graph and reverses edges if the node is already explored.
- * This implementation uses Tarjan's algorithm<ul>
- * <li>Tarjan ,R.E. Depth first search and linear graph algorithms,
- * <i>SIAM J. Comptg. </i> 1, pp. 146-160., 1972.</li>
- * </ul> to reduce unnecessary reversals.
  * 
  * <p>This cycle breaker does not support the {@link LayeredOptions#PRIORITY_DIRECTION} option 
  * that can be set on edges. Neither does it support layer constraints out of the box. 
@@ -53,9 +46,8 @@ import com.google.common.collect.Iterables;
  *   <dt>Postcondition:</dt><dd>the graph has no cycles</dd>
  * </dl>
  * 
- * @see org.eclipse.elk.alg.layered.intermediate.EdgeAndLayerConstraintEdgeReverser FIXME, check this
+ * @see org.eclipse.elk.alg.layered.intermediate.EdgeAndLayerConstraintEdgeReverser
  * @see org.eclipse.elk.alg.layered.intermediate.LayerConstraintProcessor
- * FIXME, needs more comments to understand this.
  *
  */
 public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGraph> {
@@ -83,12 +75,6 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
     private List<LEdge> edgesToBeReversed;
 
 
-    private int index;
-    protected List<Set<LNode>> stronglyConnectedComponents;
-    private Stack<LNode> stack;
-    private HashMap <LNode,Integer> nodeToSCCID;
-
-
     @Override
     public LayoutProcessorConfiguration<LayeredPhases, LGraph> getLayoutProcessorConfiguration(final LGraph graph) {
         return INTERMEDIATE_PROCESSING_CONFIGURATION;
@@ -106,21 +92,8 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
         sinks = new HashSet<>();
         visited = new boolean[nodes.size()];
         edgesToBeReversed = new ArrayList<>();
-        stronglyConnectedComponents = new LinkedList<Set<LNode>>();
-        stack = new Stack<LNode>();
-        nodeToSCCID = new HashMap<>();
-
-        tarjan(graph);
-        if (stronglyConnectedComponents.size() == 0) {
-            // Cleanup
-            this.sources = null;
-            this.visited = null;
-            this.bfsQueue = null;
-            this.edgesToBeReversed = null;
-
-            monitor.done();
-            return;
-        }
+        
+        // Find all sources and sinks in the graph.
         int index = 0;
         for (LNode node : nodes) {
             // The node id is used as index into our arrays
@@ -135,6 +108,7 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
         }
 
         // Start BFS Search starting at each source sequentially.
+        // This means each source may add their connections to the queue such that we search breadth-first.
         for (LNode source : sources) {
 
             //sequential bfs
@@ -183,106 +157,53 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
         }
     }
 
+    /**
+     * Visits a node and adds its connections to the BF-queue.
+     * @param n the node to visit
+     */
     private void bfs(final LNode n) {
+        // Return if the node was already visited.
         if (visited[n.id]) {
             return;
         }
         this.visited[n.id] = true;
 
-        HashMap<Integer,HashSet<LEdge>> modelOrderMap = new HashMap<Integer,HashSet<LEdge>>();
+        // Map to save the node model order of each edge connection.
+        HashMap<Integer, HashSet<LEdge>> modelOrderMap = new HashMap<Integer, HashSet<LEdge>>();
 
-        //Create a map of edges and the model order of the node they lead to
-        n.getOutgoingEdges().forEach(e -> {
-            if (e.getTarget().getNode().getProperty(InternalProperties.MODEL_ORDER) == null) {
+        // Create a map of edges and the model order of the node they lead to
+        for (LEdge e : n.getOutgoingEdges()) {
+            if (!e.getTarget().getNode().hasProperty(InternalProperties.MODEL_ORDER)) {
+                // Handle edges that connect to nodes without model order.
+                // They get a high unique value such that the first such node is the last one and the second the second last.
                 modelOrderMap.put(Integer.MAX_VALUE - modelOrderMap.size(), new HashSet<LEdge>(Arrays.asList(e)));
-            }
-            else {
+            } else {
+                // If the long edge target node has a model order, add it to the map.
                 int targetModelOrder = e.getTarget().getNode().getProperty(InternalProperties.MODEL_ORDER);
                 if (modelOrderMap.containsKey(targetModelOrder)){
                     modelOrderMap.get(targetModelOrder).add(e);
-                }
-                else {
+                } else {
                     modelOrderMap.put(targetModelOrder, new HashSet<LEdge>(Arrays.asList(e)));
                 }
             }
-        });
-        SortedSet<Integer> modelOrderSet = new TreeSet<>(modelOrderMap.keySet());
+        }
+        // This holds all model orders of nodes connected to the current node sorted by model order.
+        TreeSet<Integer> modelOrderSet = new TreeSet<>(modelOrderMap.keySet());
 
-        for (int key: modelOrderSet) {
+        // Since the model order determines the iteration order of e
+        for (int key : modelOrderSet) {
             LEdge out = modelOrderMap.get(key).iterator().next();
-            // Get the SCC of the source, or -1 if not part of a SCC
-            int source_SCC = nodeToSCCID.get(n) != null ?  nodeToSCCID.get(n) : -1; // FIXME why not needed?
+            // Do not visit self loops
             if(out.isSelfLoop()) {
                 continue;
             }
+            // If the target was already visited, reverse the edge to it.
             LNode target = out.getTarget().getNode();
-            // Get the SCC of the target, or -2 (force difference between source and target) if not part of a SCC
-            int target_SCC = nodeToSCCID.get(target) != null ? nodeToSCCID.get(target) : -2;  // FIXME why not needed?
-            if (this.visited[target.id] && !sources.contains(n) && !sinks.contains(target)
-                    //&& source_SCC == target_SCC
-                    ) {
+            // 
+            if (this.visited[target.id] && !sources.contains(n) && !sinks.contains(target)) {
                 edgesToBeReversed.addAll(modelOrderMap.get(key));
-            }else {
-                bfsQueue.add(target);
-            }
-        }
-    }
-
-    private void tarjan(final LGraph graph) {
-        index = 0;
-        stack = new Stack<LNode>();
-        for (LNode node : graph.getLayerlessNodes()) {
-            if (node.getProperty(InternalProperties.TARJAN_ID) == -1) {
-                stronglyConnected(node);
-                stack.clear();
-            }
-        }
-    }
-
-    private void stronglyConnected(final LNode v) {
-        v.setProperty(InternalProperties.TARJAN_ID, index);
-        v.setProperty(InternalProperties.TARJAN_LOWLINK, index);
-        index++;
-        stack.push(v);
-        v.setProperty(InternalProperties.TARJAN_ON_STACK, true);
-        for (LEdge edge : v.getConnectedEdges()) {
-            if (edge.getSource().getNode() != v && !edgesToBeReversed.contains(edge)) {
-                continue;
-            }
-            if (edge.getSource().getNode() == v && edgesToBeReversed.contains(edge)) {
-                continue;
-            }
-            LNode target = null;
-            if (edge.getTarget().getNode() == v) {
-                target = edge.getSource().getNode();
             } else {
-                target = edge.getTarget().getNode();
-            }
-            if (target.getProperty(InternalProperties.TARJAN_ID) == -1) {
-                stronglyConnected(target);
-                v.setProperty(InternalProperties.TARJAN_LOWLINK, 
-                        Math.min(v.getProperty(InternalProperties.TARJAN_LOWLINK),
-                        target.getProperty(InternalProperties.TARJAN_LOWLINK)));
-            } else if (target.getProperty(InternalProperties.TARJAN_ON_STACK)) {
-                v.setProperty(InternalProperties.TARJAN_LOWLINK, 
-                        Math.min(v.getProperty(InternalProperties.TARJAN_LOWLINK),
-                                target.getProperty(InternalProperties.TARJAN_ID)));
-            }
-        }
-        if (v.getProperty(InternalProperties.TARJAN_LOWLINK) == v.getProperty(InternalProperties.TARJAN_ID)) {
-            Set<LNode> sCC = new HashSet<LNode>();
-            LNode n = null;
-            do {
-                n = stack.pop();
-                n.setProperty(InternalProperties.TARJAN_ON_STACK, false);
-                sCC.add(n);
-            } while (v != n);
-            if (sCC.size() >1) {
-                int index = stronglyConnectedComponents.size();
-                stronglyConnectedComponents.add(sCC);
-                for (LNode node : sCC) {
-                    nodeToSCCID.put(node, index);
-                }
+                bfsQueue.add(target);
             }
         }
     }
