@@ -26,10 +26,10 @@ import org.eclipse.elk.graph.properties.AdvancedPropertyValue;
 
 /**
  * Enumeration of and factory for the different available cycle breaking strategies.
+ * The model order cycle breakers additionally allow a group model order to be set and enforced.
  * 
  * @author msp
  * @author cds
- * FIXME explain all the strategies again in detail
  */
 public enum CycleBreakingStrategy implements ILayoutPhaseFactory<LayeredPhases, LGraph> {
 
@@ -53,41 +53,43 @@ public enum CycleBreakingStrategy implements ILayoutPhaseFactory<LayeredPhases, 
     /**
      * Reacts to the input model by respecting the initial ordering in the model file.
      * This ordering is used to identify backwards edges.
+     * Optionally, this uses the group model order instead of the model order as primary criterion.
      */
     MODEL_ORDER,
     
     /**
      * Applies a greedy heuristic to minimize the number of reversed edges but uses the model order as a tie-breaker.
+     * Optionally, this uses the group model order instead of the model order as a tie-breaker.
      */
     GREEDY_MODEL_ORDER,
 
     /**
-     *  Uses Tarjan's algorithm to calculate the strongly connected components. Then it determines the order in these 
-     *  components, i.e. the cycles using the in-/out-degree of the nodes. E.g. first Tarjan, then greedy.
-     *  FIXME is this really true
+     * Uses Tarjan's algorithm to calculate the strongly connected components. Then it determines the order in these 
+     * components, i.e. the cycles using the in-/out-degree of the nodes. E.g. first Tarjan, then greedy,
+     * then model order.
+     * Optionally, this uses the group model order instead of the model order as primary criterion.
      */
     SCC_CONNECTIVITY,
 
     /**
-     *  Uses the Strongly Connected Component approach and selects the minima/maxima based on the model order.
-     *  FIXME, what does this really do?
+     * Uses the strongly connected component approach and selects the minima/maxima based on the model order.
+     * Moreover, this allows us to prefer certain model order groups as source and target.
+     * I.e., first Tarjan, model order, then preferred types, then greedy.
+     * Optionally, this uses the group model order instead of the model order as primary criterion.
      */
     SCC_NODE_TYPE,
 
     /**
-     *  Strictly enforces a order between different nodes, uses the model order for same types.
-     *  FIXME I think this could be done by adding the groupmo strategy to another strategy.
-     */
-    STRICT_GROUP_ORDER,
-    /**
      * Applies a depth-first traversal to find and reverse edges to make the graph acyclic.
-     * This uses the node order as the iteration order.
+     * This uses the node model order as the iteration order.
+     * Optionally, this uses the group model order instead of the model order as iteration order.
      */
     DFS_NODE_ORDER,
 
     /**
      * Applies a breadth-first traversal to find and reverse edges to make the graph acyclic.
-     * This uses the node order as the iteration order.
+     * This uses the node model order as the iteration order.
+     * Optionally, this uses the group model order instead of the model order as iteration order.
      */
     BFS_NODE_ORDER;
     
