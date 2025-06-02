@@ -9,17 +9,18 @@
  *******************************************************************************/
 package org.eclipse.elk.alg.layered.p1cycles;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 import org.eclipse.elk.alg.layered.LayeredPhases;
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
+import org.eclipse.elk.alg.layered.graph.Tarjan;
 import org.eclipse.elk.alg.layered.intermediate.IntermediateProcessorStrategy;
+import org.eclipse.elk.alg.layered.options.GroupOrderStrategy;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
 import org.eclipse.elk.core.alg.ILayoutPhase;
@@ -36,12 +37,33 @@ import com.google.common.collect.Lists;
  */
 public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGraph> {
 
+    /**
+     * Counter for first separate nodes.
+     */
     private int firstSeparateModelOrder;
+    /**
+     * Counter for last separate nodes.
+     */
     private int lastSeparateModelOrder;
-    private int index;
+    
+    /**
+     * List of strongly connected components calculated by tarjan.
+     */
     protected List<Set<LNode>> stronglyConnectedComponents = new LinkedList<Set<LNode>>();
-    private Stack<LNode> stack = new Stack<LNode>();
+    
+    /**
+     * Maps node to id of its strongly connected component.
+     */
+    protected HashMap <LNode,Integer> nodeToSCCID;
+    
+    /**
+     * The edges to reverse.
+     */
     protected List<LEdge> revEdges = Lists.newArrayList();
+    
+    /**
+     * The graph.
+     */
     protected LGraph graph;
 
     /** intermediate processing configuration. */
@@ -73,16 +95,12 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
         // E.g. A node with the LAST constraint needs to have a model order m = modelOrder + offset
         // such that m > m(n) with m(n) being the model order of a normal node n (without constraints).
         // Such that the highest model order has to be used as an offset
-        int offset = layeredGraph.getLayerlessNodes().size();
-        for (LNode node : layeredGraph.getLayerlessNodes()) {
-            if (node.hasProperty(InternalProperties.MODEL_ORDER)) {
-                offset = Math.max(offset, node.getProperty(InternalProperties.MODEL_ORDER) + 1);
-            }
-        }
-
+        int offset = Math.max(layeredGraph.getLayerlessNodes().size(), layeredGraph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES));
+        
         while (true) {
-            resetTARJAN(layeredGraph);
-            TARJAN(layeredGraph);
+            Tarjan t = new Tarjan(revEdges, stronglyConnectedComponents, nodeToSCCID);
+            t.resetTarjan(layeredGraph);
+            t.tarjan(layeredGraph);
 
             // If no Strongly connected components remain, the graph is acyclic.
             if (stronglyConnectedComponents.size() == 0) {
@@ -90,17 +108,19 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
             }
 
             // highest model order only incoming
-            findNodes(offset);
+            findNodes(offset, offset * layeredGraph.getProperty(InternalProperties.CB_NUM_MODEL_ORDER_GROUPS));
 
             // reverse the gathered edges
             for (LEdge edge : revEdges) {
                 edge.reverse(layeredGraph, false);
+                // FIXME why is this necessary? Is this to debug?
                 edge.getSource().getNode().setProperty(LayeredOptions.LAYERING_LAYER_ID,
                         edge.getSource().getNode().getProperty(LayeredOptions.LAYERING_LAYER_ID) + 1);
                 layeredGraph.setProperty(InternalProperties.CYCLIC, true);
             }
 
             stronglyConnectedComponents.clear();
+            nodeToSCCID.clear();
             revEdges.clear();
         }
 
@@ -108,39 +128,46 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
         monitor.log("Execution Time: " + monitor.getExecutionTime());
     }
 
-    public void findNodes(int offset) {
+    /**
+     * Find the nodes with the highest model order or group model order to reverse all its outgoing edges.
+     * @param offset Helper value to calculate constraint partitions. This has to be higher than model order such that
+     *          "offset * primary criterion + secondary criterion" works.
+     */
+    public void findNodes(int offset, int bigOffset) {
+        // All strongly connected components have one maximum element for which we can reverse all outgoing edges.
         for (int i = 0; i < stronglyConnectedComponents.size(); i++) {
             LNode max = null;
             int maxModelOrder = Integer.MIN_VALUE;
             for (LNode n : stronglyConnectedComponents.get(i)) {
-                List<Integer> groupmask = new LinkedList<Integer>();
-                // FIXME check this and make tests
-                groupmask = this.graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_ENFORCED_GROUP_ORDERS);
-                int groupID = n.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID);
-                if (!groupmask.contains(groupID)) {
-                    continue;
-                }
+                // Check whether model order or the group model order is the primary criterion.
+                // If it is group model order, we need to handle this differently.
+                boolean enforceGroupModelOrder = this.graph.getProperty(
+                        LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
                 if (max == null) {
+                    // Case first element
                     max = n;
-                    maxModelOrder = computeConstraintModelOrder(n, offset);
-                    continue;
-                }
-                int modelOrderCurrent = computeConstraintModelOrder(n, offset);
-                if (maxModelOrder < modelOrderCurrent ) {
-                    max = n;
-                    maxModelOrder = modelOrderCurrent;
+                    maxModelOrder = enforceGroupModelOrder
+                            ? computeConstraintGroupModelOrder(n, bigOffset, offset)
+                            : computeConstraintModelOrder(n, offset);
+                } else {
+                    // Find a new maximum if possible.
+                    int modelOrderCurrent = maxModelOrder = enforceGroupModelOrder
+                            ? computeConstraintGroupModelOrder(n, bigOffset, offset)
+                            : computeConstraintModelOrder(n, offset);
+                    if (maxModelOrder < modelOrderCurrent ) {
+                        max = n;
+                        maxModelOrder = modelOrderCurrent;
+                    }
                 }
             }
             for (LEdge edge : max.getOutgoingEdges()) {
-                 if (stronglyConnectedComponents.get(i).contains(edge.getTarget().getNode())) {
-                     revEdges.add(edge);
-                 }
-
+                // Reverse all edges to the same strongly connected component.
+                if (stronglyConnectedComponents.get(i).contains(edge.getTarget().getNode())) {
+                    revEdges.add(edge);
+                }
             }
         }
     }
-
-
 
     /**
      * Set model order to a value such that the constraint is respected and the ordering between nodes with
@@ -177,7 +204,19 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
         return modelOrder;
     }
 
-protected int computeConstraintGroupModelOrder(final LNode node, final int offset) {
+
+    /**
+     * Set group model order to a value such that the constraint is respected and the ordering between nodes with
+     * the same constraint is preserved.
+     * The order should be FIRST_SEPARATE < FIRST < NORMAL < LAST < LAST_SEPARATE. The offset is used to make sure the 
+     * all nodes have unique group model orders. We calculate this offset by "highest model order * number of model order
+     * groups" and the small offset by using only the highest model order.
+     * @param node The LNode
+     * @param offset The offset between FIRST, FIRST_SEPARATE, NORMAL, LAST_SEPARATE, and LAST nodes for unique order
+     * @param smallOffset The offset between each model order group.
+     * @return A unique group model order
+     */
+    protected int computeConstraintGroupModelOrder(final LNode node, final int offset, final int smallOffset) {
         int modelOrder = 0;
         switch (node.getProperty(LayeredOptions.LAYERING_LAYER_CONSTRAINT)) {
         case FIRST_SEPARATE:
@@ -197,76 +236,11 @@ protected int computeConstraintGroupModelOrder(final LNode node, final int offse
         default:
             break;
         }
-        if (node.hasProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID)) {
-            modelOrder += node.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID);
+        if (node.hasProperty(InternalProperties.MODEL_ORDER)) {
+            modelOrder += node.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID)
+                    * smallOffset + node.getProperty(InternalProperties.MODEL_ORDER);
+            
         }
         return modelOrder;
-    }
-
-    private void TARJAN(final LGraph graph) {
-        index = 0;
-        stack = new Stack<LNode>();
-        for (LNode node : graph.getLayerlessNodes()) {
-            if (node.getProperty(InternalProperties.TARJAN_ID) == -1) {
-                stronglyConnected(node);
-                stack.clear();
-            }
-        }
-    }
-
-    private void stronglyConnected(final LNode v) {
-        v.setProperty(InternalProperties.TARJAN_ID, index);
-        v.setProperty(InternalProperties.TARJAN_LOWLINK, index);
-        index++;
-        stack.push(v);
-        v.setProperty(InternalProperties.TARJAN_ON_STACK, true);
-        for (LEdge edge : v.getConnectedEdges()) {
-            if (edge.getSource().getNode() != v && !revEdges.contains(edge)) {
-                continue;
-            }
-            if (edge.getSource().getNode() == v && revEdges.contains(edge)) {
-                continue;
-            }
-            LNode target = null;
-            if (edge.getTarget().getNode() == v) {
-                target = edge.getSource().getNode();
-            } else {
-                target = edge.getTarget().getNode();
-            }
-            if (target.getProperty(InternalProperties.TARJAN_ID) == -1) {
-                stronglyConnected(target);
-                v.setProperty(InternalProperties.TARJAN_LOWLINK, 
-                        Math.min(v.getProperty(InternalProperties.TARJAN_LOWLINK),
-                        target.getProperty(InternalProperties.TARJAN_LOWLINK)));
-            } else if (target.getProperty(InternalProperties.TARJAN_ON_STACK)) {
-                v.setProperty(InternalProperties.TARJAN_LOWLINK, 
-                        Math.min(v.getProperty(InternalProperties.TARJAN_LOWLINK),
-                                target.getProperty(InternalProperties.TARJAN_ID)));
-            }
-        }
-        if (v.getProperty(InternalProperties.TARJAN_LOWLINK) == v.getProperty(InternalProperties.TARJAN_ID)) {
-            Set<LNode> sCC = new HashSet<LNode>();
-            LNode n = null;
-            do {
-                n = stack.pop();
-                n.setProperty(InternalProperties.TARJAN_ON_STACK, false);
-                sCC.add(n);
-            } while (v != n);
-            if (sCC.size() > 1) {
-                stronglyConnectedComponents.add(sCC);
-            }
-        }
-    }
-
-    private void resetTARJAN(final LGraph graph) {
-        for (LNode n : graph.getLayerlessNodes()) {
-            n.setProperty(InternalProperties.TARJAN_ON_STACK, false);
-            n.setProperty(InternalProperties.TARJAN_LOWLINK, -1);
-            n.setProperty(InternalProperties.TARJAN_ID, -1);
-            stack.clear();
-            for (LEdge e : n.getConnectedEdges()) {
-                e.setProperty(InternalProperties.IS_PART_OF_CYCLE, false);
-            }
-        }
     }
 }

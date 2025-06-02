@@ -10,6 +10,7 @@
 package org.eclipse.elk.alg.layered.graph.transform;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -228,11 +229,15 @@ class ElkGraphImporter {
     private void importFlatGraph(final ElkNode elkgraph, final LGraph lgraph) {
         // Transform the node's children, unless we're told not to
         int index = 0;
+        HashSet<Integer> cbGroupModelOrders = new HashSet<>();
         for (ElkNode child : elkgraph.getChildren()) {
             if (!child.getProperty(LayeredOptions.NO_LAYOUT)) {
                 if (needsModelOrder(child)) {
                     child.setProperty(InternalProperties.MODEL_ORDER, index);
                     index++;
+                    if (child.hasProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID)) {
+                        cbGroupModelOrders.add(child.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID));
+                    }
                 }
                 transformNode(child, lgraph);
             }
@@ -240,6 +245,8 @@ class ElkGraphImporter {
         // Save the maximum node model order.
         // This is relevant to create graph partitions based on model order and constraints.
         lgraph.setProperty(InternalProperties.MAX_MODEL_ORDER_NODES, index);
+        // Save the number of model order groups.
+        lgraph.setProperty(InternalProperties.CB_NUM_MODEL_ORDER_GROUPS, cbGroupModelOrders.size());
 
         // iterate the list of contained edges to preserve the 'input order' of the edges
         // (this is not part of the previous loop since all children must have already been transformed)
