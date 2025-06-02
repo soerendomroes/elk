@@ -54,7 +54,7 @@ public class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LG
     /**
      * Maps node to id of its strongly connected component.
      */
-    protected HashMap <LNode,Integer> nodeToSCCID;
+    protected HashMap <LNode,Integer> nodeToSCCID = new HashMap<>();
     
     /**
      * The edges to reverse.
