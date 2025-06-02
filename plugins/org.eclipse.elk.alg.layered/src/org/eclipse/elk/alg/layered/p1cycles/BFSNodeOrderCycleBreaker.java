@@ -23,6 +23,7 @@ import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraph;
 import org.eclipse.elk.alg.layered.graph.LNode;
 import org.eclipse.elk.alg.layered.intermediate.IntermediateProcessorStrategy;
+import org.eclipse.elk.alg.layered.options.GroupOrderStrategy;
 import org.eclipse.elk.alg.layered.options.InternalProperties;
 import org.eclipse.elk.alg.layered.options.LayeredOptions;
 import org.eclipse.elk.core.alg.ILayoutPhase;
@@ -73,6 +74,8 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
 
     /** The list of edges to be reversed at the end of our little algorithmic adventure. */
     private List<LEdge> edgesToBeReversed;
+    
+    private LGraph graph;
 
 
     @Override
@@ -84,6 +87,7 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
     public void process(final LGraph graph, final IElkProgressMonitor monitor) {
         monitor.begin("Breadth-first cycle removal", 1);
 
+        this.graph = graph;
         List<LNode> nodes = graph.getLayerlessNodes();
 
         // initialize values for the algorithm 
@@ -170,6 +174,7 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
 
         // Map to save the node model order of each edge connection.
         HashMap<Integer, HashSet<LEdge>> modelOrderMap = new HashMap<Integer, HashSet<LEdge>>();
+        boolean groupModelOrder = this.graph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
 
         // Create a map of edges and the model order of the node they lead to
         for (LEdge e : n.getOutgoingEdges()) {
@@ -178,8 +183,20 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
                 // They get a high unique value such that the first such node is the last one and the second the second last.
                 modelOrderMap.put(Integer.MAX_VALUE - modelOrderMap.size(), new HashSet<LEdge>(Arrays.asList(e)));
             } else {
+                int targetModelOrder = 0;
+                LNode target = e.getTarget().getNode();
+                // Find out whether the model order group id or the model order is more important.
+                if (groupModelOrder) {
+                    // Get the biggest cycle breaking model order group. Now scale all groups such that
+                    // maxModelOrderGroupSize * <model order group id> + model order creates a total ordering on all nodes.
+                    // FIXME this orders all nodes without a group model order at the top? Maybe all need a group model order to begin with.
+                    int maxModelOrderGroupSize = this.graph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES);
+                    targetModelOrder = maxModelOrderGroupSize * target.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID)
+                            + target.getProperty(InternalProperties.MODEL_ORDER);
+                } else {
+                    targetModelOrder = e.getTarget().getNode().getProperty(InternalProperties.MODEL_ORDER);
+                }
                 // If the long edge target node has a model order, add it to the map.
-                int targetModelOrder = e.getTarget().getNode().getProperty(InternalProperties.MODEL_ORDER);
                 if (modelOrderMap.containsKey(targetModelOrder)){
                     modelOrderMap.get(targetModelOrder).add(e);
                 } else {
@@ -188,6 +205,7 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
             }
         }
         // This holds all model orders of nodes connected to the current node sorted by model order.
+        // Basically this orders all different model orders (or group model orders) by priority.
         TreeSet<Integer> modelOrderSet = new TreeSet<>(modelOrderMap.keySet());
 
         // Since the model order determines the iteration order of e

@@ -232,12 +232,14 @@ class ElkGraphImporter {
             if (!child.getProperty(LayeredOptions.NO_LAYOUT)) {
                 if (needsModelOrder(child)) {
                     child.setProperty(InternalProperties.MODEL_ORDER, index);
-                    // FIXME count the model orders assigned and also find the maximum model order group id.
                     index++;
                 }
                 transformNode(child, lgraph);
             }
         }
+        // Save the maximum node model order.
+        // This is relevant to create graph partitions based on model order and constraints.
+        lgraph.setProperty(InternalProperties.MAX_MODEL_ORDER_NODES, index);
 
         // iterate the list of contained edges to preserve the 'input order' of the edges
         // (this is not part of the previous loop since all children must have already been transformed)
@@ -459,23 +461,30 @@ class ElkGraphImporter {
      * @return True, if model order should be set.
      */
     private boolean needsModelOrderBasedOnParent(final ElkNode elkgraph) {
-        // FIXME update this based on recent strategies
-        return (elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
-                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.MODEL_ORDER
-                || elkgraph
-                        .getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.GREEDY_MODEL_ORDER
+        
+        boolean modelOrderCycleBreaking = elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.MODEL_ORDER
+                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.BFS_NODE_ORDER
+                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.DFS_NODE_ORDER
+                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.GREEDY_MODEL_ORDER
+                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.SCC_CONNECTIVITY
+                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.SCC_NODE_TYPE
+                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.STRICT_GROUP_ORDER;
+        boolean modelOrderLayering = elkgraph.getProperty(LayeredOptions.LAYERING_STRATEGY) == LayeringStrategy.BF_MODEL_ORDER
+                || elkgraph.getProperty(LayeredOptions.LAYERING_STRATEGY) == LayeringStrategy.DF_MODEL_ORDER
+                || elkgraph.getProperty(LayeredOptions.LAYERING_NODE_PROMOTION_STRATEGY) == NodePromotionStrategy.MODEL_ORDER_LEFT_TO_RIGHT
+                || elkgraph.getProperty(LayeredOptions.LAYERING_NODE_PROMOTION_STRATEGY) == NodePromotionStrategy.MODEL_ORDER_RIGHT_TO_LEFT;
+        boolean modelOrderCrossingMinimization =
+                // Maybe add the explicit strategies here
+                elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_STRATEGY) != OrderingStrategy.NONE
                 || elkgraph.getProperty(LayeredOptions.CROSSING_MINIMIZATION_FORCE_NODE_MODEL_ORDER)
-                || elkgraph
-                        .getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_COMPONENTS) != ComponentOrderingStrategy.NONE)
-                || elkgraph.getProperty(
-                        LayeredOptions.LAYERING_NODE_PROMOTION_STRATEGY) == NodePromotionStrategy.MODEL_ORDER_LEFT_TO_RIGHT
-                || elkgraph.getProperty(
-                        LayeredOptions.LAYERING_NODE_PROMOTION_STRATEGY) == NodePromotionStrategy.MODEL_ORDER_RIGHT_TO_LEFT
-                || elkgraph.getProperty(
-                        LayeredOptions.LAYERING_STRATEGY) == LayeringStrategy.BF_MODEL_ORDER
-                || elkgraph.getProperty(
-                        LayeredOptions.LAYERING_STRATEGY) == LayeringStrategy.DF_MODEL_ORDER;
-    }
+                // Maybe add the explicit strategies here
+                || elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_COMPONENTS) != ComponentOrderingStrategy.NONE
+                
+                || elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_CROSSING_COUNTER_NODE_INFLUENCE) != 0
+                || elkgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_CROSSING_COUNTER_PORT_INFLUENCE) != 0;
+        return modelOrderCycleBreaking || modelOrderLayering || modelOrderCrossingMinimization;
+    }    
+    
 
     /**
      * Checks if the given node has any inside self loops.
