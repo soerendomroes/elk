@@ -1093,25 +1093,28 @@ group considerModelOrder {
             label "Group ID of the Node Type"
             description
                 "Used to define partial ordering groups during cycle breaking. A lower group id means that the group is
-                 sorted before other groups."
-            default = -1
+                 sorted before other groups. A group model order of 0 is the default group."
+            default = 0
             targets nodes
+            requires noModelOrder == false
         }
         option crossingMinimizationId: int {
             label "Group ID of the Node Type"
             description
                 "Used to define partial ordering groups during crossing minimization. A lower group id means that the group is
-                 sorted before other groups."
-            default = -1
+                 sorted before other groups. A group model order of 0 is the default group."
+            default = 0
             targets nodes, edges, ports
+            requires noModelOrder == false
         }
         option componentGroupId: int {
             label "Group ID of the Node Type"
             description
                 "Used to define partial ordering groups during component packing. A lower group id means that the group is
-                 sorted before other groups."
-            default = -1
+                 sorted before other groups. A group model order of 0 is the default group."
+            default = 0
             targets nodes, edges, ports
+            requires noModelOrder == false
         }
         option cbGroupOrderStrategy: GroupOrderStrategy {
             label "Cycle Breaking Group Ordering Strategy"
