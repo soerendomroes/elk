@@ -418,11 +418,6 @@ public final class InternalProperties {
      * Set on parents to save the maximum model order set on nodes.
      */
     public static final IProperty<Integer> MAX_MODEL_ORDER_NODES = new Property<>("modelOrder.maximum");
-    
-    /**
-     * Set on parents to save the number of model order groups that exist. FIXME
-     */
-    public static final IProperty<Integer> MODEL_ORDER_GROUPS = new Property<>("modelOrderGroups.maximum");
 
     /**
      * Set on ports to save their (long edge) target node.
