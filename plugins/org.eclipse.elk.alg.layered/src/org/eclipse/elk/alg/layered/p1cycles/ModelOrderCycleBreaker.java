@@ -40,9 +40,6 @@ import com.google.common.collect.Lists;
  */
 public final class ModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGraph> {
 
-    private int firstSeparateModelOrder;
-    private int lastSeparateModelOrder;
-
     /** intermediate processing configuration. */
     private static final LayoutProcessorConfiguration<LayeredPhases, LGraph> INTERMEDIATE_PROCESSING_CONFIGURATION =
         LayoutProcessorConfiguration.<LayeredPhases, LGraph>create()
@@ -57,10 +54,6 @@ public final class ModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases,
     public void process(final LGraph layeredGraph, final IElkProgressMonitor monitor) {
         monitor.begin("Model order cycle breaking", 1);
         
-        // Reset FIRST_SEPARATE and LAST_SEPARATE counters.
-        firstSeparateModelOrder = 0;
-        lastSeparateModelOrder = 0;
-        
         // gather edges that point to the wrong direction
         List<LEdge> revEdges = Lists.newArrayList();
         
@@ -73,18 +66,18 @@ public final class ModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases,
         int bigOffset = offset * layeredGraph.getProperty(InternalProperties.CB_NUM_MODEL_ORDER_GROUPS);
         boolean enforceGroupModelOrder = layeredGraph.getProperty(
                 LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
-        
         for (LNode source : layeredGraph.getLayerlessNodes()) {
+            GroupModelOrderCalculator calculator = new GroupModelOrderCalculator();
             int modelOrderSource = enforceGroupModelOrder
-                    ? computeConstraintGroupModelOrder(source, bigOffset, offset)
-                    : computeConstraintModelOrder(source, offset);
+                    ? calculator.computeConstraintGroupModelOrder(source, bigOffset, offset)
+                    : calculator.computeConstraintModelOrder(source, offset);
             
             for (LPort port : source.getPorts(PortType.OUTPUT)) {
                 for (LEdge edge : port.getOutgoingEdges()) {
                 LNode target = edge.getTarget().getNode();
                     int modelOrderTarget = enforceGroupModelOrder
-                            ? computeConstraintGroupModelOrder(target, bigOffset, offset)
-                            : computeConstraintModelOrder(target, offset);
+                            ? calculator.computeConstraintGroupModelOrder(target, bigOffset, offset)
+                            : calculator.computeConstraintModelOrder(target, offset);
                     if (modelOrderTarget < modelOrderSource) {
                         revEdges.add(edge);
                     }
@@ -99,81 +92,5 @@ public final class ModelOrderCycleBreaker implements ILayoutPhase<LayeredPhases,
         }
         revEdges.clear();
         monitor.done();
-    }
-
-
-    /**
-     * Set model order to a value such that the constraint is respected and the ordering between nodes with
-     * the same constraint is preserved.
-     * The order should be FIRST_SEPARATE < FIRST < NORMAL < LAST < LAST_SEPARATE. The offset is used to make sure the 
-     * all nodes have unique model orders.
-     * @param node The LNode
-     * @param offset The offset between FIRST, FIRST_SEPARATE, NORMAL, LAST_SEPARATE, and LAST nodes for unique order
-     * @return A unique model order
-     */
-    private int computeConstraintModelOrder(final LNode node, final int offset) {
-        int modelOrder = 0;
-        switch (node.getProperty(LayeredOptions.LAYERING_LAYER_CONSTRAINT)) {
-        case FIRST_SEPARATE:
-            modelOrder = 2 * -offset + firstSeparateModelOrder;
-            firstSeparateModelOrder++;
-            break;
-        case FIRST:
-            modelOrder = -offset;
-            break;
-        case LAST:
-            modelOrder = offset;
-            break;
-        case LAST_SEPARATE:
-            modelOrder = 2 * offset + lastSeparateModelOrder;
-            lastSeparateModelOrder++;
-            break;
-        default:
-            break;
-        }
-        if (node.hasProperty(InternalProperties.MODEL_ORDER)) {
-            modelOrder += node.getProperty(InternalProperties.MODEL_ORDER);
-        }
-        return modelOrder;
-    }
-
-
-    /**
-     * Set group model order to a value such that the constraint is respected and the ordering between nodes with
-     * the same constraint is preserved.
-     * The order should be FIRST_SEPARATE < FIRST < NORMAL < LAST < LAST_SEPARATE. The offset is used to make sure the 
-     * all nodes have unique group model orders. We calculate this offset by "highest model order * number of model order
-     * groups" and the small offset by using only the highest model order.
-     * @param node The LNode
-     * @param offset The offset between FIRST, FIRST_SEPARATE, NORMAL, LAST_SEPARATE, and LAST nodes for unique order
-     * @param smallOffset The offset between each model order group.
-     * @return A unique group model order
-     */
-    protected int computeConstraintGroupModelOrder(final LNode node, final int offset, final int smallOffset) {
-        int modelOrder = 0;
-        switch (node.getProperty(LayeredOptions.LAYERING_LAYER_CONSTRAINT)) {
-        case FIRST_SEPARATE:
-            modelOrder = 2 * -offset + firstSeparateModelOrder;
-            firstSeparateModelOrder++;
-            break;
-        case FIRST:
-            modelOrder = -offset;
-            break;
-        case LAST:
-            modelOrder = offset;
-            break;
-        case LAST_SEPARATE:
-            modelOrder = 2 * offset + lastSeparateModelOrder;
-            lastSeparateModelOrder++;
-            break;
-        default:
-            break;
-        }
-        if (node.hasProperty(InternalProperties.MODEL_ORDER)) {
-            modelOrder += node.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID)
-                    * smallOffset + node.getProperty(InternalProperties.MODEL_ORDER);
-            
-        }
-        return modelOrder;
     }
 }

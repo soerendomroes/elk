@@ -47,22 +47,24 @@ public class SCConnectivity extends SCCModelOrderCycleBreaker {
             // If it is group model order, we need to handle this differently.
             boolean enforceGroupModelOrder = this.graph.getProperty(
                     LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
+            GroupModelOrderCalculator calculator = new GroupModelOrderCalculator();
             // Iterate over all strongly connected components to find the maximum/minimum node to reverse edges.
             for (LNode n : stronglyConnectedComponents.get(i)) {
                 // First calculate initial values
                 if (min == null || max == null) {
                     min = n;
                     modelOrderMin = enforceGroupModelOrder
-                            ? computeConstraintGroupModelOrder(n, bigOffset, offset)
-                            : computeConstraintModelOrder(n, offset);
+                            ? calculator.computeConstraintGroupModelOrder(n, bigOffset, offset)
+                            : calculator.computeConstraintModelOrder(n, offset);
                     max = n;
                     modelOrderMax = modelOrderMin;
                 } else {
 
                     // For all not first nodes find the group model order and model order with constraints and update the
                     // minimum and maximum node.
-                    int modelOrderCurrent = enforceGroupModelOrder ? computeConstraintGroupModelOrder(n, bigOffset, offset)
-                            : computeConstraintModelOrder(n, offset);
+                    int modelOrderCurrent = enforceGroupModelOrder
+                            ? calculator.computeConstraintGroupModelOrder(n, bigOffset, offset)
+                            : calculator.computeConstraintModelOrder(n, offset);
                     if (modelOrderMin > modelOrderCurrent) {
                         min = n;
                         modelOrderMin = modelOrderCurrent;

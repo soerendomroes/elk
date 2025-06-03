@@ -474,8 +474,7 @@ class ElkGraphImporter {
                 || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.DFS_NODE_ORDER
                 || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.GREEDY_MODEL_ORDER
                 || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.SCC_CONNECTIVITY
-                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.SCC_NODE_TYPE
-                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.STRICT_GROUP_ORDER;
+                || elkgraph.getProperty(LayeredOptions.CYCLE_BREAKING_STRATEGY) == CycleBreakingStrategy.SCC_NODE_TYPE;
         boolean modelOrderLayering = elkgraph.getProperty(LayeredOptions.LAYERING_STRATEGY) == LayeringStrategy.BF_MODEL_ORDER
                 || elkgraph.getProperty(LayeredOptions.LAYERING_STRATEGY) == LayeringStrategy.DF_MODEL_ORDER
                 || elkgraph.getProperty(LayeredOptions.LAYERING_NODE_PROMOTION_STRATEGY) == NodePromotionStrategy.MODEL_ORDER_LEFT_TO_RIGHT

@@ -189,7 +189,8 @@ public class BFSNodeOrderCycleBreaker implements ILayoutPhase<LayeredPhases, LGr
                 if (groupModelOrder) {
                     // Get the biggest cycle breaking model order group. Now scale all groups such that
                     // maxModelOrderGroupSize * <model order group id> + model order creates a total ordering on all nodes.
-                    // FIXME this orders all nodes without a group model order at the top? Maybe all need a group model order to begin with.
+                    // This orders all nodes without a group model order at the top.
+                    // I leave this for know and find out whether this is desired. Maybe all need a group model order to begin with.
                     int maxModelOrderGroupSize = this.graph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES);
                     targetModelOrder = maxModelOrderGroupSize * target.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID)
                             + target.getProperty(InternalProperties.MODEL_ORDER);
