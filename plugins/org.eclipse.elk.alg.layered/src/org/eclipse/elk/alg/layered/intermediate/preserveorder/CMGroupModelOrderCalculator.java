@@ -22,7 +22,7 @@ public class CMGroupModelOrderCalculator {
     
     public static int calculateModelOrderOrGroupModelOrder(LGraphElement element, LGraph parent, int offset) {
         boolean enforceGroupModelOrder = parent.getProperty(
-                LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CB_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
+                LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CM_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ENFORCED;
         if (!element.hasProperty(InternalProperties.MODEL_ORDER)) {
             return -1;
         } else if (enforceGroupModelOrder) {
