@@ -308,6 +308,7 @@ class ElkGraphImporter {
 
         // Model order index for nodes
         int index = 0;
+        HashSet<Integer> cbGroupModelOrders = new HashSet<>();
         // Transform the node's children
         elkGraphQueue.addAll(elkgraph.getChildren());
         while (!elkGraphQueue.isEmpty()) {
@@ -316,6 +317,9 @@ class ElkGraphImporter {
             if (needsModelOrder(elknode)) {
                 // Assign a model order to the nodes as they are read
                 elknode.setProperty(InternalProperties.MODEL_ORDER, index++);
+                if (elknode.hasProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID)) {
+                    cbGroupModelOrders.add(elknode.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CYCLE_BREAKING_ID));
+                }
             }
             
             // Check if the current node is to be laid out in the first place
@@ -368,6 +372,11 @@ class ElkGraphImporter {
                 }
             }
         }
+        // Save the maximum node model order.
+        // This is relevant to create graph partitions based on model order and constraints.
+        lgraph.setProperty(InternalProperties.MAX_MODEL_ORDER_NODES, index);
+        // Save the number of model order groups.
+        lgraph.setProperty(InternalProperties.CB_NUM_MODEL_ORDER_GROUPS, cbGroupModelOrders.size());
 
         // Model order index for edges. 
         index = 0;
