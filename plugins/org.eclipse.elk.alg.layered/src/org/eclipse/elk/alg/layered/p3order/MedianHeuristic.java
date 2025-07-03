@@ -123,7 +123,6 @@ public class MedianHeuristic implements ICrossingMinimizationHeuristic {
                 // add the adjacent node's weight to the weight list
                 LNode target = edge.getTarget().getNode();
                 LNode source = edge.getSource().getNode();
-                // TODO are the layer ids reliably set?
                 if (target.getLayer().id == referenceLayer) {
                     connectedNodes.add(target);
                 }

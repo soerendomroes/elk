@@ -59,8 +59,6 @@ public enum CrossingMinimizationStrategy implements ILayoutPhaseFactory<LayeredP
     @Override
     public ILayoutPhase<LayeredPhases, LGraph> create() {
         switch (this) {
-        // TODO add new case for median heuristic
-        // or replace one with median heuristic
         case LAYER_SWEEP:
             return new LayerSweepCrossingMinimizer(CrossMinType.BARYCENTER);
             
