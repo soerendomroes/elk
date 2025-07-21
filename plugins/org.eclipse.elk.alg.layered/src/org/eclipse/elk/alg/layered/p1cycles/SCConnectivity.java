@@ -77,7 +77,7 @@ public class SCConnectivity extends SCCModelOrderCycleBreaker {
             }
             // If the minimum node has more incoming edges than the maximum node has outgoing edges,
             // reverse all edges to the minimum node and remove it from the strongly connected component.
-            // If it is the other wayaround, reverse all outgoing edges of the maximum node.
+            // If it is the other way around, reverse all outgoing edges of the maximum node.
             if (Iterables.size(min.getIncomingEdges()) > Iterables.size(max.getOutgoingEdges())) {
                 for (LEdge edge : min.getIncomingEdges()) {
                     if (stronglyConnectedComponents.get(i).contains(edge.getSource().getNode())) {
