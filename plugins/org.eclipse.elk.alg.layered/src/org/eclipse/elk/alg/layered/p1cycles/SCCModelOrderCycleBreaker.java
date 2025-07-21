@@ -145,10 +145,10 @@ public abstract class SCCModelOrderCycleBreaker implements ILayoutPhase<LayeredP
                             : calculator.computeConstraintModelOrder(n, offset);
                 } else {
                     // Find a new maximum if possible.
-                    int modelOrderCurrent = maxModelOrder = enforceGroupModelOrder
+                    int modelOrderCurrent = enforceGroupModelOrder
                             ? calculator.computeConstraintGroupModelOrder(n, bigOffset, offset)
                             : calculator.computeConstraintModelOrder(n, offset);
-                    if (maxModelOrder < modelOrderCurrent ) {
+                    if (maxModelOrder < modelOrderCurrent) {
                         max = n;
                         maxModelOrder = modelOrderCurrent;
                     }
