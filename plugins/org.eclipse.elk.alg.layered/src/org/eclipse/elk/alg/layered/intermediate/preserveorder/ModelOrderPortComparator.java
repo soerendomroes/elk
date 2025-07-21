@@ -237,9 +237,9 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
             if (this.strategy == OrderingStrategy.PREFER_NODES && p1TargetNode != null && p2TargetNode != null
                     && p1TargetNode.hasProperty(InternalProperties.MODEL_ORDER)
                     && p2TargetNode.hasProperty(InternalProperties.MODEL_ORDER)) {
-                int p1MO = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p1TargetNode,
+                int p1MO = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p1TargetNode, p2TargetNode,
                         graph, graph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES));
-                int p2MO = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p2TargetNode,
+                int p2MO = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p2TargetNode, p1TargetNode,
                         graph, graph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES));
                 if (p1MO > p2MO) {
                     updateBiggerAndSmallerAssociations(p1, p2, reverseOrder);
@@ -270,11 +270,11 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
             int p2Order = 0;
             if (p1.getOutgoingEdges().get(0).hasProperty(InternalProperties.MODEL_ORDER)) {
                 p1Order = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p1.getOutgoingEdges().get(0),
-                                graph, p1.getOutgoingEdges().size() + p1.getIncomingEdges().size());
+                        p2.getOutgoingEdges().get(0), graph, p1.getOutgoingEdges().size() + p1.getIncomingEdges().size());
             }
             if (p2.getOutgoingEdges().get(0).hasProperty(InternalProperties.MODEL_ORDER)) {
                 p2Order = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p2.getOutgoingEdges().get(0),
-                        graph, p2.getOutgoingEdges().size() + p2.getIncomingEdges().size());
+                        p1.getOutgoingEdges().get(0), graph, p2.getOutgoingEdges().size() + p2.getIncomingEdges().size());
             }
             
             // If both ports have the same target nodes, make sure that the backward edge is below the normal edge.
@@ -321,9 +321,9 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
             // can transitively order nodes that should be ordered differently.
             // This can only be prevented, if one handles the sorting such that unconnected ports are handled last.
             int numberOfPorts = p1.getNode().getPorts().size();
-            int p1MO = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p1,
+            int p1MO = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p1, p2,
                     graph, numberOfPorts);
-            int p2MO = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p2,
+            int p2MO = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p2, p1,
                     graph, numberOfPorts);
             // Still check the side, since WEST and SOUTH must be the other way around.
             if (p1.getSide() == PortSide.WEST && p2.getSide() == PortSide.WEST
@@ -359,9 +359,9 @@ public class ModelOrderPortComparator implements Comparator<LPort> {
         int numberOfPorts = p1.getNode().getPorts().size();
         if (p1.hasProperty(InternalProperties.MODEL_ORDER)
                 && p2.hasProperty(InternalProperties.MODEL_ORDER)) {
-            int p1Order = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p1,
+            int p1Order = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p1, p2,
                     graph, numberOfPorts);
-            int p2Order = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p2,
+            int p2Order = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(p2, p1,
                     graph, numberOfPorts);
             return Integer.compare(p1Order,
                     p2Order);

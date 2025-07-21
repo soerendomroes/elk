@@ -260,8 +260,8 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
         // This is also the fallback case if one of the nodes is not connected to the previous layer.
         if (n1.hasProperty(InternalProperties.MODEL_ORDER) && n2.hasProperty(InternalProperties.MODEL_ORDER)) {
             // Make a decision on group order if possible
-            int n1ModelOrder = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(n1, graph, graph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES));
-            int n2ModelOrder = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(n2, graph, graph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES));
+            int n1ModelOrder = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(n1, n2, graph, graph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES));
+            int n2ModelOrder = CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(n2, n1, graph, graph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES));
             if (n1ModelOrder > n2ModelOrder) {
                 updateBiggerAndSmallerAssociations(n1, n2);
                 return 1;

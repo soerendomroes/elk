@@ -78,8 +78,8 @@ public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
                         // The value is either a comparison both model orders or both group model orders with
                         // model order as secondary criterion.
                         int value = Integer.compare(
-                                CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(n1, lgraph, lgraph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES)),
-                                CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(n2, lgraph, lgraph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES)));
+                                CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(n1, n2, lgraph, lgraph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES)),
+                                CMGroupModelOrderCalculator.calculateModelOrderOrGroupModelOrder(n2, n1, lgraph, lgraph.getProperty(InternalProperties.MAX_MODEL_ORDER_NODES)));
                         if (lgraph.getProperty(LayeredOptions.CONSIDER_MODEL_ORDER_GROUP_MODEL_ORDER_CM_GROUP_ORDER_STRATEGY) == GroupOrderStrategy.ONLY_WITHIN_GROUP) {
                             // Check list of enforced 
                             // If two nodes are in separate model order groups, do not enforce their ordering and just use barycenter.

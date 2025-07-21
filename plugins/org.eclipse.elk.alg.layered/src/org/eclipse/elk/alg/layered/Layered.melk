@@ -213,7 +213,6 @@ algorithm layered(LayeredLayoutProvider) {
     supports considerModelOrder.groupModelOrder.crossingMinimizationId
     supports considerModelOrder.groupModelOrder.componentGroupId
     supports considerModelOrder.groupModelOrder.cbGroupOrderStrategy
-    supports considerModelOrder.groupModelOrder.cbEnforcedGroupOrders
     supports considerModelOrder.groupModelOrder.cmGroupOrderStrategy
     supports considerModelOrder.groupModelOrder.cmEnforcedGroupOrders
     supports considerModelOrder.groupModelOrder.cbPreferredSourceId
@@ -1138,15 +1137,6 @@ group considerModelOrder {
             targets parents
             requires cycleBreaking.strategy == CycleBreakingStrategy.SCC_NODE_TYPE
         }
-        option cbEnforcedGroupOrders: List<Integer> {
-            label "Cycle Breaking Enforced Group Orders"
-            description "Holds all group ids which are enforcing their order during cycle breaking strategies.
-                         E.g. if only groups 2 and -1 (default) enforce their ordering. Other groups e.g. the group of
-                         timer nodes can be ordered arbitrarily if it helps and the mentioned groups may not change
-                         their order."
-            targets parents
-            default = #[1, 2, 6, 7]
-        }
         option cmGroupOrderStrategy: GroupOrderStrategy {
             label "Crossing Minimization Group Ordering Strategy"
             description "Determines how to count ordering violations during crossing minimization. NONE: They do not
@@ -1162,7 +1152,7 @@ group considerModelOrder {
                          timer nodes can be ordered arbitrarily if it helps and the mentioned groups may not change
                          their order."
             targets parents
-            default = #[1, 2, 6, 7]
+            default = #[1, 2, 6, 7, 10, 11]
         }
     }
 }
