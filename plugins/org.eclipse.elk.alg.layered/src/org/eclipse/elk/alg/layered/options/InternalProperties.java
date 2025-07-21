@@ -465,24 +465,22 @@ public final class InternalProperties {
     
 
     /**
-     * FIXME
+     * Tarjans lowlink. The low-link value is initially equal to which number the node has during the initial DFS.
+     * If it's the first node visited, the value will be 0.
+     * If it's the second node, it will be 1.
+     * The third node has value 2, the fourth value 3, etc.
      */
     public static final IProperty<Integer> TARJAN_LOWLINK = new Property<>("tarjan.lowlink", Integer.MAX_VALUE);
 
     /**
-     * FIXME
+     * Tarjan node index.
      */
     public static final IProperty<Integer> TARJAN_ID = new Property<>("tarjan.id", -1);
 
     /**
-     * FIXME
+     * Trajan on stack property. Marks if a node is on the current depth-first stack.
      */
     public static final IProperty<Boolean> TARJAN_ON_STACK = new Property<>("tarjan.onstack", false);
-
-    /**
-     * FIXME
-     */
-    public static final IProperty<Boolean> IS_FIXED = new Property<>("isFixed", false);
 
     /**
      * Set during tarjan's algorithm. Indicates that a node is part of a cycle.

@@ -66,7 +66,6 @@ public class ModelOrderBarycenterHeuristic extends BarycenterHeuristic {
                         return 0;
                     }
                     LGraph lgraph = n1.getGraph();
-                    // FIXME what about only partly enforced for certain model order groups?
                     // First check whether the transitive dependencies already determine the ordering.
                     int transitiveComparison = compareBasedOnTansitiveDependencies(n1, n2);
                     if (transitiveComparison != 0) {

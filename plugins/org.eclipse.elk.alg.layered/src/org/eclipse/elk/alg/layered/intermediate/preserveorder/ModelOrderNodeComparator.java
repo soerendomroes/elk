@@ -289,7 +289,7 @@ public class ModelOrderNodeComparator implements Comparator<LNode> {
         if (sourcePort != null) {
             LEdge edge = sourcePort.getIncomingEdges().get(0);
             if (edge != null) {
-                // FIXME I guess I should use group model order here.
+                // FIX ME I guess I should use group model order here.
                 return edge.getProperty(InternalProperties.MODEL_ORDER);
             }
         }
