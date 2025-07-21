@@ -1123,7 +1123,7 @@ group considerModelOrder {
             description "Determines how to count ordering violations during cycle breaking. NONE: They do not
                          count. ENFORCED: A group with a higher model order is before a node with a smaller.
                          MODEL_ORDER: The model order counts instead of the model order group id ordering."
-            default = GroupOrderStrategy.NONE
+            default = GroupOrderStrategy.ONLY_WITHIN_GROUP
             targets parents
         }
         option cbPreferredSourceId: int {
@@ -1145,14 +1145,14 @@ group considerModelOrder {
                          timer nodes can be ordered arbitrarily if it helps and the mentioned groups may not change
                          their order."
             targets parents
-            default = #[1, 2, 3, 4, 5]
+            default = #[1, 2, 6, 7]
         }
         option cmGroupOrderStrategy: GroupOrderStrategy {
             label "Crossing Minimization Group Ordering Strategy"
             description "Determines how to count ordering violations during crossing minimization. NONE: They do not
-                         count. ENFORCED: A group with a higher model order is before a node with a smaller.
+                         count. ENFORCED: A group with a lower id is before a group with a higher id.
                          MODEL_ORDER: The model order counts instead of the model order group id ordering."
-            default = GroupOrderStrategy.NONE
+            default = GroupOrderStrategy.ONLY_WITHIN_GROUP
             targets parents
         }
         option cmEnforcedGroupOrders: List<Integer> {
@@ -1162,7 +1162,7 @@ group considerModelOrder {
                          timer nodes can be ordered arbitrarily if it helps and the mentioned groups may not change
                          their order."
             targets parents
-            default = #[1, 2, 3, 4, 5]
+            default = #[1, 2, 6, 7]
         }
     }
 }

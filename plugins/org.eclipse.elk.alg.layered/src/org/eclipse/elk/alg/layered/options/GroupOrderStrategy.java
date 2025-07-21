@@ -18,13 +18,15 @@ public enum GroupOrderStrategy {
      * Different group are not comparable neither by their group id nor by model order. However, if a total ordering
      * is required one can of course still use either ordering to create it.
      */
-    NONE,
+    ONLY_WITHIN_GROUP,
     /**
      * The model order is more important than the group id when comparing elements from different ordering groups.
+     * Therefore, this should most likely not be used.
      */
     MODEL_ORDER,
     /**
      * The group id is more important than the model order then comparing elements from different ordering groups.
+     * The secondary criterion will be the model order.
      */
     ENFORCED;
 }
