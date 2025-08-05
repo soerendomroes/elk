@@ -95,7 +95,7 @@ public class SelfLoopEdge {
         return false;
     }
     
-    public PortSide getLabelSides() {
+    public PortSide getLabelSide() {
         return this.slHyperLoop.getSLLabels().getSide();
     }
 

@@ -378,7 +378,7 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
         
         SelfHyperLoop slLoop = slEdge.getSLHyperLoop();
         // Use inline labels side and its size to determine the bendpoint offset required to place the label.
-        PortSide labelSide = slEdge.getLabelSides();
+        PortSide labelSide = slEdge.getLabelSide();
         boolean inline = slEdge.isInline();
         KVector lSize = slLoop.getSLLabels().getSize();
         
