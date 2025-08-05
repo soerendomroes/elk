@@ -11,6 +11,7 @@ package org.eclipse.elk.alg.layered.intermediate.loops.routing;
 
 import org.eclipse.elk.alg.layered.graph.LEdge;
 import org.eclipse.elk.alg.layered.graph.LGraphUtil;
+import org.eclipse.elk.alg.layered.graph.LLabel;
 import org.eclipse.elk.alg.layered.graph.LMargin;
 import org.eclipse.elk.alg.layered.graph.LNode;
 import org.eclipse.elk.alg.layered.graph.LPort;
@@ -131,12 +132,23 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
      * Places any labels of the given self loop.
      */
     private void placeLabels(final SelfHyperLoop slLoop, final SelfHyperLoopLabels slLabels,
-            final double[][] routingSlotPositions, final double edgeLabelDistance) {
+            final double[][] routingSlotPositions, double edgeLabelDistance) {
         
         // Find the baseline of the routing slot (we need to offset this by the spacing to be left between label and
         // edge)
         PortSide labelSide = slLabels.getSide();
         double labelPosition = routingSlotPositions[labelSide.ordinal()][slLoop.getRoutingSlot(labelSide)];
+        boolean inline = false;
+        for (LLabel label : slLabels.getLLabels()) {
+            if (label.getProperty(LayeredOptions.EDGE_LABELS_INLINE)) {
+                inline = true;
+                break;
+            }
+        }
+        // Do not use edgeLabelDistance if the labels are inline
+        if (inline) {
+            edgeLabelDistance = 0;
+        }
         
         switch (labelSide) {
         case NORTH:
@@ -299,7 +311,7 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
             final EdgeRoutingDirection routingDirection, final double[][] routingSlotPositions) {
         
         KVectorChain bendPoints = new KVectorChain();
-        
+        // Make sure that you consider the label size for centering inline.
         addOuterBendPoint(slEdge, slEdge.getSLSource(), routingSlotPositions, bendPoints);
         addCornerBendPoints(slEdge, routingDirection, routingSlotPositions, bendPoints);
         addOuterBendPoint(slEdge, slEdge.getSLTarget(), routingSlotPositions, bendPoints);
@@ -325,6 +337,13 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
         SelfHyperLoop slLoop = slEdge.getSLHyperLoop();
         LPort lPort = slPort.getLPort();
         PortSide portSide = lPort.getSide();
+        // Get label size and inline value.
+        KVector lSize = slLoop.getSLLabels().getSize();
+        boolean inline = slEdge.isInline();
+        // We need to know where the label will be placed to make sure that the size of it is taken into account
+        // when calculating the start and end bendpoints.
+        // I.e., half the labels size needs to be added or removed depending on the concrete side.
+        PortSide labelSides =  slEdge.getLabelSides();
         
         // We'll start by computing the coordinate of the level we're on
         KVector result = getBaseVector(portSide, slLoop.getRoutingSlot(portSide), routingSlotPositions);
@@ -333,13 +352,29 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
         KVector anchor = lPort.getPosition().clone().add(lPort.getAnchor());
         switch (lPort.getSide()) {
         case NORTH:
+            if (inline && labelSides == PortSide.NORTH) {
+                result.y += lSize.y / 2;
+            }
+            result.x += anchor.x;
+            break;
         case SOUTH:
             result.x += anchor.x;
+            if (inline && labelSides == PortSide.SOUTH) {
+                result.y -= lSize.y / 2;
+            }
             break;
             
         case EAST:
+            if (inline && labelSides == PortSide.EAST) {
+                result.x -= lSize.x / 2;
+            }
+            result.y += anchor.y;
+            break;
         case WEST:
             result.y += anchor.y;
+            if (inline && labelSides == PortSide.WEST) {
+                result.y += lSize.y / 2;
+            }
             break;
             
         default:
@@ -361,6 +396,10 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
         }
         
         SelfHyperLoop slLoop = slEdge.getSLHyperLoop();
+        // Use inline labels side and its size to determine the bendpoint offset required to place the label.
+        PortSide labelSides =  slEdge.getLabelSides();
+        boolean inline = slEdge.isInline();
+        KVector lSize = slLoop.getSLLabels().getSize();
         
         // Compute corner points
         PortSide currPortSide = lSourcePort.getSide();
@@ -377,6 +416,41 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
                     currPortSide, slLoop.getRoutingSlot(currPortSide), routingSlotPositions);
             KVector nextPortSideComponent = getBaseVector(
                     nextPortSide, slLoop.getRoutingSlot(nextPortSide), routingSlotPositions);
+            // If the label is inline, we need to reserve space for each side to accommodate it.
+            if (inline) {
+                if (currPortSide == labelSides) {
+                    switch (labelSides) {
+                    case NORTH:
+                        nextPortSideComponent.y -= lSize.y / 2;
+                        break;
+                    case SOUTH:
+                        nextPortSideComponent.y += lSize.y / 2;
+                        break;
+                    case WEST:
+                        nextPortSideComponent.x -= lSize.x / 2;
+                        break;
+                    case EAST:
+                        nextPortSideComponent.x += lSize.x / 2;
+                        break;
+                    }
+
+                } else if (nextPortSide == labelSides) {
+                    switch (labelSides) {
+                    case NORTH:
+                        currPortSideComponent.y -= lSize.y / 2;
+                        break;
+                    case SOUTH:
+                        currPortSideComponent.y += lSize.y / 2;
+                        break;
+                    case WEST:
+                        currPortSideComponent.x -= lSize.x / 2;
+                        break;
+                    case EAST:
+                        currPortSideComponent.x += lSize.x / 2;
+                        break;
+                    }
+                }
+            }
             
             // One has its x coordinate set, the other has its y coordinate set -- their sum is our final bend point
             bendPoints.add(currPortSideComponent.add(nextPortSideComponent));
