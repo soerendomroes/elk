@@ -378,7 +378,7 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
         
         SelfHyperLoop slLoop = slEdge.getSLHyperLoop();
         // Use inline labels side and its size to determine the bendpoint offset required to place the label.
-        PortSide labelSides =  slEdge.getLabelSides();
+        PortSide labelSide = slEdge.getLabelSides();
         boolean inline = slEdge.isInline();
         KVector lSize = slLoop.getSLLabels().getSize();
         
@@ -399,37 +399,10 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
                     nextPortSide, slLoop.getRoutingSlot(nextPortSide), routingSlotPositions);
             // If the label is inline, we need to reserve space for each side to accommodate it.
             if (inline) {
-                if (currPortSide == labelSides) {
-                    switch (labelSides) {
-                    case NORTH:
-                        nextPortSideComponent.y -= lSize.y / 2;
-                        break;
-                    case SOUTH:
-                        nextPortSideComponent.y += lSize.y / 2;
-                        break;
-                    case WEST:
-                        nextPortSideComponent.x -= lSize.x / 2;
-                        break;
-                    case EAST:
-                        nextPortSideComponent.x += lSize.x / 2;
-                        break;
-                    }
-
-                } else if (nextPortSide == labelSides) {
-                    switch (labelSides) {
-                    case NORTH:
-                        currPortSideComponent.y -= lSize.y / 2;
-                        break;
-                    case SOUTH:
-                        currPortSideComponent.y += lSize.y / 2;
-                        break;
-                    case WEST:
-                        currPortSideComponent.x -= lSize.x / 2;
-                        break;
-                    case EAST:
-                        currPortSideComponent.x += lSize.x / 2;
-                        break;
-                    }
+                if (currPortSide == labelSide) {
+                    adjustVectorForLabelSide(currPortSideComponent, labelSide, lSize);
+                } else if (nextPortSide == labelSide) {
+                    adjustVectorForLabelSide(nextPortSideComponent, labelSide, lSize);
                 }
             }
             
@@ -458,6 +431,31 @@ public class OrthogonalSelfLoopRouter extends AbstractSelfLoopRouter {
         default:
             assert false;
             return null;
+        }
+    }
+    
+    /**
+     * Adjusts the given vector to account for the label side and size. This is necessary to ensure that the
+     * label is centered on the bend point when it is inline with the edge.
+     * 
+     * @param portSideComponent The port side component vector that will be adjusted.
+     * @param labelSide The side on which the label is placed.
+     * @param labelSize The size of the label.
+     */
+    private void adjustVectorForLabelSide(KVector portSideComponent, PortSide labelSide, KVector labelSize) {
+        switch (labelSide) {
+        case NORTH:
+            portSideComponent.y -= labelSize.y / 2;
+            break;
+        case SOUTH:
+            portSideComponent.y += labelSize.y / 2;
+            break;
+        case WEST:
+            portSideComponent.x -= labelSize.x / 2;
+            break;
+        case EAST:
+            portSideComponent.x += labelSize.x / 2;
+            break;
         }
     }
 
