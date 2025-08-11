@@ -26,7 +26,7 @@ kind: Pod
 spec:
   containers:
   - name: maven
-    image: maven:3.6-openjdk-14
+    image: maven:3.9-eclipse-temurin-17
     command:
     - cat
     tty: true
@@ -163,7 +163,7 @@ spec:
               ]
             ],
             submoduleCfg: [],
-            userRemoteConfigs: [[url: 'https://github.com/eclipse/elk.git']]
+            userRemoteConfigs: [[url: 'https://github.com/eclipse-elk/elk.git']]
           ]
         )
 
@@ -185,7 +185,7 @@ spec:
               ]
             ],
             submoduleCfg: [],
-            userRemoteConfigs: [[url: 'https://github.com/eclipse/elk-models.git']]
+            userRemoteConfigs: [[url: 'https://github.com/eclipse-elk/elk-models.git']]
           ]
         )
       }
@@ -296,14 +296,14 @@ spec:
       // Notify developers of regressions
       mail subject: "ELK ${currentBuild.fullDisplayName}: ${currentBuild.currentResult}",
         body: "Oh noes! The build has fallen into the hands of an evil regression! Check console output at $BUILD_URL to view the results.",
-        to: 'sdo@informatik.uni-kiel.de, uruurumail@gmail.com, miro.spoenemann@typefox.io'
+        to: 'sdo@informatik.uni-kiel.de, mka@informatik.uni-kiel.de'
     }
 
     fixed {
       // Notify that build is stable again
       mail subject: "ELK ${currentBuild.fullDisplayName}: ${currentBuild.currentResult}",
         body: "Hail to the source, the build is fixed! Check console output at $BUILD_URL to view the results.",
-        to: 'sdo@informatik.uni-kiel.de, uruurumail@gmail.com, miro.spoenemann@typefox.io'
+        to: 'sdo@informatik.uni-kiel.de, mka@informatik.uni-kiel.de'
     }
   }
 }

@@ -297,6 +297,14 @@ final class GraphConfigurator {
                     : IntermediateProcessorStrategy.TWO_SIDED_GREEDY_SWITCH;
             configuration.addBefore(LayeredPhases.P4_NODE_PLACEMENT, internalGreedyType);
         }
+        
+        switch (lgraph.getProperty(LayeredOptions.LAYER_UNZIPPING_STRATEGY)) {
+        case ALTERNATING:
+            configuration.addBefore(LayeredPhases.P4_NODE_PLACEMENT, IntermediateProcessorStrategy.ALTERNATING_LAYER_UNZIPPER);
+            break;
+        default:
+            break;
+        }
 
         // Wrapping of graphs
         switch (lgraph.getProperty(LayeredOptions.WRAPPING_STRATEGY)) {
