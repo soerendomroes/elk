@@ -22,11 +22,13 @@ import java.util.stream.Collectors;
 import org.eclipse.elk.alg.mrtree.graph.TEdge;
 import org.eclipse.elk.alg.mrtree.graph.TGraph;
 import org.eclipse.elk.alg.mrtree.graph.TNode;
+import org.eclipse.elk.alg.mrtree.intermediate.GraphBoundsProcessor;
 import org.eclipse.elk.alg.mrtree.options.InternalProperties;
 import org.eclipse.elk.alg.mrtree.options.MrTreeOptions;
 import org.eclipse.elk.core.math.ElkPadding;
 import org.eclipse.elk.core.math.KVector;
 import org.eclipse.elk.core.options.CoreOptions;
+import org.eclipse.elk.core.util.NullElkProgressMonitor;
 import org.eclipse.elk.graph.properties.IProperty;
 
 import com.google.common.collect.Lists;
@@ -258,6 +260,10 @@ public class ComponentsProcessor {
             }
         }
         
+        // We need to recompute the graphs bounds, since each component only knows its own bounds and the prop merge
+        // cannot catch this
+        GraphBoundsProcessor boundsProcessor = new GraphBoundsProcessor();
+        boundsProcessor.process(result, new NullElkProgressMonitor());
         // Move the resulting graph to 0,0 and apply padding
         applyPaddingAndNormalizePositions(result);
 
@@ -272,10 +278,10 @@ public class ComponentsProcessor {
      * @param g the graph to work on
      */
     private void applyPaddingAndNormalizePositions(final TGraph g) {
-        ElkPadding padding = g.getNodes().get(0).getProperty(MrTreeOptions.PADDING);
+        ElkPadding padding = g.getProperty(MrTreeOptions.PADDING);
         g.setProperty(InternalProperties.BB_UPLEFT, new KVector(0, 0));
-        moveGraph(new TGraph(), g, padding.getHorizontal() - g.getProperty(InternalProperties.GRAPH_XMIN), 
-                padding.getVertical() - g.getProperty(InternalProperties.GRAPH_YMIN));
+        moveGraph(new TGraph(), g, padding.getLeft() - g.getProperty(InternalProperties.GRAPH_XMIN), 
+                padding.getTop() - g.getProperty(InternalProperties.GRAPH_YMIN));
     }
 
 

@@ -26,36 +26,20 @@ SPDX-License-Identifier: EPL-2.0
 
 The project maintains the following source code repositories:
 
-* https://github.com/eclipse/elk
-* https://github.com/eclipse/elk-models
+* https://github.com/eclipse-elk/elk
+* https://github.com/eclipse-elk/elk-models
 
 ## Third-party Content
 
 This project leverages the following third party content.
 
-ANTLR Runtime only: (3.2)
+Dependencies automatically captured by the license-check-plugin: [DEPENDENCIES](DEPENDENCIES)
 
-* License: New BSD license
+The following third-party content and licences are either not automatically captured or are used in the [elk-models](https://github.com/eclipse-elk/elk-models) repository.
 
-Apache Commons Logging Jar (1.1.1)
+libavoid (0.3.1)
 
-* License: Apache License, 2.0
-
-Apache Log4J (1.2.8)
-
-* License: Apache License, 2.0
-
-ASM (5.0.1)
-
-* License: New BSD license
-
-Google Guava (15.0.0)
-
-* License: Apache License 2.0
-
-Google Guice / Inject Core API (3.0.0)
-
-* License: Apache License, 2.0
+* License:  GNU Lesser General Public License, 2.1
 
 Ptolemy demo models (n/a)
 
