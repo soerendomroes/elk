@@ -248,4 +248,49 @@ public class TopdownLayoutTest {
         // topdown scale factor of toplevel node
         assertEquals(3.0, toplevel.getProperty(CoreOptions.TOPDOWN_SCALE_FACTOR), 0.00001);
     }
+    
+    /**
+     * Tests that paddings are correctly considered when computing the size of nodes with further children.
+     */
+    @Test
+    public void testChildDimensionCalculation() {
+        PlainJavaInitialization.initializePlainJavaLayout();
+        ElkNode graph = ElkGraphUtil.createGraph();
+        graph.setProperty(CoreOptions.TOPDOWN_LAYOUT, true);
+        graph.setProperty(CoreOptions.TOPDOWN_NODE_TYPE, TopdownNodeTypes.ROOT_NODE);
+        
+        ElkNode toplevel = ElkGraphUtil.createNode(graph);
+        toplevel.setProperty(CoreOptions.TOPDOWN_LAYOUT, true);
+        toplevel.setProperty(CoreOptions.TOPDOWN_NODE_TYPE, TopdownNodeTypes.HIERARCHICAL_NODE);
+        toplevel.setProperty(CoreOptions.NODE_SIZE_FIXED_GRAPH_SIZE, true);
+        toplevel.setProperty(CoreOptions.ALGORITHM, "org.eclipse.elk.layered");
+        toplevel.setProperty(CoreOptions.TOPDOWN_HIERARCHICAL_NODE_WIDTH, 20.0);
+        toplevel.setProperty(CoreOptions.TOPDOWN_HIERARCHICAL_NODE_ASPECT_RATIO, 1.0);
+        ElkPadding padding = new ElkPadding(10);
+        toplevel.setProperty(CoreOptions.PADDING, padding);
+        
+        ElkNode child1 = ElkGraphUtil.createNode(toplevel);
+        child1.setProperty(CoreOptions.TOPDOWN_LAYOUT, true);
+        child1.setProperty(CoreOptions.TOPDOWN_NODE_TYPE, TopdownNodeTypes.HIERARCHICAL_NODE);
+        child1.setProperty(CoreOptions.NODE_SIZE_FIXED_GRAPH_SIZE, true);
+        child1.setX(0);
+        child1.setY(0);
+        child1.setProperty(CoreOptions.TOPDOWN_HIERARCHICAL_NODE_WIDTH, 20.0);
+        child1.setProperty(CoreOptions.TOPDOWN_HIERARCHICAL_NODE_ASPECT_RATIO, 1.0);
+        
+        
+        // prepare layout engine
+        LayoutConfigurator config = new LayoutConfigurator();
+        ElkUtil.applyVisitors(graph, config, new LayoutAlgorithmResolver());
+        // call layout with layout engine
+        try {
+            new RecursiveGraphLayoutEngine().layout(graph, new BasicProgressMonitor());
+        } catch (UnsupportedGraphException exception) {
+            fail(exception.toString());
+        }
+               
+        // child dimensions computed in fallback case depend on the paddings and the "topdown size"
+        assertEquals(20.0 + padding.getHorizontal(), toplevel.getWidth(), 0.00001);
+        assertEquals(20.0 + padding.getVertical(), toplevel.getHeight(), 0.00001);
+    }
 }
