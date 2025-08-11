@@ -488,6 +488,11 @@ public final class InternalProperties {
     public static final IProperty<Boolean> IS_PART_OF_CYCLE = new Property<>("partOfCycle", false);
     
     /**
+     * The weight of a node as used by the MedianHeuristic class.
+     */
+    public static final IProperty<Double> WEIGHT = new Property<>("medianHeuristic.weight");
+    
+    /**
      * Hidden default constructor.
      */
     private InternalProperties() {
