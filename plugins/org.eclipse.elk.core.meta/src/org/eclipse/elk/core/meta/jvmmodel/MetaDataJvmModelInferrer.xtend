@@ -11,6 +11,7 @@ package org.eclipse.elk.core.meta.jvmmodel
 
 import com.google.common.collect.Iterables
 import com.google.inject.Inject
+import java.util.ArrayList
 import java.util.EnumSet
 import java.util.LinkedList
 import java.util.List
@@ -525,6 +526,7 @@ class MetaDataJvmModelInferrer extends AbstractModelInferrer {
                 case Float.canonicalName:    return "DOUBLE"
                 case String.canonicalName:    return "STRING"
                 case EnumSet.canonicalName:   return "ENUMSET"
+                case ArrayList.canonicalName:   return "LIST"
 //                case jvmType.hasSupertype(IDataObject): return "OBJECT"
                 default:                      return "OBJECT"
             }
@@ -558,6 +560,9 @@ class MetaDataJvmModelInferrer extends AbstractModelInferrer {
                 } else if (genericType.identifier == "java.lang.Long") {
                     return typeRef(Integer);
                 } else if (genericType.identifier == "java.util.EnumSet") {
+                    val outer = property.type as JvmParameterizedTypeReference
+                    return outer.arguments.head.cloneWithProxies
+                } else if (genericType.identifier == "java.util.ArrayList") {
                     val outer = property.type as JvmParameterizedTypeReference
                     return outer.arguments.head.cloneWithProxies
                 } else if (genericType.identifier == "java.util.List") {
