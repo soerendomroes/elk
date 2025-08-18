@@ -45,6 +45,8 @@ public final class LayoutOptionData implements ILayoutMetaData, IProperty<Object
         ENUM,
         /** enumeration set type. */
         ENUMSET,
+        /** enumeration set type. */
+        LIST,
         /** {@link IDataObject} type. */
         OBJECT;
     }
@@ -222,7 +224,7 @@ public final class LayoutOptionData implements ILayoutMetaData, IProperty<Object
         
         // if this open data instance is an ENUMSET, we need to allow empty strings
         // to denote that no enumeration value is selected. Otherwise, we forbid empty strings
-        if (valueString.length() == 0 && type != Type.ENUMSET) {
+        if (valueString.length() == 0 && (type != Type.ENUMSET || type != Type.LIST)) {
             return null;
         }
         
@@ -253,6 +255,9 @@ public final class LayoutOptionData implements ILayoutMetaData, IProperty<Object
             checkEnumClass();
             return enumForString(valueString);
         case ENUMSET:
+            checkEnumClass();
+            return enumSetForStringArray((Class<? extends Enum>) clazz, valueString);
+        case LIST:
             checkEnumClass();
             return enumSetForStringArray((Class<? extends Enum>) clazz, valueString);
         case OBJECT:
@@ -367,6 +372,9 @@ public final class LayoutOptionData implements ILayoutMetaData, IProperty<Object
         case ENUMSET:
             checkEnumClass();
             return EnumSet.noneOf(((Class<Enum>) clazz));
+        case LIST:
+            checkEnumClass();
+            return EnumSet.noneOf(((Class<Enum>) clazz));
         case OBJECT:
             return null;
         default:
@@ -395,6 +403,14 @@ public final class LayoutOptionData implements ILayoutMetaData, IProperty<Object
                 choices = new String[enums.length];
                 for (int i = 0; i < enums.length; i++) {
                     choices[i] = enums[i].toString();
+                }
+                break;
+            case LIST:
+                checkEnumClass();
+                Enum<?>[] t = ((Class<Enum>) clazz).getEnumConstants();
+                choices = new String[t.length];
+                for (int i = 0; i < t.length; i++) {
+                    choices[i] = t[i].toString();
                 }
                 break;
             case BOOLEAN:

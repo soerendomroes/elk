@@ -16,6 +16,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.util.ArrayList
 import java.util.EnumSet
 import java.util.LinkedList
 import org.eclipse.elk.core.meta.MetaDataRuntimeModule.MelkOutputConfigurationProvider
@@ -25,9 +26,11 @@ import org.eclipse.elk.core.meta.metaData.MdBundleMember
 import org.eclipse.elk.core.meta.metaData.MdGroup
 import org.eclipse.elk.core.meta.metaData.MdModel
 import org.eclipse.elk.core.meta.metaData.MdOption
+import org.eclipse.elk.core.meta.metaData.MdOptionDependency
 import org.eclipse.elk.graph.properties.GraphFeature
 import org.eclipse.xtext.common.types.JvmEnumerationType
 import org.eclipse.xtext.common.types.JvmField
+import org.eclipse.xtext.common.types.JvmGenericArrayTypeReference
 import org.eclipse.xtext.common.types.JvmParameterizedTypeReference
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.generator.AbstractFileSystemAccess2
@@ -35,7 +38,6 @@ import org.eclipse.xtext.generator.IFileSystemAccess
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.JvmModelGenerator
-import org.eclipse.elk.core.meta.metaData.MdOptionDependency
 
 /**
  * Generates documentation from the source model that pertains to a *.melk file.
@@ -673,6 +675,9 @@ class MelkDocumentationGenerator extends JvmModelGenerator {
             } else if (jvmType.identifier == EnumSet.canonicalName) {
                 val enumType = (type as JvmParameterizedTypeReference).arguments.head.type as JvmEnumerationType
                 return enumType.literals
+            } else if (jvmType.identifier == ArrayList.canonicalName) {
+//                val listType = (type as JvmParameterizedTypeReference).arguments.head.type as JvmGenericArrayTypeReference
+                return null
             }
         }
         return null

@@ -91,6 +91,9 @@ class ElkGraphImporter {
     public LGraph importGraph(final ElkNode elkgraph) {
         // Create the layered graph
         final LGraph topLevelGraph = createLGraph(elkgraph);
+        if (elkgraph.hasProperty(LayeredOptions.WRAPPING_CUTTING_CUTS)) {
+            throw new IllegalAccessError("Cuts found, list is parsing!!!");
+        }
         
         List<ElkPort> ports = elkgraph.getPorts();
         // Assign defined port sides to all external ports 

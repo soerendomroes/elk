@@ -131,6 +131,7 @@ public final class LayoutDataContentAssist {
                 proposals.add(Proposal.of(proposal, label));
             }
             break;
+        case LIST:
         case DOUBLE:
         case INT:
             proposals.add(Proposal.of(option.getDefaultDefault().toString(), option.getType().toString()));

@@ -104,6 +104,8 @@ public class LayoutOptionValidator implements IValidatingGraphElementVisitor {
                 return value instanceof Double;
             case ENUMSET:
                 return value instanceof EnumSet<?>;
+            case LIST:
+                return value instanceof ArrayList<?>;
             default:
                 return optionData.getOptionClass().isInstance(value);
         }

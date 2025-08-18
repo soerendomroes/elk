@@ -10,12 +10,13 @@
 package org.eclipse.elk.graph.text.validation
 
 import com.google.inject.Inject
+import java.util.ArrayList
 import java.util.EnumSet
 import java.util.Map
-import org.eclipse.elk.core.validation.LayoutOptionValidator
 import org.eclipse.elk.core.data.LayoutMetaDataService
 import org.eclipse.elk.core.data.LayoutOptionData
 import org.eclipse.elk.core.options.CoreOptions
+import org.eclipse.elk.core.validation.LayoutOptionValidator
 import org.eclipse.elk.graph.EMapPropertyHolder
 import org.eclipse.elk.graph.ElkEdge
 import org.eclipse.elk.graph.ElkEdgeSection
@@ -88,6 +89,8 @@ class ElkGraphValidator extends AbstractElkGraphValidator {
                             expectPropertyType(Double)
         	            case ENUMSET:
                             expectPropertyType(EnumSet)
+                        case LIST:
+                            expectPropertyType(ArrayList)
         	            default:
         	                if (option.optionClass !== null)
         	                    expectPropertyType(option.optionClass)
