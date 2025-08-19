@@ -29,4 +29,21 @@ public class LPadding extends ElkPadding {
         super();
     }
 
+    /**
+     * Returns an exact copy of this padding.
+     *
+     * @return identical padding
+     */
+    // elkjs-exclude-start
+    @Override
+    // elkjs-exclude-end
+    public LPadding clone() {
+        LPadding clone = new LPadding();
+        clone.setLeft(getLeft());
+        clone.setRight(getRight());
+        clone.setTop(getTop());
+        clone.setBottom(getBottom());
+        return clone;
+    }
+
 }
