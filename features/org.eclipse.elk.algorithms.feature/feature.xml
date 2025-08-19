@@ -41,46 +41,79 @@ SPDX-License-Identifier: EPL-2.0
 
    <plugin
          id="org.eclipse.elk.alg.common"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.disco"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.layered"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.mrtree"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.rectpacking"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.force"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.radial"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.spore"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.topdownpacking"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.vertiflex"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.elk.alg.indentedtree"
-         version="0.0.0"/>
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
