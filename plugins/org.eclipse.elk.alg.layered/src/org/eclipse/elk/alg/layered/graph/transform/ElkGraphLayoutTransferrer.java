@@ -414,7 +414,7 @@ public class ElkGraphLayoutTransferrer {
     // Utility Methods for debugging
     
     /**
-     * Debug method used to create an ElkGraph to log via the progress monitor.
+     * Debug method used to create an ElkGraph from an LGraph to log via the progress monitor.
      * This is done by executing the same steps as in {@link #applyLayout(LGraph)}, but without mutating.
      * 
      * @param lgraph The LGraph
@@ -429,7 +429,7 @@ public class ElkGraphLayoutTransferrer {
     }
     
     /**
-     * Recursive method used to create an ElkGraph to log via the progress monitor.
+     * Recursive method used to create an ElkGraph from an LGraph to log via the progress monitor.
      * This is done by executing the same steps as in {@link #applyLayout(LGraph)}, but without mutating.
      * 
      * @param lgraph The LGraph
