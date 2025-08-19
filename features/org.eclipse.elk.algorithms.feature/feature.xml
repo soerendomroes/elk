@@ -41,72 +41,46 @@ SPDX-License-Identifier: EPL-2.0
 
    <plugin
          id="org.eclipse.elk.alg.common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.elk.alg.disco"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.elk.alg.layered"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.elk.alg.mrtree"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.elk.alg.rectpacking"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.elk.alg.force"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.elk.alg.radial"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-  
+         version="0.0.0"/>
+
    <plugin
          id="org.eclipse.elk.alg.spore"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-  
+         version="0.0.0"/>
+
    <plugin
          id="org.eclipse.elk.alg.topdownpacking"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.elk.alg.vertiflex"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-  
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.elk.alg.indentedtree"
+         version="0.0.0"/>
+
 </feature>

@@ -13,7 +13,7 @@ import org.eclipse.elk.alg.indentedtree.IndentedtreeLayoutProvider
 import org.eclipse.elk.core.math.ElkPadding
 
 bundle {
-    metadataClass IndentedtreeMetadataProvider
+    metadataClass IndentedtreeMetaDataProvider
     idPrefix org.eclipse.elk.alg.indentedtree
 }
 
