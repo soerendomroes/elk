@@ -261,6 +261,21 @@ public final class KVectorChain extends LinkedList<KVector> implements IDataObje
     }
 
     /**
+     * Iterate through all vectors and add the offset to them without mutating.
+     * 
+     * @param offset
+     *            the offset to add to the vectors.
+     * @return A new vector chain
+     */
+    public KVectorChain offsetNonMutating(final KVector offset) {
+        KVectorChain result = new KVectorChain();
+        for (KVector vector : this) {
+            result.add(KVector.sum(vector, offset));
+        }
+        return result;
+    }
+
+    /**
      * Iterate through all vectors and add the offset to them.
      * 
      * @param dx
