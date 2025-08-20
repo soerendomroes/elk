@@ -34,7 +34,7 @@ public class IndentedtreeLayoutProvider extends AbstractLayoutProvider {
     @Override
     public void layout(ElkNode layoutGraph, IElkProgressMonitor progressMonitor) {
         // Start progress monitor
-        progressMonitor.begin("Org.eclipse.elk.alg.indentedtree", 2);
+        progressMonitor.begin("org.eclipse.elk.alg.indentedtree", 2);
         progressMonitor.log("Algorithm began");
 
         // Retrieve padding
