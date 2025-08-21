@@ -15,7 +15,7 @@ The layered algorithm or Sugiyama algorithm is in its implementation in ELK divi
 
 Using the occasion of the upcoming ELK 0.11.0 release, I want to shed more light into the ELK Layered algorithm and how to find the correct layout phase to configure.
 
-In the following, I will assume that the layout direction is left-to-right, or speaking in ELK layout options `elk.direction: RIGHT` since this makes talking about coordinates easier and allows be to use horizontal and vertical as well as left and right without discussion potential alternatives.
+In the following, I will assume that the layout direction is left-to-right, or speaking in ELK layout options `elk.direction: RIGHT` since this makes talking about coordinates easier and allows me to use horizontal and vertical as well as left and right without discussion potential alternatives.
 
 ## Cycle Breaking
 
@@ -35,7 +35,7 @@ This phase is implemented by the following strategies:
 
 Moreover, the following options might constrain the cycle breaking step:
 
-- Partitioning: [Activating partitioning](https://eclipse.dev/elk/reference/options/org-eclipse-elk-partitioning-activate.html) and [partitions](https://eclipse.dev/elk/reference/options/org-eclipse-elk-partitioning-partition.html) determine does not only partitions in the graph but also determine the direction of edges
+- Partitioning: [Activating partitioning](https://eclipse.dev/elk/reference/options/org-eclipse-elk-partitioning-activate.html) and [partitions](https://eclipse.dev/elk/reference/options/org-eclipse-elk-partitioning-partition.html) not only determine partitions in the graph but also determine the direction of edges
 - Layer constraints: Setting [layer constraints](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-layering-layerConstraint.html) to `FIRST` or `LAST` also influences the direction of edges to make this possible
 - Direction priority: Setting [`priority.direction`](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-priority-direction.html) makes it possible to weight the importance of edges being not reversed
 
@@ -65,7 +65,7 @@ Moreover, the following options can be used to constrain, configure, or post-pro
 
 ## Crossing Minimization
 
-The [crossing minimization](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-crossingMinimization-strategy.html) phase (`crossingMinimization.strategy`) determines the vertical ordering or nodes and the relative routes by also ordering the dummy nodes associated with them. Therefore, this phase makes sure that the drawing has fewer edges crossings and conforms to relative vertical constraints and also determine the ordering of ports/edges.
+The [crossing minimization](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-crossingMinimization-strategy.html) phase (`crossingMinimization.strategy`) determines the vertical ordering of nodes and the relative routes by also ordering the dummy nodes associated with them. Therefore, this phase makes sure that the drawing has fewer edge crossings and conforms to relative vertical constraints and also determines the ordering of ports/edges.
 
 It supports the following strategies:
 
@@ -99,5 +99,5 @@ Notable options to configure this are the following:
 
 ELK layered's [edge routing](https://eclipse.dev/elk/reference/options/org-eclipse-elk-edgeRouting.html) phases supports different drawing styles and finally determines the `x` coordinates of nodes and the routes for edges. This can be used to create edge control points for polyline, orthogonal, or spline edge routing.
 
-I hope this help readers to give an overview over the different strategies without having to dig trough different layers of documentation or at least helps to find the layout phase that is responsible for a problem.
+I hope this helps readers by giving an overview of the different strategies without having to dig through different layers of documentation, or at least helps by highlighting the layout phase that is responsible for a problem.
 
