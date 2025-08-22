@@ -13,7 +13,7 @@ The layered algorithm or Sugiyama algorithm is in its implementation in ELK divi
 
 {{< image src="layered-algorithm-structure.svg" alt="ELK Layered phases." >}}
 
-Using the occasion of the upcoming ELK 0.11.0 release, I want to shed more light into the ELK Layered algorithm and how to find the correct layout phase to configure.
+Using the occasion of the upcoming ELK 0.11.0 release, I want to shed more light on the ELK Layered algorithm and how to find the correct layout phase to configure.
 
 In the following, I will assume that the layout direction is left-to-right, or speaking in ELK layout options `elk.direction: RIGHT` since this makes talking about coordinates easier and allows me to use horizontal and vertical as well as left and right without discussion potential alternatives.
 
@@ -26,7 +26,7 @@ This phase is implemented by the following strategies:
 - `GREEDY` (default): Aims to minimize the number of backward edges and uses random decisions on tie
 - `INTERACTIVE`: Use the ordering given by the positions of nodes (e.g. from a previous layout run) to determine the direction of edges
 - `MODEL_ORDER`: Use the ordering of nodes in the input model to determine the direction of edges
-- `DEPTH_FIRST`: Traverse the graph depth first beginning with the first  source in the list of nodes and using the edge order as the depth-first visiting order. All edges that lead back to already visited nodes will be reversed
+- `DEPTH_FIRST`: Traverse the graph depth first beginning with the first source in the list of nodes and using the edge order as the depth-first visiting order. All edges that lead back to already visited nodes will be reversed
 - `GREEDY_MODEL_ORDER`: The `GREEDY` approach but using the model order as a tie-breaker
 - `SCC_CONNECTIVITY`: Determines the strongly connected components using Tarjan's algorithm while using the in-out degree to determine edges to reverse, which results in quadratic runtime compared to the other approaches
 - `SCC_NODE_TYPE`: Same as `SCC_CONNECTIVITY` but reverses edges going out of or going to specifically marked nodes using group model order
