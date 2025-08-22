@@ -61,7 +61,6 @@ Moreover, the following options can be used to constrain, configure, or post-pro
 - Layer constraints: See layer constraints explained above
 - Node promotion: Uses [Nikolov et al.'s](http://doi.acm.org/10.1145/1064546.1180618) node promotion strategy to achieve a layering with fewer dummy nodes
 - Layer splitting: Split a very high layer into multiple uses using [layer unzipping](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-layerUnzipping-strategy.html).
-- Edge labels: TODO I think there are options to control their placement, right?
 
 ## Crossing Minimization
 
