@@ -66,7 +66,7 @@ The following example shows the symmetrical space reservation for node labels.
 }
 </code></pre>
   </div>
-  <div style="flex: 1; min-width: 0;margin:auto;">
+  <div style="flex: 1; min-width: 0; margin:auto;">
     {{< image src="nodeLabelPlacement-symmetrical.svg" alt="The node's size with symmetrical space reservation for node labels.">}}
   </div>
 </div>
@@ -84,7 +84,7 @@ While this example shows how to disable it.
 }
 </code></pre>
   </div>
-  <div style="flex: 1; min-width: 0;margin:auto;">
+  <div style="flex: 1; min-width: 0; margin:auto;">
     {{< image src="nodeLabelPlacement-asymmetrical.svg" alt="The node's size with asymmetrical space reservation for node labels.">}}
   </div>
 </div>
@@ -110,7 +110,7 @@ Note, however, that the `ASYMMETRICAL` option is not supported for parent nodes 
 }
 </code></pre>
   </div>
-  <div style="flex: 1; min-width: 0;margin:auto;">
+  <div style="flex: 1; min-width: 0; margin:auto;">
     {{< image src="nodeLabelPlacement-parent.svg" alt="The parent node's size with node label placement.">}}
   </div>
 </div>
