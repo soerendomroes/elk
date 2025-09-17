@@ -19,14 +19,14 @@ In the following, I will assume that the layout direction is left-to-right, or s
 
 ## Cycle Breaking
 
-The [cycle breaking](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-cycleBreaking-strategy.html) phase (`cycleBreaking.strategy`) of the ELK layered algorithm make a graph acyclic by reversing edges such that they go from right-to-left instead of left-to-right creating *backward edges*. However, in its implementation in ELK, it does a lot more than that since this phase typically also handles constraints that somehow determine the horizontal ordering of connected nodes.
+The [cycle breaking](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-cycleBreaking-strategy.html) phase (`cycleBreaking.strategy`) of the ELK layered algorithm makes a graph acyclic by reversing edges such that they go from right-to-left instead of left-to-right creating *backward edges*. However, in its implementation in ELK, it does a lot more than that since this phase typically also handles constraints that somehow determine the horizontal ordering of connected nodes.
 
 This phase is implemented by the following strategies:
 
-- `GREEDY` (default): Aims to minimize the number of backward edges and uses random decisions on tie
+- `GREEDY` (default): Aims to minimize the number of backward edges and uses random decisions on ties
 - `INTERACTIVE`: Use the ordering given by the positions of nodes (e.g. from a previous layout run) to determine the direction of edges
 - `MODEL_ORDER`: Use the ordering of nodes in the input model to determine the direction of edges
-- `DEPTH_FIRST`: Traverse the graph depth first beginning with the first source in the list of nodes and using the edge order as the depth-first visiting order. All edges that lead back to already visited nodes will be reversed
+- `DEPTH_FIRST`: Traverse the graph depth-first beginning with the first source in the list of nodes and using the edge order as the depth-first visiting order. All edges that lead back to already visited nodes will be reversed
 - `GREEDY_MODEL_ORDER`: The `GREEDY` approach but using the model order as a tie-breaker
 - `SCC_CONNECTIVITY`: Determines the strongly connected components using Tarjan's algorithm while using the in-out degree to determine edges to reverse, which results in quadratic runtime compared to the other approaches
 - `SCC_NODE_TYPE`: Same as `SCC_CONNECTIVITY` but reverses edges going out of or going to specifically marked nodes using group model order
@@ -64,7 +64,7 @@ Moreover, the following options can be used to constrain, configure, or post-pro
 
 ## Crossing Minimization
 
-The [crossing minimization](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-crossingMinimization-strategy.html) phase (`crossingMinimization.strategy`) determines the vertical ordering of nodes and the relative routes by also ordering the dummy nodes associated with them. Therefore, this phase makes sure that the drawing has fewer edge crossings and conforms to relative vertical constraints and also determines the ordering of ports/edges.
+The [crossing minimization](https://eclipse.dev/elk/reference/options/org-eclipse-elk-layered-crossingMinimization-strategy.html) phase (`crossingMinimization.strategy`) determines the vertical ordering of nodes and the relative routes by also ordering the dummy nodes associated with them. Therefore, this phase ensures that the drawing has fewer edge crossings and conforms to relative vertical constraints and also determines the ordering of ports/edges.
 
 It supports the following strategies:
 
