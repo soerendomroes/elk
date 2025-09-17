@@ -16,4 +16,7 @@ Recent posts:
  * [Top-down Layout: Zoom in the Layout Process](./blog/posts/2023/23-06-09-topdown-layout.html) *by Maximilian Kasperowski*
  * [Layer Unzipping](./blog/posts/2024/24-12-06-layer-unzipping.html) *by Maximilian Kasperowski*
  * [Layered](./blog/posts/2025/25-08-21-layered.html) *by Sören Domrös*
- * [Node Labels](./blog/posts/2025/25-08-22-node-labels.html) *by Sören Domrös*
+ * [Top-down Layout: Zoom in the Layout Process](./blog/posts/2023/23-06-09-topdown-layout.html) _by Maximilian Kasperowski_
+ * [Layer Unzipping](./blog/posts/2024/24-12-06-layer-unzipping.html) _by Maximilian Kasperowski_
+ * [Layered](./blog/posts/2025/25-08-21-layered.html) _by Sören Domrös_
+ * [Node Labels](./blog/posts/2025/25-08-22-node-labels.html) _by Sören Domrös_
